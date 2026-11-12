@@ -31,5 +31,3 @@
 .related-course-links { display:flex; flex-wrap:wrap; gap:10px 22px; margin:16px 0; font-size:1rem; }
 .related-course-links a { color:inherit; text-underline-offset:4px; }
 .concept-lesson { display:inline-block; margin:0 0 16px; color:var(--a); }
-
-@media(max-width:360px) { .catalog-bar { row-gap:8px; } .catalog-primary { grid-row:1; } .catalog-bar > [data-site-view="search"] { grid-row:2; } }

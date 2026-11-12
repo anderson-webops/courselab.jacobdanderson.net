@@ -35,7 +35,7 @@ class CatalogTests(unittest.TestCase):
                 self.assertEqual([a['href'] for t,a in tags if t=='link' and a.get('rel')=='canonical'],[expected])
                 header=__import__('re').search(r'<header class="catalog-header">(.*?)</header>',file.read_text(),__import__('re').S).group(1)
                 nav=[a.get('data-site-view') for t,a in Tags(header).tags if t=='a']
-                self.assertEqual(nav,['courses','simulations','topics','search'])
+                self.assertEqual(nav,['courses','topics','search'])
                 self.assertNotIn('<select',header)
                 for tag,a in tags:
                     for key in ['src','href']:

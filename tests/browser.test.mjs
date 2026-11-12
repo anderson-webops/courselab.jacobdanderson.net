@@ -227,14 +227,14 @@ async function assertNoOverflow(page) {
 }
 
 async function assertNativeNavigation(page) {
-  for (const view of ['courses','simulations','topics','search']) {
+  for (const view of ['courses','topics','search']) {
     const link=page.locator(`.catalog-header a[data-site-view="${view}"]`);
     assert.equal(await link.count(),1);
     const target=new URL(await link.getAttribute('href'),page.url());
     assert.equal(target.origin,base.origin);
     assert.equal(target.pathname,'/'+view+'/');
   }
-  assert.equal(await page.locator('.catalog-header a').count(),4);
+  assert.equal(await page.locator('.catalog-header a').count(),3);
 }
 
 async function assertWalkthroughRoute(page, admin = false) {
