@@ -26,7 +26,7 @@ try{
  });
  await check('Each project control changes its corresponding numerical figure',async()=>{
   let count=0;
-  for(const input of await page.locator('#project-overview input[type=range],#project-overview input[type=checkbox],#project-overview select').all()){
+  for(const input of await page.locator('.project-controls input[type=range],.project-controls input[type=checkbox],.project-controls select,[data-project-module] input[type=range],[data-project-module] input[type=checkbox],[data-project-module] select').all()){
    const before=await page.locator('#project-overview').innerHTML();
    if(await input.evaluate(e=>e.tagName==='SELECT'))await input.selectOption(await input.evaluate(e=>e.options[(e.selectedIndex+1)%e.options.length].value));
    else await input.evaluate(e=>{if(e.type==='checkbox')e.checked=!e.checked;else e.value=Number(e.value)===Number(e.max)?e.min:e.max;e.dispatchEvent(new Event('input',{bubbles:true}));});

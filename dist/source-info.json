@@ -36,7 +36,8 @@
     "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree",
     "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository",
     "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
-    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions"
+    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions",
+    "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs."
   ],
   "source_sha256": {
     "additional-course-topics.json": "17b006b6a1b621787facb449f444f8d7fdd7ddf19b0991585e8a0644a0799cd9",
@@ -56,14 +57,16 @@
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
+    "georgia-system-model.js": "5ef4d04db221426b1893ea2438f40376f1c963c07abef5e282722bb668f458f2",
+    "georgia-system.js": "fa28e2a8b0ee6c038bd723aa3eac47acf9c6ec382add06d943c0e621d09e4a21",
     "orbit-runtime.css": "6dd52dbf5c67b5616c75cfbe576d6677d4cc94128dea92819195648f3eed2afa",
     "orbit-types-topic.json": "245faf51230071f0cb8ebdd272239ae07f538872db0d7bd166ce30d5d51aa9dd",
     "orbit-types.js": "4db50ecaacde412b1250108a27a1a064d12ea6ce397903cef7cd52c00b20a651",
     "orbit.html": "798f06231e9148daeb3e31c972de0932f368b6f662ee173b46cf9aad6857721d",
     "progress.html": "b3a269c87cd2275db596ae879643668f374398d418475e3e6c361cdcb85cd763",
     "progress.js": "0bff4a8f781755c8884d0acfb313aa45ae56253f72a64157140a4549d7ad4d11",
-    "project.css": "3114ca753fb53d5df0da29e84fa842014a12878a57d17582e1e8e60252d10427",
-    "project.html": "779a3b82d8f9c51795fa21d96f7cef23bbe3c8135fb651140bd5c585a6d15613",
+    "project.css": "83dc06d8b880068711c212ce396ad8d0232f5b780b17999c6864e8dcacbc85e6",
+    "project.html": "64465bfc3170676d68df0920670c0a5e4a4dd382e0e5224a34d58c791a96fe6f",
     "project.js": "34cd2610066dcfaa07477cab5b28f6f57876a429863ddb54032457d4a27ea2aa",
     "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
     "search.js": "2b48776e621e52b5dbdf8e86f0f0b640f8d3e8783ed4be906f0d9981e1d4f8e8",
@@ -87,5 +90,5 @@
   "reference_links": [
     "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ],
-  "version": "1.2.0"
+  "version": "1.3.0"
 }

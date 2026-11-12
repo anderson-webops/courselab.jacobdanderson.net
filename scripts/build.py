@@ -317,7 +317,7 @@ def build():
     write_generated(assets / 'course-lab.js', lab_js)
     count = build_topics(ROOT, CSP)
     build_project(ROOT, CSP)
-    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'catalog.css', 'search.js', 'progress.js']:
+    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'georgia-system-model.js', 'georgia-system.js', 'catalog.css', 'search.js', 'progress.js']:
         shutil.copyfile(ROOT / 'src' / name, assets / name)
     configured_models = json.loads((ROOT/'src/course-model-assets.json').read_text())
     for name in ['figure-registry.js','course-figures.js', *sorted({name for names in configured_models.values() for name in names})]:

@@ -134,6 +134,8 @@ def build_project(root, csp):
 <script src="../assets/figure-utils.js" defer></script>
 <script src="../assets/course-lab.js" defer></script>
 <script src="../assets/project.js" defer></script>
+<script src="../assets/georgia-system-model.js" defer></script>
+<script src="../assets/georgia-system.js" defer></script>
 <script src="../assets/topic-practice.js" defer></script></head>''')
     folder = root/'dist/project'
     folder.mkdir(exist_ok=True)

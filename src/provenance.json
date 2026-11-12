@@ -10,7 +10,7 @@
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
     "Fall 2024 PHSCS 587 notebook topic review; original device-physics explanations, figures and staged practice",
-    "ECE 6612 syllabus, slides 01–20 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
+    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -36,7 +36,8 @@
     "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree",
     "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository",
     "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
-    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions"
+    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions",
+    "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs."
   ],
   "source_sha256": {},
   "aliases": [
