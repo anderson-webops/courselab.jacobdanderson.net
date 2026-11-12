@@ -32,7 +32,10 @@ class CatalogTests(unittest.TestCase):
                 tags=Tags(file.read_text()).tags
                 expected='https://courselab.jacobdanderson.net/'+file.relative_to(DIST).as_posix().removesuffix('index.html')
                 self.assertEqual([a['href'] for t,a in tags if t=='link' and a.get('rel')=='canonical'],[expected])
-                self.assertTrue(any(a.get('id')=='course-switcher' for t,a in tags))
+                header=__import__('re').search(r'<header class="catalog-header">(.*?)</header>',file.read_text(),__import__('re').S).group(1)
+                nav=[a.get('data-site-view') for t,a in Tags(header).tags if t=='a']
+                self.assertEqual(nav,['courses','search','simulations','topics'])
+                self.assertNotIn('<select',header)
                 for tag,a in tags:
                     for key in ['src','href']:
                         url=a.get(key)
@@ -41,6 +44,17 @@ class CatalogTests(unittest.TestCase):
                         for host in ['courselab.jacobdanderson.net','learn.jacobdanderson.net']:
                             base='https://'+host+'/'+file.relative_to(DIST).as_posix()
                             self.assertEqual(urlsplit(urljoin(base,url)).hostname,host)
+
+    def test_ece6390_navigation_uses_the_same_topic_structure_as_other_courses(self):
+        page=(DIST/'courses/gt/ece6390/index.html').read_text()
+        tags=Tags(page).tags
+        self.assertFalse(any(a.get('data-site-view') in ['orbit','solar','project'] for t,a in tags if t=='a'))
+        for ident in ['geo-frames','solar-pressure-components']:
+            text=(DIST/'courses/gt/ece6390/topics'/ident/'index.html').read_text()
+            self.assertIn('Explore further',text)
+            self.assertIn('orbit/',text)
+        lab=(DIST/'courses/gt/ece6390/lab/index.html').read_text()
+        self.assertIn('id="topic-lesson"',lab)
 
     def test_sitemap_contains_only_primary_public_pages(self):
         xml=ElementTree.parse(DIST/'sitemap.xml')

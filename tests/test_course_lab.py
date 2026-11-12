@@ -86,11 +86,12 @@ class CourseLabTests(unittest.TestCase):
             links = [urlsplit(urljoin(ORIGIN + route, attrs['href'])).path
                      for tag, attrs in document(relative).tags
                      if tag == 'a' and attrs.get('href')]
-            self.assertIn('/courses/gt/ece6390/lab/', links, f'{route} must expose the new lab')
+            self.assertIn('/simulations/', links, f'{route} must expose simulations')
         lab_links = [urlsplit(urljoin(location, attrs['href'])).path
                      for tag, attrs in page.tags if tag == 'a' and attrs.get('href')]
-        self.assertIn('/', lab_links)
-        self.assertIn('/courses/gt/ece6390/solar/', lab_links)
+        self.assertIn('/courses/', lab_links)
+        self.assertIn('/topics/', lab_links)
+        self.assertIn('/courses/gt/ece6390/', lab_links)
         self.assertNotIn('/courses/gt/ece6390/admin/', lab_links)
 
     def test_generated_graphics_do_not_reintroduce_inline_styles(self):

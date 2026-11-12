@@ -1,6 +1,6 @@
 # Course Lab
 
-Shared course notes, explanations, figures, simulations and attempt-first practice. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
+Shared course notes, explanations, figures, simulations and attempt-first practice. Navigation contains Courses, Search, Simulations and Topics. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
 
 Source: [anderson-webops/courselab.jacobdanderson.net](https://github.com/anderson-webops/courselab.jacobdanderson.net).
 
@@ -28,13 +28,13 @@ Browser checks cover the preserved orbital models, course topics, project figure
 - `/courses/gt/ece6612/`: Computer Network Security.
 - `/courses/byu/phscs587/`: Physics of Semiconductor Devices.
 
-Each course has its own landing page. Topics use `/courses/<institution>/<course>/topics/<stable-topic-id>/`. ECE 6390 also retains `/orbit/`, `/solar/`, `/project/` and `/lab/` within its course. Its unlinked `/admin/` route contains the code walkthrough. That route is a presentation choice, not authentication.
+Each course has its own landing page. Topics use `/courses/<institution>/<course>/topics/<stable-topic-id>/`. ECE 6390 also retains `/orbit/`, `/solar/`, `/project/` and `/lab/` within its course. Specialized orbit/solar explorers are linked from their relevant topics; GeorgiaTenna is grouped with arrays. The shared course navigation prioritizes the overview and topic sequence. Its unlinked `/admin/` route contains the code walkthrough. That route is a presentation choice, not authentication.
 
 `src/courses.json` is the shared course registry. `scripts/catalog.py` generates the site home, course pages, navigation, breadcrumbs, search, canonical URLs and sitemap. `scripts/topics.py` builds the ECE 6390 lesson pages around the preserved model registry. All courses share figure utilities, control presentation, practice feedback and optional browser storage.
 
 ECE 6390 authoring sources are `src/course-lab.html`, `src/course-update.js`, `src/course-extensions.js` and `src/course-navigation.js`; lesson prose and practice are in the corresponding `topic-*.json` files. The supplied HTML originals retain their original bytes. Adaptations belong in the builder and shared assets.
 
-Other courses use the topic-array schema demonstrated by `src/additional-course-topics.json` and the BYU topic parts. Each entry provides `course`, `id`, `title`, `heading`, a figure-led `problem`, original `figureSvg`, explanatory paragraphs, an example, 1–2 staged questions and source notes. Optional `simulation` selects a model from the shared device registry. Figures and equations must state their units, assumptions and model limits.
+Other courses use the topic-array schema demonstrated by `src/additional-course-topics.json` and the BYU topic parts. Each entry provides `course`, `id`, `title`, `heading`, a figure-led `problem`, original `figureSvg`, explanatory paragraphs, an example, 1–2 staged questions and source notes. Optional `simulation` selects a model from `window.CourseFigureRegistry`. `src/course-model-assets.json` lists each course’s model scripts; the shared renderer supplies controls, equations, model scope, URL state and reset behavior. Subject modules use the common `{id, controls, render, checks}` interface. Figures and equations must state their units, assumptions and model limits.
 
 To add a course, add its verified institution/code/title to `courses.json`, then add topic entries using that course key in a file under `src/course-topics/`. Reuse the shared shell and components. Keep topic IDs stable, validate the build, and review rendered pages on desktop and mobile. Mark incomplete course coverage `in-progress` and describe the gap. Publish original learning material; retain raw course documents, personal assignments, solutions, grades and confidential material outside this public repository.
 

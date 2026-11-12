@@ -49,6 +49,9 @@ def shell(title, body, csp, *, topic=None):
 
 def build_topics(root, csp):
     topics = inventory(root)
+    course_groups = json.loads((root/'src/topic-groups.json').read_text()).get('gt/ece6390',[])
+    order=[ident for group in course_groups for ident in group['ids']]
+    ordered=sorted(topics,key=lambda x:order.index(x['id']) if x['id'] in order else len(order))
     content = json.loads((root / 'src/topic-content.json').read_text())
     extensions = json.loads((root / 'src/topic-extensions.json').read_text())
     assert not (content.keys() & extensions.keys()), 'Duplicate topic content'
@@ -92,7 +95,7 @@ def build_topics(root, csp):
 <label for="attempt-{n}">Your reasoning</label><textarea id="attempt-{n}" rows="4" maxlength="8000"></textarea>
 <div class="practice-actions"><button type="button" data-hint aria-controls="hint-{n}">Hint</button><button type="button" data-compare aria-controls="answer-{n}" disabled>Compare reasoning</button></div>
 <p id="hint-{n}" class="practice-hint" hidden>{esc(question['hint'])}</p><p id="answer-{n}" class="practice-answer" hidden>{esc(question['answer'])}</p></article>''')
-        siblings = [x for x in topics if x['group'] == item['group']]
+        siblings = ordered
         at = siblings.index(item)
         prev = f'<a rel="prev" href="../{siblings[at-1]["id"]}/">← {esc(siblings[at-1]["title"])}</a>' if at else '<span></span>'
         nxt = f'<a rel="next" href="../{siblings[at+1]["id"]}/">{esc(siblings[at+1]["title"])} →</a>' if at+1 < len(siblings) else '<span></span>'
@@ -109,7 +112,7 @@ def build_topics(root, csp):
 {links}
 <details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
 <section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2>{''.join(practice)}</section>
-</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic">{prev}{nxt}</nav>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this course">{prev}{nxt}</nav>
 <noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>'''
         folder = dest / ident
         folder.mkdir(exist_ok=True)

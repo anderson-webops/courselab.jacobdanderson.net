@@ -8,7 +8,8 @@
     "User-provided solar-acceleration-visualizer.html",
     "ECE 6390 Interactive Course Lab, validated 2026-10-29",
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
-    "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion"
+    "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
+    "Fall 2024 PHSCS 587 notebook topic review; original device-physics explanations, figures and staged practice"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -30,7 +31,8 @@
     "Practice attempts persist locally; comparison feedback is initially hidden and requires a written attempt",
     "GeorgiaTenna project learning section: eight linked figures with independent example controls for geometry, aperture components, phasing, steering, normalization, transmission, schematic coverage and calculation workflow; no solved design data",
     "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
-    "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import"
+    "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import",
+    "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree"
   ],
   "source_sha256": {},
   "aliases": [

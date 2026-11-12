@@ -226,14 +226,15 @@ async function assertNoOverflow(page) {
   return sizes;
 }
 
-async function assertNativeNavigation(page, admin = false) {
-  for (const [view, pathname] of [['orbit', admin ? '/courses/gt/ece6390/admin/' : '/courses/gt/ece6390/orbit/'], ['solar', '/courses/gt/ece6390/solar/']]) {
-    const link = page.locator(`a[data-site-view="${view}"]`).first();
-    assert.equal(await link.count(), 1, `Missing native ${view} navigation link`);
-    const target = new URL(await link.getAttribute('href'), page.url());
-    assert.equal(target.origin, base.origin);
-    assert.equal(target.pathname, pathname);
+async function assertNativeNavigation(page) {
+  for (const view of ['courses','search','simulations','topics']) {
+    const link=page.locator(`.catalog-header a[data-site-view="${view}"]`);
+    assert.equal(await link.count(),1);
+    const target=new URL(await link.getAttribute('href'),page.url());
+    assert.equal(target.origin,base.origin);
+    assert.equal(target.pathname,'/'+view+'/');
   }
+  assert.equal(await page.locator('.catalog-header a').count(),4);
 }
 
 async function assertWalkthroughRoute(page, admin = false) {
@@ -530,15 +531,15 @@ try {
     assert.match(await page.locator('#ol-rk-svg').textContent(), /No update after the endpoint/);
     await range(page, '#ol-time', 12);
     assert.equal(await page.locator('[data-stage="0"]').isEnabled(), true);
-    await page.locator('a[data-site-view="orbit"]').first().click();
+    await page.reload();
     await page.waitForURL(url('/courses/gt/ece6390/admin/'));
     await orbitReady(page);
     await assertWalkthroughRoute(page, true);
-    await page.locator('a[data-site-view="solar"]').first().click();
-    await page.waitForURL(url('/courses/gt/ece6390/solar/'));
+    await page.locator('#inspect-solar').first().click();
+    await page.waitForURL(u=>u.pathname==='/courses/gt/ece6390/solar/');
     await solarReady(page);
     await assertNativeNavigation(page);
-    await page.locator('a[data-site-view="orbit"]').first().click();
+    await page.locator('.catalog-header a[data-site-view="simulations"]').click();await page.getByRole('link',{name:'Orbit and Sun explorer',exact:true}).first().click();
     await page.waitForURL(url('/courses/gt/ece6390/orbit/'));
     await orbitReady(page);
     await assertWalkthroughRoute(page);
@@ -678,11 +679,11 @@ try {
   });
 
   await check('Native site links navigate between both tools', async () => {
-    await page.locator('a[data-site-view="orbit"]').first().click();
+    await page.locator('.catalog-header a[data-site-view="simulations"]').click();await page.getByRole('link',{name:'Orbit and Sun explorer',exact:true}).first().click();
     await page.waitForURL(url('/courses/gt/ece6390/orbit/'));
     await orbitReady(page);
-    await page.locator('a[data-site-view="solar"]').first().click();
-    await page.waitForURL(url('/courses/gt/ece6390/solar/'));
+    await page.locator('#inspect-solar').first().click();
+    await page.waitForURL(u=>u.pathname==='/courses/gt/ece6390/solar/');
     await solarReady(page);
   });
 

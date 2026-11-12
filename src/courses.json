@@ -21,7 +21,8 @@
     "sourceNotes": [
       "Course title and scope: Georgia Tech Catalog: https://catalog.gatech.edu/courses-grad/ece/",
       "Initial lessons cover authenticated encryption and TLS identity/key establishment; broader protocol and application topics are being prepared."
-    ]
+    ],
+    "gap": "Two introductory lessons are available. The remaining course notes and labs still need topic pages."
   },
   {
     "institution": "byu",
@@ -29,10 +30,11 @@
     "displayCode": "PHSCS 587",
     "title": "Physics of Semiconductor Devices",
     "status": "in-progress",
-    "description": "Semiconductor-device mechanisms, carrier populations, electrostatics, and field-effect control.",
+    "description": "Bands and carrier statistics, transport, junctions and contacts, MOS devices, scaling, and multigate electrostatics.",
     "sourceNotes": [
       "Course title and scope: BYU Catalog: https://catalog.byu.edu/courses/10779-000",
       "Introductory foundations are being expanded against the course-note topic inventory."
-    ]
+    ],
+    "gap": "Topics follow the reviewed Fall 2024 notebook PDFs. Lecture recordings remain to be reviewed."
   }
 ]

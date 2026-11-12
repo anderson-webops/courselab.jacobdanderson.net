@@ -124,11 +124,15 @@ const groups=[""")
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-update.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-extensions.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-navigation.js').read_text() + '\nconst groups=[')
+    order=[ident for group in json.loads((ROOT/'src/topic-groups.json').read_text())['gt/ece6390'] for ident in group['ids']]
+    js = replace_once(js,'const groups=[','const courseTopicOrder='+json.dumps(order)+';\nmodules.sort((a,b)=>{const rank=id=>{const i=courseTopicOrder.indexOf(id);return i<0?999:i;};return rank(a.id)-rank(b.id);});\nconst groups=[')
     js = replace_once(js, "const root=document.getElementById('course-lab')", "if(document.querySelector('[data-project-overview]')) { window.CourseLab={modules,U,checks:()=>modules.flatMap(m=>(m.checks?.()||[]).map(x=>({module:m.id,...x})))}; return; }\nconst root=document.getElementById('course-lab')")
-    js = replace_once(js, "['Antennas','Antennas']];", "['Antennas','Antennas'],['Navigation','Navigation'],['Digital','Digital signals']];")
+    js = replace_once(js, "['Antennas','Antennas']];", "['Antennas','Antennas'],['Digital','Digital signals'],['Navigation','Navigation']];")
     js = replace_once(js, "function sourceLabel(source) {", "function sourceLabel(source) {\n  if (source.startsWith('Course: ')) return source.slice(8);")
     js = replace_once(js, 'Course material through October 27, 2026', 'Class through October 29, 2026; assigned digital review')
     js = replace_once(js, 'This explicitly supplied uniform-array toy model extends the introductory pattern-multiplication picture, not a claim that the general array definition has already been taught.', 'This uniform identical-element model illustrates the general array factor defined in the October 29 lecture.')
+    markup = replace_once(markup, '<h2 id="heading"></h2>', '<h2 id="heading"></h2><a id="topic-lesson" class="concept-lesson" href="../learn/kepler-ellipse/">Lesson and practice</a>')
+    js = replace_once(js, "$('heading').textContent=m.heading;", "$('heading').textContent=m.heading;const lesson=$('topic-lesson');if(lesson)lesson.href='../topics/'+id+'/';")
     # Topic routes reuse the same physics and controls, locked to their own concept.
     js = replace_once(js, "const save=()=>", "if(root.dataset.topic) active=root.dataset.topic;\nconst save=()=>")
     js = replace_once(js, "const save=()=>{try{localStorage.setItem('ece6390-course-lab-v1',JSON.stringify({active,values}))}catch{}};", """if(root.dataset.topic) {
@@ -312,9 +316,11 @@ def build():
     write_generated(assets / 'course-lab.js', lab_js)
     count = build_topics(ROOT, CSP)
     build_project(ROOT, CSP)
-    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'catalog.css', 'catalog.js', 'search.js', 'progress.js']:
+    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'catalog.css', 'search.js', 'progress.js']:
         shutil.copyfile(ROOT / 'src' / name, assets / name)
-    for name in ['semiconductor-models.js','device-models.js','course-figures.js']:
+    configured_models = json.loads((ROOT/'src/course-model-assets.json').read_text())
+    for name in ['figure-registry.js','course-figures.js', *sorted({name for names in configured_models.values() for name in names})]:
+        assert re.fullmatch(r'[a-z0-9-]+\.js',name), f'Invalid model asset: {name}'
         if (ROOT/'src'/name).exists():
             shutil.copyfile(ROOT/'src'/name,assets/name)
     build_catalog(ROOT, CSP)
@@ -325,7 +331,7 @@ def build():
         if source.is_file() and source.suffix in ['.js','.css','.html','.svg','.json'] and source.name != 'provenance.json':
             provenance['source_sha256'][source.relative_to(ROOT/'src').as_posix()] = hashlib.sha256(source.read_bytes()).hexdigest()
     (dest / 'source-info.json').write_text(json.dumps(provenance, indent=2) + '\n')
-    print(f'Built {count} topic pages, topic index, orbit, solar, course lab and admin; all runtime assets are local.')
+    print(f'Built Course Lab with {len(list(dest.rglob('*.html')))} pages; all runtime assets are local.')
 
 
 if __name__ == '__main__':

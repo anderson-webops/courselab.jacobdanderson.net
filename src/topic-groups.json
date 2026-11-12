@@ -1,0 +1,255 @@
+{
+  "gt/ece6390": [
+    {
+      "title": "Orbits and look angles",
+      "anchor": "Orbits",
+      "ids": [
+        "kepler-ellipse",
+        "geo-frames",
+        "look-triangle",
+        "azimuth-components",
+        "solar-pressure-components",
+        "numerical-orbits",
+        "hohmann-transfer"
+      ],
+      "links": [
+        {
+          "title": "Orbit and Sun explorer",
+          "route": "/courses/gt/ece6390/orbit/"
+        }
+      ]
+    },
+    {
+      "title": "Spacecraft systems",
+      "anchor": "Systems",
+      "ids": [
+        "eclipse-battery",
+        "solar-array",
+        "rocket-mass",
+        "electric-propulsion",
+        "thermal-balance",
+        "radiation-redundancy"
+      ]
+    },
+    {
+      "title": "Fields and local operators",
+      "anchor": "Waves",
+      "ids": [
+        "divergence-curl",
+        "double-curl",
+        "displacement-current",
+        "helmholtz-curvature"
+      ]
+    },
+    {
+      "title": "Traveling waves and interference",
+      "ids": [
+        "plane-wave",
+        "standing-wave",
+        "polarization",
+        "phasor-interference"
+      ]
+    },
+    {
+      "title": "RF links",
+      "anchor": "RF",
+      "ids": [
+        "db-distance",
+        "link-budget",
+        "receiver-noise",
+        "doppler-shift",
+        "rain-path",
+        "bandwidth-noise",
+        "free-space-flux"
+      ]
+    },
+    {
+      "title": "Radiators and apertures",
+      "anchor": "Antennas",
+      "ids": [
+        "dipole-pattern",
+        "aperture-phasors",
+        "circular-aperture",
+        "dish-gain",
+        "reflector-screens"
+      ]
+    },
+    {
+      "title": "Array geometry and steering",
+      "ids": [
+        "array-multiplication",
+        "array-path-phase",
+        "planar-array",
+        "array-footprint",
+        "beamforming-frontends"
+      ],
+      "links": [
+        {
+          "title": "GeorgiaTenna project figures",
+          "route": "/courses/gt/ece6390/project/"
+        }
+      ]
+    },
+    {
+      "title": "Pattern normalization and gain",
+      "ids": [
+        "gain-references",
+        "array-normalization",
+        "solid-angle"
+      ]
+    },
+    {
+      "title": "Digital representation",
+      "anchor": "Digital",
+      "ids": [
+        "sampling-alias",
+        "quantization-pcm",
+        "source-compression"
+      ]
+    },
+    {
+      "title": "Pulses, channels and detection",
+      "ids": [
+        "nyquist-pulse",
+        "rectangular-pulse-spectrum",
+        "matched-filter",
+        "ofdm-multipath",
+        "modem-chain"
+      ]
+    },
+    {
+      "title": "Modulation, rates and power",
+      "ids": [
+        "iq-constellation",
+        "rate-bandwidth",
+        "adaptive-modcod",
+        "amplifier-backoff"
+      ]
+    },
+    {
+      "title": "Navigation geometry and errors",
+      "anchor": "Navigation",
+      "ids": [
+        "gnss-orbits",
+        "doppler-pass",
+        "pseudorange-clock",
+        "navigation-frames",
+        "gnss-geometry",
+        "gnss-dop-3d",
+        "gnss-error-budget"
+      ]
+    },
+    {
+      "title": "Codes and receiver processing",
+      "ids": [
+        "pn-correlation",
+        "lfsr-code",
+        "processing-gain",
+        "near-far",
+        "gnss-acquisition",
+        "dual-frequency"
+      ]
+    }
+  ],
+  "byu/phscs587": [
+    {
+      "title": "Bands and quantum states",
+      "ids": [
+        "band-states-holes",
+        "density-of-states-dimensions",
+        "effective-mass-valleys",
+        "quantum-well-subbands",
+        "parabolic-dirac-dispersion"
+      ]
+    },
+    {
+      "title": "Carrier populations",
+      "ids": [
+        "carrier-populations",
+        "fermi-dirac-occupation",
+        "intrinsic-mass-action",
+        "dopant-neutrality",
+        "degenerate-statistics"
+      ]
+    },
+    {
+      "title": "Fields and transport",
+      "ids": [
+        "band-energy-potential",
+        "poisson-gauss",
+        "drift-mobility",
+        "diffusion-einstein",
+        "quasi-fermi-levels",
+        "continuity-lifetime",
+        "minority-diffusion"
+      ]
+    },
+    {
+      "title": "Junctions and carrier storage",
+      "ids": [
+        "pn-depletion",
+        "pn-diode-injection",
+        "junction-tunneling",
+        "bipolar-carrier-storage"
+      ]
+    },
+    {
+      "title": "Contacts and barriers",
+      "ids": [
+        "workfunction-affinity",
+        "schottky-ohmic",
+        "interface-pinning",
+        "barrier-transport",
+        "image-force-lowering"
+      ]
+    },
+    {
+      "title": "MOS gate and fabrication",
+      "ids": [
+        "mos-gate-electrostatics",
+        "mos-capacitance-frequency",
+        "polysilicon-gate-depletion",
+        "self-aligned-fabrication",
+        "mos-terminal-capacitance",
+        "mos-body-effect"
+      ]
+    },
+    {
+      "title": "MOS channel current",
+      "ids": [
+        "mos-regional-current",
+        "subthreshold-swing",
+        "channel-length-modulation",
+        "mos-channel-mobility",
+        "strain-engineering"
+      ]
+    },
+    {
+      "title": "Threshold and channel design",
+      "ids": [
+        "threshold-temperature",
+        "threshold-quantization",
+        "threshold-ion-ioff",
+        "channel-profile-engineering"
+      ]
+    },
+    {
+      "title": "Scaling and multigate devices",
+      "ids": [
+        "short-channel-effects",
+        "poisson-scale-length",
+        "constant-field-scaling",
+        "cmos-inverter",
+        "double-gate-electrostatics",
+        "nanowire-electrostatics",
+        "ballistic-injection"
+      ]
+    },
+    {
+      "title": "Study methods",
+      "ids": [
+        "technical-reading"
+      ]
+    }
+  ]
+}

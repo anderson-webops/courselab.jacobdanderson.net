@@ -11,7 +11,7 @@
     "build": "python3 scripts/build.py",
     "check": "python3 scripts/check_site.py",
     "test": "python3 -m unittest discover -s tests -p 'test_*.py'",
-    "test:browser": "node tests/browser.test.mjs && node tests/course-lab.browser.test.mjs && node tests/topics.browser.test.mjs && node tests/project.browser.test.mjs && node tests/catalog.browser.test.mjs",
+    "test:browser": "node tests/browser.test.mjs && node tests/course-lab.browser.test.mjs && node tests/topics.browser.test.mjs && node tests/project.browser.test.mjs && node tests/catalog.browser.test.mjs && node tests/additional-courses.browser.test.mjs",
     "dev": "python3 scripts/serve.py --port 4178",
     "validate": "npm run build && npm run test && npm run check"
   }
