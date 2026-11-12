@@ -1,0 +1,11 @@
+.figure-enlarge { display:block; margin:10px 0; padding:8px 14px; min-height:44px; font:inherit; color:var(--ink); border:1px solid var(--line); border-radius:6px; background:var(--surface); cursor:pointer; }
+.figure-viewer { width:calc(100vw - 24px); max-width:1200px; max-height:calc(100dvh - 24px); padding:16px; border:1px solid var(--line); border-radius:10px; color:var(--ink); background:var(--surface); }
+.figure-viewer::backdrop { background:rgb(0 0 0 / .65); }
+.figure-viewer h2 { margin:0 0 10px; font:600 1.1rem/1.4 system-ui,sans-serif; }
+.fv-toolbar { display:flex; flex-wrap:wrap; gap:8px; align-items:center; margin-bottom:10px; }
+.fv-toolbar button { min-width:44px; min-height:44px; padding:7px 12px; font:inherit; color:var(--ink); background:var(--surface); border:1px solid var(--line); border-radius:6px; cursor:pointer; }
+.fv-toolbar button:last-child { margin-left:auto; }
+.fv-toolbar output { min-width:50px; text-align:center; font:1rem system-ui,sans-serif; }
+.fv-stage { overflow:auto; height:65dvh; max-height:calc(100dvh - 175px); padding:12px; background:#fff; color:#17343d; border:1px solid var(--line); border-radius:6px; overscroll-behavior:contain; }
+.fv-stage > svg { display:block; flex:none; max-width:none; }
+.figure-enlarge:focus-visible,.fv-toolbar button:focus-visible,.fv-stage:focus-visible { outline:3px solid var(--a); outline-offset:3px; }

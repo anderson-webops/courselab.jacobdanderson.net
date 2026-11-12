@@ -37,7 +37,8 @@
     "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository",
     "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
     "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions",
-    "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs."
+    "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs.",
+    "Reference figures preserve authored text colors and font sizes on a consistent chart surface, with an accessible natural-size vector viewer for zooming and panning."
   ],
   "source_sha256": {},
   "aliases": [

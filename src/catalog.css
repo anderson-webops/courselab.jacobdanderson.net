@@ -28,7 +28,8 @@
 .additional-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 28px; max-width:850px; margin:22px 0; }
 .additional-controls .control { margin:0; }
 @media(max-width:600px) { .additional-controls { grid-template-columns:1fr; } }
-.course-static { background:#fff; }
+.topic-demonstration .course-static { background:#fff; color-scheme:light; }
+.course-static svg text { font-family:inherit; }
 .related-course-links { display:flex; flex-wrap:wrap; gap:10px 22px; margin:16px 0; font-size:1rem; }
 .related-course-links a { color:inherit; text-underline-offset:4px; }
 .concept-lesson { display:inline-block; margin:0 0 16px; color:var(--a); }

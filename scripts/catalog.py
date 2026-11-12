@@ -35,7 +35,7 @@ def header(file, courses, current=None):
 
 
 def page(file, title, body, csp, courses, current=None, extra='', noindex=False, canonical=None):
-    css = ''.join(f'<link rel="stylesheet" href="{relative(file,"/assets/"+x)}">' for x in ['course-lab.css','topics.css','catalog.css'])
+    css = ''.join(f'<link rel="stylesheet" href="{relative(file,"/assets/"+x)}">' for x in ['course-lab.css','topics.css','catalog.css','figure-viewer.css'])
     return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="{csp}"><title>{html.escape(title) + (' | Course Lab' if title != 'Course Lab' else '')}</title><link rel="canonical" href="{PRIMARY+(canonical or route(file))}">{'<meta name="robots" content="noindex">' if noindex else ''}<link rel="icon" href="{relative(file,'/assets/favicon.svg')}" type="image/svg+xml">{css}{extra}</head><body class="topic-site"><a class="lab-skip" href="#main">Skip to content</a>{header(file,courses,current)}{body}</body></html>'''
 
 
@@ -135,9 +135,9 @@ def build_catalog(root, csp):
         assert '<script' not in t['figureSvg'] and 'style=' not in t['figureSvg'] and 'onload=' not in t['figureSvg']
         model_attr = f' data-course-figure="{e(t["simulation"])}"' if t.get('simulation') else ''
         body=f'<main id="main" class="topic-page"><p class="topic-breadcrumb"><a href="{relative(file,"/courses/"+key+"/")}">{e(next(c["displayCode"] for c in courses if c["institution"]+"/"+c["code"]==key))}</a></p><h1>{e(t["title"])}</h1><figure class="topic-demonstration"{model_attr}><div class="figure course-static" role="region" tabindex="0" aria-label="{e(t["heading"])}">{t["figureSvg"]}</div><figcaption>Fig. 1. {e(t["heading"])}</figcaption></figure><section class="topic-reading"><h2>From the figure to the concept</h2><p>Fig. 1 shows {e(t["problem"])}</p>'+''.join('<p>'+e(p)+'</p>' for p in t['explanation'])+'</section><section class="topic-reading"><h2>Example</h2><p>'+e(t['example'])+'</p></section><details><summary>Sources and scope</summary><ul>'+''.join('<li>'+e(s)+'</li>' for s in t['sourceNotes'])+'</ul></details>'+practice(key.replace('/','-')+'-'+t['id'],t['questions'])+'</main>'
-        scripts = ['topic-practice.js']
+        scripts = ['topic-practice.js','figure-viewer.js']
         if model_attr:
-            scripts = ['figure-utils.js','figure-registry.js']+model_assets.get(key,[])+['course-figures.js','topic-practice.js']
+            scripts = ['figure-utils.js','figure-registry.js']+model_assets.get(key,[])+['course-figures.js','topic-practice.js','figure-viewer.js']
         assets = ''.join(f'<script src="{relative(file,"/assets/"+s)}" defer></script>' for s in scripts)
         siblings=[x for x in extra_topics if x['course']==key]
         order={ident:i for i,ident in enumerate([ident for group in groups.get(key,[]) for ident in group['ids']])}

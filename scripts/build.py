@@ -306,6 +306,10 @@ def build():
         write_generated(dest / ('index.html' if name == 'orbit' else 'solar/index.html'), shell(name, body))
     write_generated(dest / 'admin/index.html', shell('orbit', admin_orbit, admin=True))
     lab, lab_css, lab_js = course_lab((ROOT / 'src/course-lab.html').read_text())
+    # Fixed-palette reference SVGs retain their authored fills and label sizes.
+    # The live figures continue to inherit the surrounding page theme.
+    for selector in ['.figure svg text', '.figure svg .tick', '.figure svg .axis-title']:
+        lab_css = lab_css.replace(selector, selector.replace('.figure', '.figure:not(.course-static)', 1))
     start = lab_js.index('const C=')
     end = lab_js.index('const Orb =', start)
     helpers = lab_js[start:end]
@@ -317,7 +321,7 @@ def build():
     write_generated(assets / 'course-lab.js', lab_js)
     count = build_topics(ROOT, CSP)
     build_project(ROOT, CSP)
-    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'georgia-system-model.js', 'georgia-system.js', 'catalog.css', 'search.js', 'progress.js']:
+    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'georgia-system-model.js', 'georgia-system.js', 'figure-viewer.js', 'figure-viewer.css', 'catalog.css', 'search.js', 'progress.js']:
         shutil.copyfile(ROOT / 'src' / name, assets / name)
     configured_models = json.loads((ROOT/'src/course-model-assets.json').read_text())
     for name in ['figure-registry.js','course-figures.js', *sorted({name for names in configured_models.values() for name in names})]:

@@ -15,6 +15,12 @@ await context.addInitScript(()=>document.addEventListener('securitypolicyviolati
 const page=await context.newPage();page.on('pageerror',e=>errors.push(String(e)));
 async function check(name,fn){try{const detail=await fn();results.push({name,status:'passed',detail});console.log('PASS '+name);}catch(e){results.push({name,status:'failed',error:e.stack});console.error('FAIL '+name+': '+e.message);}}
 async function outside(){return page.locator('main svg').evaluateAll(svgs=>svgs.flatMap(svg=>{const vb=svg.viewBox.baseVal;return[...svg.querySelectorAll('text')].filter(e=>{const m=svg.getCTM().inverse().multiply(e.getCTM()),b=e.getBBox();return[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].some(([x,y])=>{const p=new DOMPoint(x,y).matrixTransform(m);return p.x<-.75||p.y<-.75||p.x>vb.width+.75||p.y>vb.height+.75;});}).map(e=>e.textContent);}));}
+async function referencePalette(){return page.locator('main .course-static svg').evaluateAll(svgs=>svgs.flatMap(svg=>[...svg.querySelectorAll('text')].flatMap(label=>{
+ const failures=[],style=getComputedStyle(label),fill=label.getAttribute('fill'),size=label.getAttribute('font-size');
+ if(fill){const sample=document.createElementNS('http://www.w3.org/2000/svg','rect');sample.setAttribute('fill',fill);svg.append(sample);const expected=getComputedStyle(sample).fill;sample.remove();if(style.fill!==expected)failures.push({text:label.textContent,kind:'authored-fill',actual:style.fill,expected});}
+ if(size&&Math.abs(parseFloat(style.fontSize)-parseFloat(size))>.01)failures.push({text:label.textContent,kind:'authored-label-size',actual:style.fontSize,expected:size});
+ return failures;
+})));}
 try{
  await mkdir(output,{recursive:true});
  await check('Every additional course topic has a reference figure, explanation, example and staged practice',async()=>{
@@ -42,7 +48,8 @@ try{
   for(const scheme of['light','dark'])for(const width of[390,1440]){
    await page.emulateMedia({colorScheme:scheme});await page.setViewportSize({width,height:1050});
    for(const lesson of lessons){await page.goto(new URL('/courses/'+lesson.course+'/topics/'+lesson.id+'/',base).href);await page.waitForSelector('main svg');assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),lesson.id+width+scheme);
-    if(['density-of-states-dimensions','mos-capacitance-frequency','short-channel-effects','cmos-inverter','interface-pinning','authenticated-encryption'].includes(lesson.id)&&[390,1440].includes(width))await page.screenshot({path:path.join(output,lesson.id+'-'+width+'-'+scheme+'.png'),fullPage:true});
+    assert.deepEqual(await referencePalette(),[],lesson.id+': fixed reference palette and label sizes survive '+scheme+' theme');
+    if(['band-states-holes','fermi-dirac-occupation','density-of-states-dimensions','mos-capacitance-frequency','short-channel-effects','cmos-inverter','interface-pinning','authenticated-encryption'].includes(lesson.id)&&[390,1440].includes(width))await page.screenshot({path:path.join(output,lesson.id+'-'+width+'-'+scheme+'.png'),fullPage:true});
    }
   }
  });
