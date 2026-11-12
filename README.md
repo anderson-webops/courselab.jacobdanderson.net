@@ -38,6 +38,10 @@ Other courses use the topic-array schema demonstrated by `src/additional-course-
 
 To add a course, add its verified institution/code/title to `courses.json`, then add topic entries using that course key in a file under `src/course-topics/`. Reuse the shared shell and components. Keep topic IDs stable, validate the build, and review rendered pages on desktop and mobile. Mark incomplete course coverage `in-progress` and describe the gap. Publish original learning material; retain raw course documents, personal assignments, solutions, grades and confidential material outside this public repository.
 
+## ECE 6612 coverage
+
+The 26 topic lessons follow cryptography, link/IP protection, routing, transport/DNS, TLS/QUIC, web, authentication/email, access control, DoS and malware. Eleven adjustable models use the existing shared figure controls. Existing authenticated-encryption and TLS URLs and their saved-question prompts are retained. [Coverage and remaining depth](ECE6612-COVERAGE.md) records source scope and model limits.
+
 ## State and sharing
 
 Existing storage keys are preserved: `orbitalhw:orbit:v1`, `ece6390-course-lab-v1` and `orbitalhw-attempt-*`. Storage failure does not disable simulations. Written attempts stay local and comparison feedback begins hidden. Topic controls use validated `c_<control-id>` query parameters where supported; direct links and refreshes restore those values. Question answers are never put in URLs.

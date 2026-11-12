@@ -1,12 +1,12 @@
 /** Integrated reference figures, shared models, practice and all course topic URLs. */
 import assert from 'node:assert/strict';
 import{createRequire}from'node:module';
-import{readFile,mkdir,writeFile}from'node:fs/promises';
+import{readFile,mkdir,writeFile,readdir}from'node:fs/promises';
 import path from'node:path';
 const require=createRequire(import.meta.url),{chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=new URL(process.env.COURSELAB_URL||process.env.ORBITALHW_URL||'http://127.0.0.1:4178');
 const output=path.resolve(process.env.QA_OUTPUT||'.ai-work/runs/additional-courses');
-let lessons=[];for(const name of['additional-course-topics.json','byu-topics-part-a.json','byu-topics-part-b.json'])lessons.push(...JSON.parse(await readFile('src/'+name,'utf8')));
+let lessons=[];for(const name of['additional-course-topics.json','byu-topics-part-a.json','byu-topics-part-b.json',...(await readdir('src/course-topics')).filter(n=>n.endsWith('.json')).sort().map(n=>'course-topics/'+n)])lessons.push(...JSON.parse(await readFile('src/'+name,'utf8')));
 const results=[],errors=[],external=[],violations=[];
 const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
 const context=await browser.newContext({viewport:{width:1440,height:1100}});
@@ -18,7 +18,7 @@ async function outside(){return page.locator('main svg').evaluateAll(svgs=>svgs.
 try{
  await mkdir(output,{recursive:true});
  await check('Every additional course topic has a reference figure, explanation, example and staged practice',async()=>{
-  assert.equal(lessons.length,51);assert.equal(lessons.filter(x=>x.course==='byu/phscs587').length,49);const failures=[];
+  assert.equal(lessons.filter(x=>x.course==='gt/ece6612').length,26);assert.equal(lessons.filter(x=>x.course==='byu/phscs587').length,49);const failures=[];
   for(const lesson of lessons){const route='/courses/'+lesson.course+'/topics/'+lesson.id+'/';const response=await page.goto(new URL(route,base).href);assert.ok(response.ok(),route);await page.waitForSelector('main svg');
    assert.equal(await page.locator('h1').textContent(),lesson.title);assert.equal(await page.locator('[data-practice]').count(),lesson.questions.length);
    assert.equal(await page.locator('.practice-answer:visible').count(),0);assert.equal(await page.locator('[style]').count(),0);

@@ -9,7 +9,8 @@
     "ECE 6390 Interactive Course Lab, validated 2026-10-29",
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
-    "Fall 2024 PHSCS 587 notebook topic review; original device-physics explanations, figures and staged practice"
+    "Fall 2024 PHSCS 587 notebook topic review; original device-physics explanations, figures and staged practice",
+    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -32,20 +33,24 @@
     "GeorgiaTenna project learning section: eight linked figures with independent example controls for geometry, aperture components, phasing, steering, normalization, transmission, schematic coverage and calculation workflow; no solved design data",
     "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
     "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import",
-    "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree"
+    "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree",
+    "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository"
   ],
   "source_sha256": {
-    "additional-course-topics.json": "83ee5d2fa5967cc2dddc41c0478feef07cc7f54b41d68f113ba217d75c3043ab",
+    "additional-course-topics.json": "17b006b6a1b621787facb449f444f8d7fdd7ddf19b0991585e8a0644a0799cd9",
     "byu-topics-part-a.json": "a2879cf22ac06e60d94521b1eb09cdf9c571579560412991fe3b51348948aa83",
     "byu-topics-part-b.json": "3e7436b9c356e3d013587c7314d442139caf6da1e64ca46a82b545c0eae7fe67",
     "catalog.css": "1e46bd78c4b8025774810dab1134283f254fc86ad03dac6d4bfd3e61274ec70b",
     "course-extensions.js": "d8b43594df994f8e92ddfb297d35e477b09b35b4849dc88aa3913b9d7b110e83",
     "course-figures.js": "6e8c3687b4bd64349a70b8d3fe6bb89ef93b74289ce2d3d7fcb0abaa4f712ec9",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
-    "course-model-assets.json": "14948406761e660c697f768b2bfadef97b23454a3f067a7dd43e9c6ae8d69803",
+    "course-model-assets.json": "cb9d3fdf368f6a4dd3b852f6bc9d9005ecbb006f5ca79af304bca7f6d175e309",
     "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
+    "course-topics/ece6612-applications.json": "3b91404fa6a9f6d446f193ce66dc9a4aec64969347538cb93f11725c958b0adc",
+    "course-topics/ece6612-foundations.json": "a276dbf4f2cdcf3521ff2fa6f7037872173138f5a1c242fc865fdbf5a5abae8a",
+    "course-topics/ece6612-protocols.json": "c287406f1d35c1f19b03707d74733fa21ff4e158f59349d6eba68c62fc56901e",
     "course-update.js": "2ea4272433d578b207b9a3e6ce0cfba0fa53772e4cdbf1b9073db4ff618e1722",
-    "courses.json": "d4bd9a30d0a9f4e4ce73094fee705b2ad65d3bedfbf5765f37b7b5e91d43871a",
+    "courses.json": "b9b0a60e177e860eaff07b0560d0be752623398d3aa3dccd109dfdfa2106aeef",
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
@@ -58,6 +63,7 @@
     "project.js": "7f612368ffe2e6e58fa5b437dcbf06c9318fbf784916d0f13c436ed8b5343836",
     "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
     "search.js": "2b48776e621e52b5dbdf8e86f0f0b640f8d3e8783ed4be906f0d9981e1d4f8e8",
+    "security-models.js": "89d2f22c3aaab1b4160721c093ae7782f2610c2767eca58e29daf6a2980452fd",
     "semiconductor-models.js": "2eae4e64a525f452c5813bab6239843fac66c6280a55f6446ba130549c728714",
     "site.css": "17ff97b31254daaa8b34eb0bf6b37419e37b32553b6aa55b6558639da98d0430",
     "site.js": "54e3d11c5eca82748f3a574a5526fe35b3160e20b9b1afb4d8d3e832a86cd427",
@@ -66,7 +72,7 @@
     "sun-view.js": "70301ffa1b839e387ee0c4cfe787f4bdfceed2bffbe5cb7589beab5dc2a66de1",
     "topic-content.json": "2ca1b6e080d0b838860130536078da432ca58565879d155d1d94d4aec2145bee",
     "topic-extensions.json": "653d3ee8c32b92ff1af03609eb21d822a5c84755ab44ca4b70c49263e334db4c",
-    "topic-groups.json": "f887a467c9197c06d4d7782fee336f9bf3b0ef8dd64c02a93d567bc4598d5128",
+    "topic-groups.json": "a91d7d870774c438b61ef92204e6ebec792b182b279e93a1c9b71a56aea4c612",
     "topic-navigation.json": "d92cc056c59e1b19f4ae4644d008f4391864b70b96a1c465b2f05170265b3c8a",
     "topic-practice.js": "0f730cf9322f1a558e200e91e224316f473e02db81d03a94049424b0a48bd56a",
     "topics.css": "d044454c10e953a71321b28a7cc276d58065e27af09a69a253dd8f165253905c"

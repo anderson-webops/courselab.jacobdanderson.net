@@ -1,4 +1,9 @@
 {
-  "byu/phscs587": ["semiconductor-models.js", "device-models.js"],
-  "gt/ece6612": []
+  "byu/phscs587": [
+    "semiconductor-models.js",
+    "device-models.js"
+  ],
+  "gt/ece6612": [
+    "security-models.js"
+  ]
 }

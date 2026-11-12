@@ -251,5 +251,68 @@
         "technical-reading"
       ]
     }
+  ],
+  "gt/ece6612": [
+    {
+      "title": "Security goals and cryptography",
+      "ids": [
+        "security-models",
+        "encryption-modes",
+        "authenticated-encryption",
+        "hashes-macs",
+        "public-key-signatures",
+        "key-establishment"
+      ]
+    },
+    {
+      "title": "Links, tunnels and routing",
+      "ids": [
+        "link-security",
+        "ipsec-vpns",
+        "bgp-routing"
+      ]
+    },
+    {
+      "title": "Transport and name resolution",
+      "ids": [
+        "tcp-sequence-space",
+        "tcp-attacks",
+        "dns-cache",
+        "dnssec-validation"
+      ]
+    },
+    {
+      "title": "Secure sessions",
+      "ids": [
+        "tls-session-keys",
+        "tls-records-downgrades",
+        "quic-transport"
+      ]
+    },
+    {
+      "title": "Browser boundaries",
+      "ids": [
+        "origins-cookies",
+        "web-injection",
+        "csrf-cors"
+      ]
+    },
+    {
+      "title": "Accounts and email",
+      "ids": [
+        "password-auth",
+        "sso-passkeys",
+        "email-auth",
+        "email-confidentiality"
+      ]
+    },
+    {
+      "title": "Network defenses and malware",
+      "ids": [
+        "firewall-policy",
+        "dos-defense",
+        "malware-spread"
+      ]
+    }
   ]
 }

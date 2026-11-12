@@ -17,12 +17,12 @@
     "displayCode": "ECE 6612",
     "title": "Computer Network Security",
     "status": "in-progress",
-    "description": "Network security foundations, beginning with authenticated encryption and secure session establishment.",
+    "description": "Cryptography, secure network protocols, web and email trust, access control, availability, and malware.",
     "sourceNotes": [
-      "Course title and scope: Georgia Tech Catalog: https://catalog.gatech.edu/courses-grad/ece/",
-      "Initial lessons cover authenticated encryption and TLS identity/key establishment; broader protocol and application topics are being prepared."
+      "Course scope follows the reviewed syllabus, lecture slides 01–20, recorded lectures through November 10, 2026, and conceptual lab exercises.",
+      "All lessons, figures, numerical experiments and practice cases are original educational material."
     ],
-    "gap": "Two introductory lessons are available. The remaining course notes and labs still need topic pages."
+    "gap": "Recorded coverage extends through SYN cookies on November 10. Later denial-of-service and malware topics follow the supplied slides; their lecture recording remains to be reviewed."
   },
   {
     "institution": "byu",
