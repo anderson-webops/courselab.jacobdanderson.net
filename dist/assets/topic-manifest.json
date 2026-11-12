@@ -1,0 +1,530 @@
+[
+  {
+    "id": "kepler-ellipse",
+    "group": "Orbits",
+    "title": "Kepler ellipse",
+    "heading": "An ellipse sweeps equal areas in equal times",
+    "route": "/courses/gt/ece6390/topics/kepler-ellipse/",
+    "questions": 1
+  },
+  {
+    "id": "geo-frames",
+    "group": "Orbits",
+    "title": "GEO & rotating Earth",
+    "heading": "A stationary point in the sky is moving in space",
+    "route": "/courses/gt/ece6390/topics/geo-frames/",
+    "questions": 1
+  },
+  {
+    "id": "look-triangle",
+    "group": "Orbits",
+    "title": "Elevation & horizon",
+    "heading": "Elevation is an angle at the station, not Earth\u2019s center",
+    "route": "/courses/gt/ece6390/topics/look-triangle/",
+    "questions": 1
+  },
+  {
+    "id": "azimuth-components",
+    "group": "Orbits",
+    "title": "Azimuth quadrants",
+    "heading": "East and north components determine the bearing",
+    "route": "/courses/gt/ece6390/topics/azimuth-components/",
+    "questions": 1
+  },
+  {
+    "id": "solar-pressure-components",
+    "group": "Orbits",
+    "title": "Solar push",
+    "heading": "Project one sunlight push onto rotating orbital axes",
+    "route": "/courses/gt/ece6390/topics/solar-pressure-components/",
+    "questions": 1
+  },
+  {
+    "id": "numerical-orbits",
+    "group": "Orbits",
+    "title": "Integration drift",
+    "heading": "The same physics can produce different numerical drift",
+    "route": "/courses/gt/ece6390/topics/numerical-orbits/",
+    "questions": 1
+  },
+  {
+    "id": "hohmann-transfer",
+    "group": "Orbits",
+    "title": "Two-burn transfer",
+    "heading": "One burn raises apogee; the next circularizes",
+    "route": "/courses/gt/ece6390/topics/hohmann-transfer/",
+    "questions": 1
+  },
+  {
+    "id": "eclipse-battery",
+    "group": "Systems",
+    "title": "Eclipse & battery",
+    "heading": "One eclipse is an energy bill; every orbit must repay it",
+    "route": "/courses/gt/ece6390/topics/eclipse-battery/",
+    "questions": 1
+  },
+  {
+    "id": "solar-array",
+    "group": "Systems",
+    "title": "Solar array",
+    "heading": "Sun-facing area and cell performance set useful power",
+    "route": "/courses/gt/ece6390/topics/solar-array/",
+    "questions": 1
+  },
+  {
+    "id": "rocket-mass",
+    "group": "Systems",
+    "title": "Rocket equation",
+    "heading": "A later burn\u2019s fuel must ride through every earlier burn",
+    "route": "/courses/gt/ece6390/topics/rocket-mass/",
+    "questions": 1
+  },
+  {
+    "id": "electric-propulsion",
+    "group": "Systems",
+    "title": "Electric thrust",
+    "heading": "High exhaust speed saves propellant but costs thrust at fixed power",
+    "route": "/courses/gt/ece6390/topics/electric-propulsion/",
+    "questions": 1
+  },
+  {
+    "id": "thermal-balance",
+    "group": "Systems",
+    "title": "Heat & radiator",
+    "heading": "RF power, waste heat and radiator temperature are connected",
+    "route": "/courses/gt/ece6390/topics/thermal-balance/",
+    "questions": 1
+  },
+  {
+    "id": "db-distance",
+    "group": "RF",
+    "title": "dB & distance",
+    "heading": "Logarithms turn power ratios into distances you can compare",
+    "route": "/courses/gt/ece6390/topics/db-distance/",
+    "questions": 1
+  },
+  {
+    "id": "link-budget",
+    "group": "RF",
+    "title": "Link budget",
+    "heading": "Follow carrier power to the receiver, then compare it with noise",
+    "route": "/courses/gt/ece6390/topics/link-budget/",
+    "questions": 1
+  },
+  {
+    "id": "receiver-noise",
+    "group": "RF",
+    "title": "Noise cascade",
+    "heading": "A lossy first stage makes later low-noise gain less useful",
+    "route": "/courses/gt/ece6390/topics/receiver-noise/",
+    "questions": 1
+  },
+  {
+    "id": "doppler-shift",
+    "group": "RF",
+    "title": "Doppler",
+    "heading": "Only the line-of-sight velocity changes range instantaneously",
+    "route": "/courses/gt/ece6390/topics/doppler-shift/",
+    "questions": 1
+  },
+  {
+    "id": "rain-path",
+    "group": "RF",
+    "title": "Rain & elevation",
+    "heading": "A low look angle takes a longer path through the rain",
+    "route": "/courses/gt/ece6390/topics/rain-path/",
+    "questions": 1
+  },
+  {
+    "id": "bandwidth-noise",
+    "group": "RF",
+    "title": "Bandwidth & noise",
+    "heading": "More bandwidth admits more noise but may carry more information",
+    "route": "/courses/gt/ece6390/topics/bandwidth-noise/",
+    "questions": 1
+  },
+  {
+    "id": "radiation-redundancy",
+    "group": "Systems",
+    "title": "Radiation & voting",
+    "heading": "Three copies mask one bad bit; shared failures can defeat the vote",
+    "route": "/courses/gt/ece6390/topics/radiation-redundancy/",
+    "questions": 1
+  },
+  {
+    "id": "divergence-curl",
+    "group": "Waves",
+    "title": "Divergence & curl",
+    "heading": "Outward flow and local circulation measure different things",
+    "route": "/courses/gt/ece6390/topics/divergence-curl/",
+    "questions": 1
+  },
+  {
+    "id": "standing-wave",
+    "group": "Waves",
+    "title": "Standing waves",
+    "heading": "Counter-propagating waves can leave fixed nodes",
+    "route": "/courses/gt/ece6390/topics/standing-wave/",
+    "questions": 1
+  },
+  {
+    "id": "plane-wave",
+    "group": "Waves",
+    "title": "E, H & energy",
+    "heading": "A plane wave carries perpendicular fields together",
+    "route": "/courses/gt/ece6390/topics/plane-wave/",
+    "questions": 1
+  },
+  {
+    "id": "polarization",
+    "group": "Waves",
+    "title": "Polarization",
+    "heading": "Watch the electric-field tip trace its polarization",
+    "route": "/courses/gt/ece6390/topics/polarization/",
+    "questions": 1
+  },
+  {
+    "id": "phasor-interference",
+    "group": "Waves",
+    "title": "Interference & phasors",
+    "heading": "Add fields before squaring to find power",
+    "route": "/courses/gt/ece6390/topics/phasor-interference/",
+    "questions": 1
+  },
+  {
+    "id": "double-curl",
+    "group": "Waves",
+    "title": "Double curl pinwheels",
+    "heading": "Pinwheels measure the swirl of the axle field",
+    "route": "/courses/gt/ece6390/topics/double-curl/",
+    "questions": 1
+  },
+  {
+    "id": "displacement-current",
+    "group": "Waves",
+    "title": "Displacement current",
+    "heading": "A charging capacitor keeps magnetic circulation continuous",
+    "route": "/courses/gt/ece6390/topics/displacement-current/",
+    "questions": 1
+  },
+  {
+    "id": "helmholtz-curvature",
+    "group": "Waves",
+    "title": "Helmholtz curvature",
+    "heading": "The wave equation ties spatial curvature to the field",
+    "route": "/courses/gt/ece6390/topics/helmholtz-curvature/",
+    "questions": 1
+  },
+  {
+    "id": "dipole-pattern",
+    "group": "Antennas",
+    "title": "Dipole patterns",
+    "heading": "A doughnut-shaped beam has an axial null",
+    "route": "/courses/gt/ece6390/topics/dipole-pattern/",
+    "questions": 1
+  },
+  {
+    "id": "aperture-phasors",
+    "group": "Antennas",
+    "title": "Aperture addition",
+    "heading": "A pattern comes from adding fields with phase",
+    "route": "/courses/gt/ece6390/topics/aperture-phasors/",
+    "questions": 1
+  },
+  {
+    "id": "circular-aperture",
+    "group": "Antennas",
+    "title": "Circular aperture",
+    "heading": "A circular opening produces a Bessel beam",
+    "route": "/courses/gt/ece6390/topics/circular-aperture/",
+    "questions": 1
+  },
+  {
+    "id": "dish-gain",
+    "group": "Antennas",
+    "title": "Dish and pointing",
+    "heading": "A larger dish collects more power and needs better pointing",
+    "route": "/courses/gt/ece6390/topics/dish-gain/",
+    "questions": 1
+  },
+  {
+    "id": "reflector-screens",
+    "group": "Antennas",
+    "title": "Usable band",
+    "heading": "Electrical size, surface precision, and range set different screens",
+    "route": "/courses/gt/ece6390/topics/reflector-screens/",
+    "questions": 1
+  },
+  {
+    "id": "array-multiplication",
+    "group": "Antennas",
+    "title": "Arrays",
+    "heading": "The array factor multiplies the element pattern",
+    "route": "/courses/gt/ece6390/topics/array-multiplication/",
+    "questions": 1
+  },
+  {
+    "id": "gain-references",
+    "group": "Antennas",
+    "title": "Gain and matching",
+    "heading": "Accepted, radiated, and incident power use different references",
+    "route": "/courses/gt/ece6390/topics/gain-references/",
+    "questions": 1
+  },
+  {
+    "id": "array-path-phase",
+    "group": "Antennas",
+    "title": "Path + feed phase",
+    "heading": "Why broadside adds while another direction cancels",
+    "route": "/courses/gt/ece6390/topics/array-path-phase/",
+    "questions": 1
+  },
+  {
+    "id": "planar-array",
+    "group": "Antennas",
+    "title": "Planar steering",
+    "heading": "A plane of elements controls two directional coordinates",
+    "route": "/courses/gt/ece6390/topics/planar-array/",
+    "questions": 1
+  },
+  {
+    "id": "array-footprint",
+    "group": "Antennas",
+    "title": "Beam to footprint",
+    "heading": "An angular beam becomes a patch of ground through geometry",
+    "route": "/courses/gt/ece6390/topics/array-footprint/",
+    "questions": 1
+  },
+  {
+    "id": "gnss-orbits",
+    "group": "Navigation",
+    "title": "GPS orbit geometry",
+    "heading": "Inclined MEO planes spread satellites across the sky",
+    "route": "/courses/gt/ece6390/topics/gnss-orbits/",
+    "questions": 1
+  },
+  {
+    "id": "doppler-pass",
+    "group": "Navigation",
+    "title": "Doppler pass",
+    "heading": "A nearer pass changes its range rate more sharply",
+    "route": "/courses/gt/ece6390/topics/doppler-pass/",
+    "questions": 1
+  },
+  {
+    "id": "pseudorange-clock",
+    "group": "Navigation",
+    "title": "Range & clock",
+    "heading": "One clock offset adds the same distance error to every pseudorange",
+    "route": "/courses/gt/ece6390/topics/pseudorange-clock/",
+    "questions": 1
+  },
+  {
+    "id": "gnss-geometry",
+    "group": "Navigation",
+    "title": "Geometry & precision",
+    "heading": "Similar range errors can produce very different position uncertainty",
+    "route": "/courses/gt/ece6390/topics/gnss-geometry/",
+    "questions": 1
+  },
+  {
+    "id": "pn-correlation",
+    "group": "Navigation",
+    "title": "Code correlation",
+    "heading": "A delayed code is found by testing many alignments",
+    "route": "/courses/gt/ece6390/topics/pn-correlation/",
+    "questions": 1
+  },
+  {
+    "id": "sampling-alias",
+    "group": "Digital",
+    "title": "Sampling & aliasing",
+    "heading": "Different continuous waves can give exactly the same samples",
+    "route": "/courses/gt/ece6390/topics/sampling-alias/",
+    "questions": 1
+  },
+  {
+    "id": "quantization-pcm",
+    "group": "Digital",
+    "title": "Quantization & PCM",
+    "heading": "Sampling fixes when; quantization fixes which amplitude level",
+    "route": "/courses/gt/ece6390/topics/quantization-pcm/",
+    "questions": 1
+  },
+  {
+    "id": "source-compression",
+    "group": "Digital",
+    "title": "Compression vs coding",
+    "heading": "Compression removes redundancy; error correction deliberately adds it",
+    "route": "/courses/gt/ece6390/topics/source-compression/",
+    "questions": 1
+  },
+  {
+    "id": "nyquist-pulse",
+    "group": "Digital",
+    "title": "Pulses & ISI",
+    "heading": "A pulse can overlap its neighbors while giving zero interference at the right sampling instants",
+    "route": "/courses/gt/ece6390/topics/nyquist-pulse/",
+    "questions": 1
+  },
+  {
+    "id": "iq-constellation",
+    "group": "Digital",
+    "title": "I/Q & decisions",
+    "heading": "A modulation symbol chooses one point in the I/Q plane",
+    "route": "/courses/gt/ece6390/topics/iq-constellation/",
+    "questions": 1
+  },
+  {
+    "id": "rate-bandwidth",
+    "group": "Digital",
+    "title": "Bits, baud & bandwidth",
+    "heading": "Keep information bits, coded bits and modulation symbols separate",
+    "route": "/courses/gt/ece6390/topics/rate-bandwidth/",
+    "questions": 1
+  },
+  {
+    "id": "adaptive-modcod",
+    "group": "Digital",
+    "title": "Adaptive MODCOD",
+    "heading": "Use a robust mode in a fade and a faster mode when margin returns",
+    "route": "/courses/gt/ece6390/topics/adaptive-modcod/",
+    "questions": 1
+  },
+  {
+    "id": "amplifier-backoff",
+    "group": "Digital",
+    "title": "Amplifier & backoff",
+    "heading": "Constellation geometry changes what a nonlinear amplifier distorts",
+    "route": "/courses/gt/ece6390/topics/amplifier-backoff/",
+    "questions": 1
+  },
+  {
+    "id": "array-normalization",
+    "group": "Antennas",
+    "title": "Pattern to absolute gain",
+    "heading": "A relative pattern becomes directivity only after angular integration",
+    "route": "/courses/gt/ece6390/topics/array-normalization/",
+    "questions": 2
+  },
+  {
+    "id": "solid-angle",
+    "group": "Antennas",
+    "title": "Solid angle and power",
+    "heading": "Equal angular rectangles cover different areas on a sphere",
+    "route": "/courses/gt/ece6390/topics/solid-angle/",
+    "questions": 2
+  },
+  {
+    "id": "free-space-flux",
+    "group": "RF",
+    "title": "Spreading and capture",
+    "heading": "A receiver captures a small part of an expanding power flow",
+    "route": "/courses/gt/ece6390/topics/free-space-flux/",
+    "questions": 2
+  },
+  {
+    "id": "rectangular-pulse-spectrum",
+    "group": "Digital",
+    "title": "Pulse width and spectrum",
+    "heading": "A short rectangular pulse spreads across a wide range of frequencies",
+    "route": "/courses/gt/ece6390/topics/rectangular-pulse-spectrum/",
+    "questions": 2
+  },
+  {
+    "id": "matched-filter",
+    "group": "Digital",
+    "title": "Matched filter and timing",
+    "heading": "A time-reversed pulse collects a known waveform into a decision sample",
+    "route": "/courses/gt/ece6390/topics/matched-filter/",
+    "questions": 2
+  },
+  {
+    "id": "lfsr-code",
+    "group": "Navigation",
+    "title": "Shift register and PN code",
+    "heading": "A short binary recurrence creates a long recognizable chip sequence",
+    "route": "/courses/gt/ece6390/topics/lfsr-code/",
+    "questions": 2
+  },
+  {
+    "id": "processing-gain",
+    "group": "Navigation",
+    "title": "Spreading and processing gain",
+    "heading": "A known fast code lets the receiver collect a slow data bit coherently",
+    "route": "/courses/gt/ece6390/topics/processing-gain/",
+    "questions": 2
+  },
+  {
+    "id": "gnss-error-budget",
+    "group": "Navigation",
+    "title": "Range-error budget",
+    "heading": "Independent range uncertainties add through their variances",
+    "route": "/courses/gt/ece6390/topics/gnss-error-budget/",
+    "questions": 2
+  },
+  {
+    "id": "navigation-frames",
+    "group": "Navigation",
+    "title": "Earth-fixed coordinates",
+    "heading": "Earth-fixed coordinates turn latitude and longitude into Cartesian positions",
+    "route": "/courses/gt/ece6390/topics/navigation-frames/",
+    "questions": 2
+  },
+  {
+    "id": "near-far",
+    "group": "Navigation",
+    "title": "CDMA near\u2013far effect",
+    "heading": "A strong unwanted code can overwhelm a weaker desired correlation",
+    "route": "/courses/gt/ece6390/topics/near-far/",
+    "questions": 2
+  },
+  {
+    "id": "ofdm-multipath",
+    "group": "Digital",
+    "title": "Multipath and OFDM",
+    "heading": "A delayed echo makes channel gain vary across frequency",
+    "route": "/courses/gt/ece6390/topics/ofdm-multipath/",
+    "questions": 2
+  },
+  {
+    "id": "beamforming-frontends",
+    "group": "Antennas",
+    "title": "Analog and digital combining",
+    "heading": "The location of beamforming changes which hardware sees interference",
+    "route": "/courses/gt/ece6390/topics/beamforming-frontends/",
+    "questions": 2
+  },
+  {
+    "id": "dual-frequency",
+    "group": "Navigation",
+    "title": "Dual-frequency ranging",
+    "heading": "Two frequencies separate the leading ionospheric delay from common range",
+    "route": "/courses/gt/ece6390/topics/dual-frequency/",
+    "questions": 2
+  },
+  {
+    "id": "gnss-acquisition",
+    "group": "Navigation",
+    "title": "Code-delay and Doppler search",
+    "heading": "A receiver searches code alignment and carrier frequency together",
+    "route": "/courses/gt/ece6390/topics/gnss-acquisition/",
+    "questions": 2
+  },
+  {
+    "id": "modem-chain",
+    "group": "Digital",
+    "title": "The modem signal chain",
+    "heading": "Rates and waveform choices belong to specific stages of the modem",
+    "route": "/courses/gt/ece6390/topics/modem-chain/",
+    "questions": 2
+  },
+  {
+    "id": "gnss-dop-3d",
+    "group": "Navigation",
+    "title": "Three-dimensional DOP",
+    "heading": "Six sky directions constrain east, north, up and receiver clock together",
+    "route": "/courses/gt/ece6390/topics/gnss-dop-3d/",
+    "questions": 2
+  }
+]

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Multipath and OFDM: interactive figures, explanations, examples and practice.">
+<title>Multipath and OFDM | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/ofdm-multipath/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="ofdm-multipath">
+<p class="topic-breadcrumb"><a href="../#group-Digital">Digital signals</a></p>
+<h1 id="topic-title">Multipath and OFDM</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">A delayed echo makes channel gain vary across frequency</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how one echo creates frequency-dependent fading, and why a cyclic prefix can simplify a multicarrier receiver.</p><p>A direct path plus a delayed echo has H(f) = 1 + a exp(−j2πfτ), where a is the echo voltage ratio and τ is delay. The paths reinforce at some frequencies and cancel at others. This is a frequency-selective channel.</p><p>OFDM divides the useful symbol into orthogonal subcarriers spaced Δf = 1/Tu. With a long enough cyclic prefix and correct timing, channel convolution over the useful interval becomes circular. Each subcarrier then sees a complex gain that a receiver can estimate and equalize.</p><p>The prefix costs transmission time. A longer useful interval reduces its fractional overhead but increases sensitivity to time variation and frequency offset. Deep spectral fades also remain difficult because equalization can amplify noise.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>For τ = 1 µs and equal path amplitudes, the first cancellation occurs at f = 0.5 MHz. Subcarrier spacing 100 kHz gives Tu = 10 µs. A 1.2 µs prefix exceeds this delay in the ideal two-path timing model and occupies about 10.7% of the total symbol interval.</p></section>
+<section class="topic-reading"><h2>Related tools</h2><ul><li><a href="https://adamdjellouli.com/tools/filters/" rel="noreferrer">Signal processing visualizer</a> <span class="external-author">Adam Djellouli</span></li></ul></section>
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="ofdm-multipath-1"><h3>1. What useful-symbol duration corresponds to 50 kHz subcarrier spacing?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Use Tu = 1/Δf and keep seconds and hertz consistent.</p><p id="answer-1" class="practice-answer" hidden>Tu = 1/(50,000 Hz) = 20 µs.</p></article><article class="practice-question" data-practice="ofdm-multipath-2"><h3>2. Does a prefix longer than the echo delay eliminate a deep frequency-domain channel null?</h3>
+<label for="attempt-2">Your reasoning</label><textarea id="attempt-2" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-2">Hint</button><button type="button" data-compare aria-controls="answer-2" disabled>Compare reasoning</button></div>
+<p id="hint-2" class="practice-hint" hidden>Separate circular-convolution structure from the value of H(f).</p><p id="answer-2" class="practice-answer" hidden>It prevents adjacent useful-symbol interference under the ideal assumptions and enables one-tap subcarrier equalization. A channel null remains a weak or lost subcarrier and can severely amplify equalized noise.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../matched-filter/">← Matched filter and timing</a><a rel="next" href="../modem-chain/">The modem signal chain →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

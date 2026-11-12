@@ -5,6 +5,12 @@ import html
 import json
 import re
 import shutil
+try:
+    from scripts.topics import build_topics, build_project
+    from scripts.catalog import build_catalog
+except ModuleNotFoundError:
+    from topics import build_topics, build_project
+    from catalog import build_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
 CSP = "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"
@@ -72,7 +78,7 @@ def shell(view, content, admin=False):
 <body>
 <a class="site-skip" href="#main">Skip to the visualization</a>
 <header class="site-header">
-<nav class="site-nav" aria-label="Learning tools"><a data-site-view="orbit" href="{orbit_link}" {'aria-current="page"' if orbit else ''}>{orbit_label}</a><a data-site-view="solar" href="{base}solar/" {'' if orbit else 'aria-current="page"'}>Solar Components</a><a data-site-view="lab" href="{base}lab/">Course Lab</a></nav>
+<nav class="site-nav" aria-label="Learning tools"><a data-site-view="orbit" href="{orbit_link}" {'aria-current="page"' if orbit else ''}>{orbit_label}</a><a data-site-view="solar" href="{base}solar/" {'' if orbit else 'aria-current="page"'}>Solar Components</a><a data-site-view="topics" href="{base}learn/">Topics</a><a data-site-view="project" href="{base}project/">GeorgiaTenna</a><a data-site-view="lab" href="{base}lab/">Course Lab</a></nav>
 </header>
 <main id="main" class="site-main">
 <div class="site-intro"><h1>{title}</h1><p>{intro}</p></div>
@@ -116,10 +122,36 @@ def course_lab(source):
 }
 const groups=[""")
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-update.js').read_text() + '\nconst groups=[')
+    js = replace_once(js, "const groups=[", (ROOT / 'src/course-extensions.js').read_text() + '\nconst groups=[')
+    js = replace_once(js, "const groups=[", (ROOT / 'src/course-navigation.js').read_text() + '\nconst groups=[')
+    js = replace_once(js, "const root=document.getElementById('course-lab')", "if(document.querySelector('[data-project-overview]')) { window.CourseLab={modules,U,checks:()=>modules.flatMap(m=>(m.checks?.()||[]).map(x=>({module:m.id,...x})))}; return; }\nconst root=document.getElementById('course-lab')")
     js = replace_once(js, "['Antennas','Antennas']];", "['Antennas','Antennas'],['Navigation','Navigation'],['Digital','Digital signals']];")
     js = replace_once(js, "function sourceLabel(source) {", "function sourceLabel(source) {\n  if (source.startsWith('Course: ')) return source.slice(8);")
     js = replace_once(js, 'Course material through October 27, 2026', 'Class through October 29, 2026; assigned digital review')
     js = replace_once(js, 'This explicitly supplied uniform-array toy model extends the introductory pattern-multiplication picture, not a claim that the general array definition has already been taught.', 'This uniform identical-element model illustrates the general array factor defined in the October 29 lecture.')
+    # Topic routes reuse the same physics and controls, locked to their own concept.
+    js = replace_once(js, "const save=()=>", "if(root.dataset.topic) active=root.dataset.topic;\nconst save=()=>")
+    js = replace_once(js, "const save=()=>{try{localStorage.setItem('ece6390-course-lab-v1',JSON.stringify({active,values}))}catch{}};", """if(root.dataset.topic) {
+  const params=new URLSearchParams(location.search),m=modules.find(x=>x.id===active);
+  for(const c of m.controls) {
+    const raw=params.get('c_'+c.id),n=Number(raw);
+    if(raw===null||raw.trim()===''||!Number.isFinite(n))continue;
+    if(c.options ? c.options.some(x=>x.value===n) : n>=c.min&&n<=c.max)
+      values[active][c.id]=c.options?n:Number(Math.min(c.max,Math.max(c.min,c.min+Math.round((n-c.min)/c.step)*c.step)).toPrecision(12));
+  }
+}
+const save=()=>{
+  try{localStorage.setItem('ece6390-course-lab-v1',JSON.stringify({active,values}))}catch{}
+  if(root.dataset.topic)try{
+    const url=new URL(location.href),m=modules.find(x=>x.id===active);
+    for(const c of m.controls){const key='c_'+c.id;if(values[active][c.id]===c.value)url.searchParams.delete(key);else url.searchParams.set(key,values[active][c.id]);}
+    history.replaceState(null,'',url.pathname+url.search+url.hash);
+  }catch{}
+};""")
+    js = replace_once(js, 'pause();active=id;const m=modules.find', 'pause();id=root.dataset.topic||id;active=id;const m=modules.find')
+    js = replace_once(js, "$('panel').setAttribute('aria-labelledby','tab-'+id)", "$('panel').setAttribute('aria-labelledby',root.dataset.topic?'topic-title':'tab-'+id)")
+    js = replace_once(js, "history.replaceState(null,'','#'+id)", "!root.dataset.topic&&history.replaceState(null,'','#'+id)")
+    js = replace_once(js, "$('footer').textContent=modules.length+' interactive concepts · Class through October 29, 2026; assigned digital review · Illustrative examples'", "$('footer').textContent=''")
     css += '''
 .legend .legend-key { display:inline-block; width:22px; min-width:22px; height:6px; flex:none; }
 .lab-site-header { max-width:1204px; margin:0 auto; padding:18px 0 0; }
@@ -136,7 +168,7 @@ const groups=[""")
 <html lang="en"><head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="50 interactive concepts in orbital mechanics, arrays, navigation, digital signals, waves and RF links.">
+<meta name="description" content="Interactive concepts in orbital mechanics, arrays, navigation, digital signals, waves and RF links.">
 <meta name="referrer" content="no-referrer">
 <meta http-equiv="Content-Security-Policy" content="{CSP}">
 <title>Course Lab | Orbital HW</title>
@@ -145,7 +177,7 @@ const groups=[""")
 <script src="../assets/course-lab.js" defer></script>
 </head><body>
 <a class="lab-skip" href="#course-lab">Skip to the course lab</a>
-<div class="lab-site-header"><nav class="lab-site-tabs" aria-label="Learning tools"><a data-site-view="orbit" href="../">Orbit</a><a data-site-view="solar" href="../solar/">Solar Components</a><a data-site-view="lab" href="./" aria-current="page">Course Lab</a></nav></div>
+<div class="lab-site-header"><nav class="lab-site-tabs" aria-label="Learning tools"><a data-site-view="orbit" href="../">Orbit</a><a data-site-view="solar" href="../solar/">Solar Components</a><a data-site-view="topics" href="../learn/">Topics</a><a data-site-view="project" href="../project/">GeorgiaTenna</a><a data-site-view="lab" href="./" aria-current="page">Course Lab</a></nav></div>
 {markup}
 <noscript><p>Enable JavaScript to use the interactive controls.</p></noscript>
 </body></html>'''
@@ -190,6 +222,9 @@ def learning_layout(orbit, solar):
 
 def build():
     dest = ROOT / 'dist'
+    # dist is generated from versioned inputs; discard stale generated routes.
+    if dest.exists():
+        shutil.rmtree(dest)
     assets = dest / 'assets'
     assets.mkdir(parents=True, exist_ok=True)
     (dest / 'solar').mkdir(exist_ok=True)
@@ -266,18 +301,31 @@ def build():
         write_generated(dest / ('index.html' if name == 'orbit' else 'solar/index.html'), shell(name, body))
     write_generated(dest / 'admin/index.html', shell('orbit', admin_orbit, admin=True))
     lab, lab_css, lab_js = course_lab((ROOT / 'src/course-lab.html').read_text())
+    start = lab_js.index('const C=')
+    end = lab_js.index('const Orb =', start)
+    helpers = lab_js[start:end]
+    write_generated(assets/'figure-utils.js', "(() => {'use strict';\n"+helpers+'\nwindow.CourseFigureU=U;\n})();')
+    lab_js = lab_js[:start]+'const U=window.CourseFigureU;\nconst {C,esc,fmt,text,line,path,circle,arrow,svg,range,legend,wheel,plot}=U;\n'+lab_js[end:]
+    lab = lab.replace('<script src="../assets/course-lab.js"', '<script src="../assets/figure-utils.js" defer></script>\n<script src="../assets/course-lab.js"')
     write_generated(dest / 'lab/index.html', lab)
     write_generated(assets / 'course-lab.css', lab_css)
     write_generated(assets / 'course-lab.js', lab_js)
-    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css']:
+    count = build_topics(ROOT, CSP)
+    build_project(ROOT, CSP)
+    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'catalog.css', 'catalog.js', 'search.js', 'progress.js']:
         shutil.copyfile(ROOT / 'src' / name, assets / name)
+    for name in ['semiconductor-models.js','device-models.js','course-figures.js']:
+        if (ROOT/'src'/name).exists():
+            shutil.copyfile(ROOT/'src'/name,assets/name)
+    build_catalog(ROOT, CSP)
     (dest / '_headers').write_text('/*\n  Content-Security-Policy: ' + CSP + "; frame-ancestors 'none'\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Cache-Control: no-cache\n")
     provenance = json.loads((ROOT / 'src/provenance.json').read_text())
     provenance['version'] = (ROOT / 'VERSION').read_text().strip()
-    for name in ['orbit.html', 'solar-acceleration-visualizer.html', 'course-lab.html', 'course-update.js']:
-        provenance['source_sha256'][name] = hashlib.sha256((ROOT / 'src' / name).read_bytes()).hexdigest()
+    for source in sorted((ROOT/'src').rglob('*')):
+        if source.is_file() and source.suffix in ['.js','.css','.html','.svg','.json'] and source.name != 'provenance.json':
+            provenance['source_sha256'][source.relative_to(ROOT/'src').as_posix()] = hashlib.sha256(source.read_bytes()).hexdigest()
     (dest / 'source-info.json').write_text(json.dumps(provenance, indent=2) + '\n')
-    print('Built public orbit, solar, course lab, and admin walkthrough pages; all assets are local.')
+    print(f'Built {count} topic pages, topic index, orbit, solar, course lab and admin; all runtime assets are local.')
 
 
 if __name__ == '__main__':

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Gain and matching: interactive figures, explanations, examples and practice.">
+<title>Gain and matching | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gain-references/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="gain-references">
+<p class="topic-breadcrumb"><a href="../#group-Antennas">Antennas and arrays</a></p>
+<h1 id="topic-title">Gain and matching</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Accepted, radiated, and incident power use different references</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how directivity, radiation efficiency and mismatch use different power references.</p><p>Radiation intensity U(θ, φ) is in W/sr. Total radiated power is Pᵣₐd = ∫₀²π∫₀π U sin θ dθ dφ. Directivity is D = 4πU/Pᵣₐd; a forward-only model sets backward intensity to zero while retaining this definition.</p><p>For any peak-normalized power shape p, D(θ, φ) = 4πp/∫p dΩ. Integration angles are radians, with solid-angle measure sin θ dθ dφ; uniformly spaced angle samples are not equal-area samples. Squared field magnitude supplies intensity shape before this normalization.</p><p>Radiation efficiency ηᵣ relates radiated power to accepted power, so G = ηᵣD. With a real reference impedance, reflected power fraction is |Γ|² and realized gain is (1 − |Γ|²)ηᵣD. Polarization coupling is another factor applied at its appropriate link reference.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>With 100 W incident, |Γ|² = 0.10, and ηᵣ = 0.75, accepted power is 90 W and radiated power is 67.5 W. For D = 8, gain is 6 and realized gain is 5.4, both linear.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="gain-references-1"><h3>1. A plotted pattern peaks at 1. What additional information is needed to turn it into absolute gain?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Separate angular normalization from conversion between incident, accepted, and radiated power.</p><p id="answer-1" class="practice-answer" hidden>Integrate the power pattern over the full radiating solid angle to obtain directivity, then apply radiation efficiency and the required mismatch reference. A unit relative peak alone supplies none of those absolute gain values.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../array-multiplication/">← Arrays</a><a rel="next" href="../array-path-phase/">Path + feed phase →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

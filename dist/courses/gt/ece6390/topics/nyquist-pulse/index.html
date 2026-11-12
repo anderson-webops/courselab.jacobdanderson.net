@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Pulses &amp; ISI: interactive figures, explanations, examples and practice.">
+<title>Pulses &amp; ISI | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/nyquist-pulse/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="nyquist-pulse">
+<p class="topic-breadcrumb"><a href="../#group-Digital">Digital signals</a></p>
+<h1 id="topic-title">Pulses &amp; ISI</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">A pulse can overlap its neighbors while giving zero interference at the right sampling instants</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how overlapping pulses can give interference-free samples at the intended decision times.</p><p>A Nyquist combined pulse response has h(0) = 1 and h(nT) = 0 at nonzero integer symbol offsets. Neighboring pulses may overlap strongly between sampling instants while contributing zero at the ideal samples.</p><p>A raised-cosine response controls the trade between spectral rolloff and time-domain ringing. Its total passband occupied width is approximately (1 + α)Rs, with rolloff 0 ≤ α ≤ 1 and symbol rate Rs = 1/T.</p><p>The relevant response includes transmitter, channel, and receiver together. A root-raised-cosine transmitter and matched receiver can form a raised-cosine response; timing error or channel distortion can disrupt its zero-ISI sampling property.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>At Rs = 1 Mbaud and α = 0.5, the ideal raised-cosine total RF width is 1.5 MHz. This bandwidth statement uses the passband convention.</p></section>
+<section class="topic-reading"><h2>Related tools</h2><ul><li><a href="https://adamdjellouli.com/tools/filters/" rel="noreferrer">Signal processing visualizer</a> <span class="external-author">Adam Djellouli</span></li></ul></section>
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="nyquist-pulse-1"><h3>1. Why can a zero-ISI pulse shape still show interference when the receiver samples halfway between the intended symbol instants?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>The zero crossings are located at specific integer multiples of T.</p><p id="answer-1" class="practice-answer" hidden>The Nyquist zeros guarantee cancellation only at the intended sample times. A timing offset generally samples neighboring pulses away from their zeros, creating intersymbol interference.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../source-compression/">← Compression vs coding</a><a rel="next" href="../iq-constellation/">I/Q &amp; decisions →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

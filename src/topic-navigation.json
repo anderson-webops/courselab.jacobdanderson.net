@@ -1,0 +1,90 @@
+{
+  "dual-frequency": {
+    "problem": "how two pseudorange frequencies cancel a leading ionospheric delay while retaining common range.",
+    "explanation": [
+      "To first order, ionospheric code delay varies as 1/f². A lower-frequency pseudorange therefore has a larger positive delay for the same ionospheric conditions. Write P₁ = ρ + b + K/f₁² and P₂ = ρ + b + K/f₂², with all range terms in metres.",
+      "Choose α = f₁²/(f₁² − f₂²) and β = −f₂²/(f₁² − f₂²). Their sum is 1, preserving the common geometric range and bias, while α/f₁² + β/f₂² = 0 cancels the leading ionospheric term.",
+      "For equal independent per-frequency noise standard deviation σ, the combined noise is σ√(α² + β²). The negative coefficient permits cancellation but also increases noise. Hardware biases, higher-order ionosphere, and other common residuals need their own corrections."
+    ],
+    "example": "For L1 = 1575.42 MHz and L2 = 1227.60 MHz, α ≈ 2.546 and β ≈ −1.546. The independent equal-noise multiplier is approximately 2.978, so 0.5 m noise on each frequency gives approximately 1.489 m combined noise.",
+    "questions": [
+      {
+        "prompt": "Does this ionosphere-free combination remove a common 3 m clock-distance residual as well?",
+        "hint": "Multiply the common term by α + β.",
+        "answer": "The 3 m residual remains because α + β = 1. The combination isolates a particular frequency-dependent error rather than canceling every error source."
+      },
+      {
+        "prompt": "Why can the combined measurement have greater random noise even though its first-order ionospheric error is smaller?",
+        "hint": "Noise variances contain squared coefficients, whose signs disappear.",
+        "answer": "Independent noise variances add as α²σ² + β²σ². The opposing signs cancel the correlated 1/f² term but do not cancel independent random noise."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gnss-acquisition": {
+    "problem": "why acquisition searches both code delay and carrier-frequency offset.",
+    "explanation": [
+      "A delayed spreading code requires a matching local code phase. Carrier Doppler also rotates the received complex signal during integration. A correct code phase alone cannot make a frequency-mismatched signal add coherently.",
+      "For a constant residual frequency Δf over integration time T, normalized coherent power is |sinc(ΔfT)|², with sinc(x) = sin(πx)/(πx). The first frequency null is at |Δf| = 1/T. This example multiplies that factor by the squared periodic code correlation to form a separable teaching surface.",
+      "Longer integration makes the frequency peak narrower. A fixed frequency grid can miss a narrow between-bin peak, even in this noiseless model. Real acquisition also depends on the actual code ambiguity function, noise, data transitions, and detection thresholds; delay here is modulo a 31-chip teaching sequence."
+    ],
+    "example": "With T = 5 ms, the first coherent frequency null is 200 Hz from the true carrier offset. A 100 Hz mismatch gives |sinc(0.5)|² = 4/π² ≈ 0.405, approximately −3.92 dB power loss.",
+    "questions": [
+      {
+        "prompt": "If coherent integration time doubles, how should frequency-grid spacing change to preserve a similar worst-case coherent mismatch loss?",
+        "hint": "Keep the maximum magnitude of ΔfT similar.",
+        "answer": "Halve the frequency-grid spacing. The maximum between-bin mismatch then halves while T doubles, preserving their product."
+      },
+      {
+        "prompt": "Why does a strong cyclic code-correlation peak still leave an absolute timing ambiguity?",
+        "hint": "Consider delays separated by one complete code period.",
+        "answer": "A repeated code gives the same cyclic alignment after each code period. The receiver needs additional epoch, navigation-message, or timing information to determine the absolute delay."
+      }
+    ],
+    "relatedTools": []
+  },
+  "modem-chain": {
+    "problem": "how information rate, coding, modulation and pulse shape determine the transmitted waveform together.",
+    "explanation": [
+      "Information bits enter a channel encoder. Code rate Rc is information bits per coded bit, so Rcoded = Rb/Rc. An M-point modulation alphabet maps log₂M coded bits into each symbol, giving Rs = Rb/(Rc log₂M).",
+      "A combined raised-cosine response with rolloff α has total occupied passband width approximately (1 + α)Rs. Its pulse shape satisfies the Nyquist zero-ISI condition at the intended symbol times. Suitable root-raised-cosine transmit and matched-receive filters can form that combined response.",
+      "Changing constellation order changes bit loading and normalized point spacing; changing rolloff changes spectrum and pulse shape. The rate chain alone does not predict bit errors or amplifier behavior. Source compression is already included in the input, and extra pilots, framing, and synchronization overhead are omitted."
+    ],
+    "example": "At 6 Mbit/s information rate, code rate 3/4, 16-QAM, and rolloff 0.25, the coded rate is 8 Mbit/s, symbol rate is 2 Mbaud, and total RF width is approximately 2.5 MHz.",
+    "questions": [
+      {
+        "prompt": "With information rate, constellation, and rolloff fixed, how do coded rate, symbol rate, and RF width change when code rate moves from 1 to 1/2?",
+        "hint": "The encoder now sends two coded bits for each information bit.",
+        "answer": "All three double. The added coding redundancy requires a greater downstream rate if the information input stays unchanged."
+      },
+      {
+        "prompt": "Why does halving symbol rate by increasing constellation order fail to establish unchanged link reliability?",
+        "hint": "Compare point separation at the same average symbol energy.",
+        "answer": "More points generally sit closer together relative to noise. A rate and bandwidth saving must be evaluated alongside the modulation's required received quality, coding, and hardware constraints."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gnss-dop-3d": {
+    "problem": "how sky directions constrain east, north, up and receiver clock at the same time.",
+    "explanation": [
+      "A linearized pseudorange row in local east, north, up coordinates is Hᵢ = [−cosEᵢ sinAᵢ, −cosEᵢ cosAᵢ, −sinEᵢ, 1], where A is azimuth from north and E is elevation. The fourth parameter is receiver clock distance cb in metres.",
+      "With equal independent range errors of standard deviation σ, covariance is σ²Q, where Q = (HᵀH)⁻¹ when the geometry has full rank. HDOP = √(Qee + Qnn), VDOP = √Quu, TDOP = √Qbb, PDOP² = HDOP² + VDOP², and GDOP² = PDOP² + TDOP².",
+      "DOP values are dimensionless. The three-coordinate position RMS scale is σPDOP, while receiver-time standard deviation is σTDOP/c. Equal elevations make the height and clock columns proportional; more measurements at that same elevation cannot recover the missing distinction. The model reports rank loss rather than adding an artificial regularization."
+    ],
+    "example": "If a valid geometry has HDOP = 1 and VDOP = 2, PDOP = √5 ≈ 2.236. With TDOP = 1.5, GDOP = √7.25 ≈ 2.693. These values describe different combinations of position and clock uncertainty.",
+    "questions": [
+      {
+        "prompt": "Why can six measurements at exactly the same elevation fail to distinguish height error from clock error?",
+        "hint": "Compare the up-column entries −sinE with the clock-column entries 1.",
+        "answer": "Both columns are constant across measurements and therefore proportional. A suitable height change and clock-distance change produce the same common measurement effect, leaving the normal matrix rank deficient."
+      },
+      {
+        "prompt": "If range-error σ doubles with sky geometry unchanged, what happens to DOP and to the position RMS scale?",
+        "hint": "Separate Q from the multiplier σ² in covariance.",
+        "answer": "DOP stays unchanged because it depends on geometry. The position RMS scale σPDOP doubles, and covariance multiplies by four."
+      }
+    ],
+    "relatedTools": []
+  }
+}

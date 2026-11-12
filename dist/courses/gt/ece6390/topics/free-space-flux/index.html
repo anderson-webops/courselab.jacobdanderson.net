@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Spreading and capture: interactive figures, explanations, examples and practice.">
+<title>Spreading and capture | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/free-space-flux/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="free-space-flux">
+<p class="topic-breadcrumb"><a href="../#group-RF">RF links</a></p>
+<h1 id="topic-title">Spreading and capture</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">A receiver captures a small part of an expanding power flow</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows the geometric reason a distant receiver captures less power even when the medium absorbs none.</p><p>Power spreads across a growing spherical surface. In a chosen far-field direction, flux density is S = PtGt/(4πR²), where Pt is accepted transmit power in watts, Gt is dimensionless gain and R is range in metres. EIRP = PtGt is the isotropic power that would produce the same flux in that direction.</p><p>The receiver captures flux through its effective aperture Ae, giving Pr = S Ae. For a reciprocal antenna, Ae = Gr λ²/(4π), with wavelength λ in metres. Combining these expressions gives Friis transmission. Free-space path loss is the ratio (4πR/λ)², commonly expressed in dB.</p><p>Changing frequency at fixed receive gain changes effective aperture. Changing frequency at fixed physical aperture can change receive gain instead. State what is held fixed before interpreting the frequency dependence.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>Doubling range spreads the same radiated power over four times the area. Received power falls by a factor of four, or 6.02 dB, when gains and wavelength are fixed.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="free-space-flux-1"><h3>1. If range increases by a factor of ten with all antenna gains fixed, how many dB does received power change?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Pr is proportional to R⁻².</p><p id="answer-1" class="practice-answer" hidden>Received power falls by 20 dB: 10 log₁₀(1/100) = −20 dB.</p></article><article class="practice-question" data-practice="free-space-flux-2"><h3>2. At fixed receive gain, why does a shorter wavelength reduce effective aperture?</h3>
+<label for="attempt-2">Your reasoning</label><textarea id="attempt-2" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-2">Hint</button><button type="button" data-compare aria-controls="answer-2" disabled>Compare reasoning</button></div>
+<p id="hint-2" class="practice-hint" hidden>Use Ae = Gr λ²/(4π).</p><p id="answer-2" class="practice-answer" hidden>Effective aperture scales as λ² at fixed dimensionless gain. A given flux therefore delivers less power. A fixed physical antenna need not maintain the same gain as frequency changes.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../bandwidth-noise/">← Bandwidth &amp; noise</a><span></span></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

@@ -28,7 +28,7 @@ html, body {
 }
 .site-header, .site-main { width: min(1200px, calc(100% - 64px)); margin-inline: auto; }
 .site-header { padding-top: 18px; border-bottom: 1px solid var(--site-line); }
-.site-nav { display: flex; gap: 24px; }
+.site-nav { display: flex; flex-wrap: wrap; gap: 8px 24px; }
 .site-nav a {
   display: inline-flex;
   align-items: center;

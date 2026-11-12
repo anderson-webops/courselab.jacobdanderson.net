@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "application": "course-lab",
+  "hosting": "existing static application installation",
+  "source_repository": "https://github.com/anderson-webops/courselab.jacobdanderson.net",
+  "primary_hostname": "courselab.jacobdanderson.net",
+  "alias_hostnames": ["learn.jacobdanderson.net"],
+  "retained_legacy_hostnames": ["orbitalhw.jacobdanderson.net"],
+  "artifact": {
+    "tree": "dist/",
+    "selection": "exact accepted release artifact",
+    "application_root": "one existing host-managed release root shared by the hostnames",
+    "runtime": "static files only"
+  },
+  "routing": {
+    "https_hostname_redirect": false,
+    "http_redirect": "HTTPS on the same requested hostname",
+    "preserve_request_path_and_query": true,
+    "canonical_document_hostname": "courselab.jacobdanderson.net"
+  },
+  "invariants": [
+    "Preserve every existing DNS record, including IPv4 and IPv6.",
+    "Preserve the existing application installation and a recoverable accepted rollback release.",
+    "Serve the same exact accepted dist artifact on both requested hostnames.",
+    "Retain the opened hostname during navigation and HTTPS upgrades.",
+    "TLS validity and SNI routing cover both requested hostnames before live acceptance.",
+    "Browser-local state remains isolated by origin; the application provides explicit export/import."
+  ],
+  "acceptance": {
+    "address_families": ["IPv4", "IPv6"],
+    "hostnames": ["courselab.jacobdanderson.net", "learn.jacobdanderson.net"],
+    "paths": ["/", "/courses/", "/progress/", "/source-info.json", "/robots.txt", "/sitemap.xml"],
+    "checks": ["valid TLS", "matching release identity", "requested hostname retained", "local assets and course navigation", "missing paths return 404"]
+  }
+}

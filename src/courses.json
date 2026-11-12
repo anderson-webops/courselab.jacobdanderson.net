@@ -1,0 +1,38 @@
+[
+  {
+    "institution": "gt",
+    "code": "ece6390",
+    "displayCode": "ECE 6390",
+    "title": "Satellite Communications and Navigation Systems",
+    "status": "available",
+    "description": "Orbits, spacecraft systems, radio links, antennas, navigation, and digital communications.",
+    "sourceNotes": [
+      "Course title and scope: Georgia Tech Catalog: https://catalog.gatech.edu/courses-grad/ece/",
+      "Original concept explanations, mathematical diagrams, and staged practice cover the published topic collection."
+    ]
+  },
+  {
+    "institution": "gt",
+    "code": "ece6612",
+    "displayCode": "ECE 6612",
+    "title": "Computer Network Security",
+    "status": "in-progress",
+    "description": "Network security foundations, beginning with authenticated encryption and secure session establishment.",
+    "sourceNotes": [
+      "Course title and scope: Georgia Tech Catalog: https://catalog.gatech.edu/courses-grad/ece/",
+      "Initial lessons cover authenticated encryption and TLS identity/key establishment; broader protocol and application topics are being prepared."
+    ]
+  },
+  {
+    "institution": "byu",
+    "code": "phscs587",
+    "displayCode": "PHSCS 587",
+    "title": "Physics of Semiconductor Devices",
+    "status": "in-progress",
+    "description": "Semiconductor-device mechanisms, carrier populations, electrostatics, and field-effect control.",
+    "sourceNotes": [
+      "Course title and scope: BYU Catalog: https://catalog.byu.edu/courses/10779-000",
+      "Introductory foundations are being expanded against the course-note topic inventory."
+    ]
+  }
+]

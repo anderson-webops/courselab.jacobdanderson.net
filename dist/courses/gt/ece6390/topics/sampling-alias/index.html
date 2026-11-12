@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Sampling &amp; aliasing: interactive figures, explanations, examples and practice.">
+<title>Sampling &amp; aliasing | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/sampling-alias/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="sampling-alias">
+<p class="topic-breadcrumb"><a href="../#group-Digital">Digital signals</a></p>
+<h1 id="topic-title">Sampling &amp; aliasing</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Different continuous waves can give exactly the same samples</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows why different continuous-time frequencies can produce identical sampled data.</p><p>Sampling observes a waveform only at t = n/fs. Adding an integer multiple of fs to a sinusoid&#x27;s frequency adds integer multiples of 2π at those samples, leaving the sample sequence unchanged.</p><p>For a bandlimited baseband signal with highest frequency B, fs &gt; 2B permits ideal reconstruction under the model&#x27;s assumptions. An analog anti-alias filter must suppress unwanted energy before sampling.</p><p>Exactly at fs/2, a sinusoid&#x27;s sampled appearance depends on phase and can be pathological. Aliasing is an ambiguity in the available samples, so filtering a recorded sequence cannot generally recover information already mixed together.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>A 900 Hz cosine sampled at 1,000 samples/s has the same real sample sequence as a 100 Hz cosine with the corresponding phase convention.</p></section>
+<section class="topic-reading"><h2>Related tools</h2><ul><li><a href="https://adamdjellouli.com/tools/filters/" rel="noreferrer">Signal processing visualizer</a> <span class="external-author">Adam Djellouli</span></li></ul></section>
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="sampling-alias-1"><h3>1. What lower-frequency cosine aliases with a 700 Hz cosine when sampled at 1,000 samples/s?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Fold the frequency into the interval from 0 to fs/2.</p><p id="answer-1" class="practice-answer" hidden>300 Hz. At integer sample indices, cos(2π·0.7n) = cos(2π·0.3n).</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><span></span><a rel="next" href="../quantization-pcm/">Quantization &amp; PCM →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

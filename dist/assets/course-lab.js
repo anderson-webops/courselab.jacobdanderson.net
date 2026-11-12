@@ -1,20 +1,7 @@
 (()=>{'use strict';
 const modules=[];
-const C={a:'var(--a)',b:'var(--b)',c:'var(--c)',d:'var(--d)',ink:'var(--ink)',muted:'var(--muted)',grid:'var(--line)'};
-const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const fmt=(x,d=2)=>!Number.isFinite(x)?'undefined':Math.abs(x)<1e-10?'0':Math.abs(x)>=1e6||Math.abs(x)<.001?x.toExponential(d):x.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0});
-const text=(x,y,s,anchor='start',color=C.ink)=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="${color}">${esc(s)}</text>`;
-const line=(x1,y1,x2,y2,color=C.grid,width=1,dash='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${width}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
-const path=(pts,color=C.a,width=2,dash='')=>`<path d="${pts.filter(p=>p.every(Number.isFinite)).map((p,i)=>(i?'L':'M')+p.map(x=>x.toFixed(3)).join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="${width}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
-const circle=(x,y,r,fill='none',stroke=C.ink)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}"/>`;
-const arrow=(x1,y1,x2,y2,color=C.a,label='')=>{const a=Math.atan2(y2-y1,x2-x1),l=7;return line(x1,y1,x2,y2,color,2)+`<path d="M${x2-l*Math.cos(a-.45)},${y2-l*Math.sin(a-.45)} L${x2},${y2} L${x2-l*Math.cos(a+.45)},${y2-l*Math.sin(a+.45)}" fill="none" stroke="${color}" stroke-width="2"/>`+(label?text(x2+8,y2-8,label,'start',C.ink):'')};
-const svg=(content,label,W=800,H=440)=>`<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}" viewBox="0 0 ${W} ${H}"><title>${esc(label)}</title>${content}</svg>`;
-const range=(n,fn)=>Array.from({length:n+1},(_,i)=>fn(i/n));
-const legend=items=>`<div class="legend">${items.map(q=>`<span><svg class="legend-key" viewBox="0 0 22 6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="${q.color||C.a}" stroke-width="3" stroke-dasharray="${q.dash?'5 3':'none'}"/></svg>${esc(q.name)}</span>`).join('')}</div>`;
-const wheel=(cx,cy,r,angle,color=C.a,tilt=1)=>{let s=`<g transform="translate(${cx},${cy}) scale(1,${tilt}) rotate(${angle*180/Math.PI})">`;s+=circle(0,0,r,'none',color);for(let j=0;j<4;j++){let a=j*Math.PI/2;s+=`<path d="M0,0 L${r*Math.cos(a)},${r*Math.sin(a)} L${.48*r*Math.cos(a+.7)},${.48*r*Math.sin(a+.7)} Z" fill="${color}" opacity=".65"/>`}return s+circle(0,0,2,color,color)+'</g>'};
-const plot=(series,o={})=>{const w=o.width||800,h=o.height||340,L=88,R=28,T=o.title?48:24,B=65;let xmin=o.xmin??Math.min(...series.flatMap(s=>s.points.map(p=>p[0]))),xmax=o.xmax??Math.max(...series.flatMap(s=>s.points.map(p=>p[0]))),ymin=o.ymin??Math.min(...series.flatMap(s=>s.points.map(p=>p[1]))),ymax=o.ymax??Math.max(...series.flatMap(s=>s.points.map(p=>p[1])));if(xmax===xmin)xmax=xmin+1;if(ymax===ymin)ymax=ymin+1;const X=x=>L+(x-xmin)/(xmax-xmin)*(w-L-R),Y=y=>h-B-(y-ymin)/(ymax-ymin)*(h-B-T);let z=o.title?text(L,23,o.title):'';for(let i=0;i<=4;i++){let x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;z+=line(X(x),T,X(x),h-B,C.grid)+text(X(x),h-B+25,fmt(x,2),'middle',C.muted)+line(L,Y(y),w-R,Y(y),C.grid)+text(L-12,Y(y)+5,fmt(y,2),'end',C.muted)}z+=`<rect x="${L}" y="${T}" width="${w-L-R}" height="${h-B-T}" fill="none" stroke="${C.grid}"/>`;for(const s of series)z+=path(s.points.map(p=>[X(p[0]),Y(Math.max(ymin,Math.min(ymax,p[1])))]),s.color||C.a,2.4,s.dash||'');z+=text((L+w-R)/2,h-11,o.xlabel||'x','middle')+`<text class="axis-title" transform="translate(20,${(T+h-B)/2}) rotate(-90)" text-anchor="middle">${esc(o.ylabel||'y')}</text>`;return svg(z,o.title||`${o.ylabel} versus ${o.xlabel}`,w,h)+legend(series)};
-const U={W:800,H:440,C,rad:x=>x*Math.PI/180,deg:x=>x*180/Math.PI,clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),fmt,esc,range,svg,line,arrow,circle,text,path,plot,legend,wheel};
-
+const U=window.CourseFigureU;
+const {C,esc,fmt,text,line,path,circle,arrow,svg,range,legend,wheel,plot}=U;
 const Orb = (() => {
   const mu=398600.4418, R=6378, TE=86164.0905, tau=2*Math.PI;
   const solveE=(M,e)=>{let E=M;for(let i=0;i<14;i++)E-=(E-e*Math.sin(E)-M)/(1-e*Math.cos(E));return E;};
@@ -351,15 +338,331 @@ function amplifier(kind,ibo){const alphabet=kind===0?constellation(4):kind===1?c
 modules.push({id:'amplifier-backoff',group:'Digital',title:'Amplifier & backoff',heading:'Constellation geometry changes what a nonlinear amplifier distorts',intro:'Apply a toy radial amplitude limiter to equally normalized QPSK, square 16-QAM and a two-ring 16-APSK alphabet.',sources:src('VID06: APSK rings, nonlinear amplification and power backoff'),controls:[pick('kind','Constellation',1,[[0,'QPSK'],[1,'16-QAM'],[2,'Toy 16-APSK: ring ratio 2.8']]),ctl('ibo','Input power backoff',0,10,.5,0,'dB')],render(v,U){const a=amplifier(v.kind,v.ibo),cx=310,cy=225,scale=125;let z=U.line(120,cy,500,cy,U.C.grid)+U.line(cx,40,cx,410,U.C.grid)+U.circle(cx,cy,scale,'none',U.C.muted)+U.text(512,cy+5,'I')+U.text(cx+10,42,'Q');a.input.forEach((p,i)=>{const q=a.output[i],clipped=Math.hypot(...p)>1+1e-12;z+=U.line(cx+scale*p[0],cy-scale*p[1],cx+scale*q[0],cy-scale*q[1],U.C.d,2)+U.circle(cx+scale*p[0],cy-scale*p[1],5,'none',U.C.a)+U.circle(cx+scale*q[0],cy-scale*q[1],2.5,clipped?U.C.d:U.C.b,clipped?U.C.d:U.C.b);});z+=U.text(535,85,'Unit circle: saturation amplitude')+U.text(535,130,'Hollow rings: linear input points')+U.text(535,175,'Small dots: limited output points')+U.text(535,220,a.clipped+' of '+a.input.length+' symbol points clipped')+U.text(535,285,'Equal I/Q spatial scales')+U.text(535,330,'Symbol instants only; no pulse filter');const series=[0,1,2].map((kind,i)=>({name:['QPSK','16-QAM','Toy 16-APSK'][i],color:[U.C.a,U.C.b,U.C.c][i],points:U.range(100,q=>[q*10,amplifier(kind,q*10).rms])}));series.push({name:'Selected input backoff',color:U.C.d,dash:'4 4',points:[[v.ibo,0],[v.ibo,20]]});return{svg:U.svg(z,'Toy hard amplitude limiting of normalized constellation points')+U.plot(series,{xmin:0,xmax:10,ymin:0,ymax:20,xlabel:'Input power backoff (dB)',ylabel:'RMS point error (%)',title:'Error relative to an ideal linear output at the same input level',height:320}),stats:[['Output power / saturation power',U.fmt(a.pout,3)],['Output power backoff',U.fmt(a.obo,2)+' dB'],['RMS point error',U.fmt(a.rms,2)+'%']],equation:'z<sub>in</sub>=10<sup>−IBO/20</sup>z; &nbsp; z<sub>out</sub>=z<sub>in</sub>/max(1,|z<sub>in</sub>|); &nbsp; OBO=−10log₁₀⟨|z<sub>out</sub>|²⟩',note:'This memoryless hard AM limiter preserves phase and clips only amplitudes above 1; saturation power is 1. Each alphabet starts with average symbol energy 1, so IBO is 10log₁₀(Psat/Pin). The 16-APSK ring ratio 2.8 is illustrative and is not a DVB requirement. Lower peak radius can reduce symbol-point clipping, but clipped-point count alone does not measure error severity. Real pulse-shaped waveforms have between-symbol peaks, AM/PM distortion and amplifier memory; this plot does not predict BER, DC efficiency or a required hardware backoff. QPSK having zero point error at 0 dB does not imply a filtered QPSK waveform has no peaks.',question:'Why can backing off reduce distortion while also reducing output power, and why does a constellation-only picture miss between-symbol peaks?'};},checks:()=>{const q=amplifier(0,0),a=amplifier(1,0),b=amplifier(1,3),p=apsk16();return[{name:'Toy16APSK has unit average symbol energy',pass:Math.abs(p.reduce((s,p)=>s+p[0]**2+p[1]**2,0)/16-1)<1e-12},{name:'Hard limiter bounds every output amplitude by1',pass:a.output.every(p=>Math.hypot(...p)<=1+1e-12)},{name:'Unit-radius QPSK at0dB has zero symbol-point distortion',pass:q.rms<1e-10},{name:'16QAM at3dB input backoff has no clipped symbol points',pass:b.clipped===0&&b.rms<1e-10},{name:'Passive radial limiter never increases mean signal power',pass:a.pout<=a.pin&&b.pout<=b.pin}]}});
 })();
 
+/* November topics. All examples are generic and independent of submitted designs. */
+(() => {
+  const tau=2*Math.PI, sinc=x=>Math.abs(x)<1e-10?1:Math.sin(Math.PI*x)/(Math.PI*x);
+  const close=(a,b,tol=1e-8)=>Math.abs(a-b)<tol;
+  const sources=['Course: November 10 and 12 notes and lecture transcripts'];
+  const controls=(items)=>items.map(([id,label,min,max,step,value,unit])=>({id,label,min,max,step,value,unit}));
+  const arrayPattern=(theta,phi,n,d,beta)=>{
+    let re=0,im=0;
+    for(let i=0;i<n;i++){const phase=i*(tau*d*Math.sin(theta)*Math.cos(phi)+beta);re+=Math.cos(phase);im+=Math.sin(phase);}
+    return 2*(re*re+im*im); // Ideal element power: 2 forward, 0 rear.
+  };
+  const patternIntegral=(n,d,beta)=>{
+    let total=0;
+    const nt=48,np=96,dt=Math.PI/2/nt,dp=tau/np;
+    for(let j=0;j<nt;j++)for(let l=0;l<np;l++){
+      const theta=(j+.5)*dt;
+      total+=arrayPattern(theta,(l+.5)*dp,n,d,beta)*Math.sin(theta)*dt*dp;
+    }
+    return total;
+  };
+  modules.push({id:'array-normalization',group:'Antennas',title:'Pattern to absolute gain',heading:'A relative pattern becomes directivity only after angular integration',intro:'Follow phasor addition through intensity, radiated power, directivity and gain.',sources,
+    controls:controls([['n','Equal-amplitude elements N',2,12,1,4,''],['spacing','Spacing d/λ',.25,1,.05,.5,''],['phase','Progressive feed phase β',-180,180,5,0,'°'],['eta','Radiation efficiency η',.1,1,.05,.8,''],['watts','Accepted power',1,100,1,10,'W']]),
+    render(v,U){
+      const beta=U.rad(v.phase),I=patternIntegral(v.n,v.spacing,beta),sample=U.range(360,t=>{const deg=-90+180*t,p=arrayPattern(U.rad(deg),0,v.n,v.spacing,beta),D=4*Math.PI*p/I;return{deg,p,D};}),peak=Math.max(...sample.map(p=>p.D));
+      const cut=sample.map(p=>[p.deg,10*Math.log10(Math.max(1e-6,p.D))]);
+      let diagram=U.text(65,35,'Feed voltage → complex sum → relative power → total-power normalization');
+      for(let i=0;i<v.n;i++)diagram+=U.circle(80+i*48,88,6,U.C.a,U.C.a)+U.arrow(80+i*48,90,80+i*48+25*Math.cos(i*beta),90-25*Math.sin(i*beta),U.C.b);
+      diagram+=U.text(65,140,'p(θ,φ) = |AF|² Gₑₗ;  I = ∫ p dΩ over the radiating hemisphere')+U.text(65,176,'U = η Paccepted p / I   [W/sr];   D = 4πp/I;   G = ηD');
+      return{svg:U.svg(diagram,'Equal-amplitude feed phasors and the normalization chain',800,210)+U.plot([{name:'Absolute directivity cut',points:cut,color:U.C.a}],{xmin:-90,xmax:90,ymin:-40,ymax:Math.ceil(10*Math.log10(peak))+1,xlabel:'Signed angle from normal in φ = 0 plane (°)',ylabel:'D (dBi)',title:'The whole pattern sets the normalization'}),stats:[['Radiated power',U.fmt(v.eta*v.watts,2)+' W'],['Peak in this cut',U.fmt(10*Math.log10(peak),2)+' dBi'],['Gain at normal',U.fmt(10*Math.log10(v.eta*arrayPattern(0,0,v.n,v.spacing,beta)/I*4*Math.PI),2)+' dBi']],equation:'AF = Σ aₙ exp[j(k rₙ·r̂ + ψₙ)]; &nbsp; dΩ = sinθ dθ dφ; &nbsp; D = 4πp / ∫p dΩ; &nbsp; G = ηD',note:'Equal active amplitudes; ideal uncoupled elements. Midpoint quadrature covers the entire forward hemisphere, with zero radiation in the rear. The displayed peak is a cut peak, not a 3-D peak search. Changing accepted power scales intensity, not directivity.',question:'If every field amplitude doubles, why does directivity stay the same?'};
+    },checks:()=>[{name:'Isolated halfspace element has D=2',pass:close(4*Math.PI*2/patternIntegral(1,.5,0),2,.001)},{name:'Two λ/2 broadside elements give D≈4',pass:close(4*Math.PI*8/patternIntegral(2,.5,0),4,.002)}]});
+
+  modules.push({id:'solid-angle',group:'Antennas',title:'Solid angle and power',heading:'Equal angular rectangles cover different areas on a sphere',intro:'A latitude-like polar strip shrinks toward the pole; sinθ accounts for its area.',sources,
+    controls:controls([['theta','Patch center θ',10,170,5,60,'°'],['width','Polar width Δθ',2,20,2,10,'°'],['azimuth','Azimuth width Δφ',5,90,5,30,'°'],['intensity','Uniform intensity U',1,10,.5,2,'W/sr']]),
+    render(v,U){const t=U.rad(v.theta),h=U.rad(v.width)/2,dp=U.rad(v.azimuth),omega=dp*(Math.cos(t-h)-Math.cos(t+h));let s=U.circle(250,210,150,'none',U.C.muted)+U.line(250,40,250,390,U.C.muted,1,'4 5');
+      for(let deg=20;deg<180;deg+=20){const th=U.rad(deg),y=210-150*Math.cos(th),a=150*Math.sin(th);s+=`<ellipse cx="250" cy="${y}" rx="${a}" ry="${a*.15}" fill="none" stroke="${U.C.grid}"/>`;}
+      const y=210-150*Math.cos(t),rx=150*Math.sin(t);s+=`<ellipse cx="250" cy="${y}" rx="${rx}" ry="${rx*.15}" fill="none" stroke="${U.C.a}" stroke-width="5"/>`+U.arrow(250,210,250+rx, y,U.C.b)+U.text(450,90,'θ measured from the pole')+U.text(450,140,'Ring radius: R sinθ')+U.text(450,190,'Area: R² sinθ dθ dφ')+U.text(450,240,'Solid angle: dA / R²')+U.text(450,300,'Whole sphere: 4π sr')+U.text(450,340,'Hemisphere: 2π sr');
+      return{svg:U.svg(s,'Sphere with polar angle, shrinking rings and solid-angle area'),stats:[['Patch solid angle',U.fmt(omega,4)+' sr'],['Patch power',U.fmt(v.intensity*omega,4)+' W'],['Uniform sphere power',U.fmt(4*Math.PI*v.intensity,2)+' W']],equation:'ΔΩ = Δφ[cos(θ₁) − cos(θ₂)]; &nbsp; Ppatch = U ΔΩ; &nbsp; ∫sphere dΩ = 4π',note:'The highlighted ellipse is the latitude ring containing the patch center. The finite-patch calculation uses exact polar bounds. Uniform U is an isotropic teaching case.'};},checks:()=>[{name:'Sphere solid angle is 4π',pass:close(tau*(Math.cos(0)-Math.cos(Math.PI)),4*Math.PI)},{name:'Hemisphere solid angle is 2π',pass:close(tau*(1-Math.cos(Math.PI/2)),tau)}]});
+
+  modules.push({id:'free-space-flux',group:'RF',title:'Spreading and capture',heading:'A receiver captures a small part of an expanding power flow',intro:'Geometric spreading connects intensity, effective aperture and Friis transmission.',sources,
+    controls:controls([['range','Range R',100,40000,100,10000,'km'],['freq','Frequency',1,40,1,10,'GHz'],['eirp','EIRP',10,80,1,50,'dBW'],['gain','Receiver gain',0,40,1,20,'dBi']]),
+    render(v,U){const R=v.range*1000,lambda=299792458/(v.freq*1e9),eirp=10**(v.eirp/10),flux=eirp/(4*Math.PI*R*R),area=10**(v.gain/10)*lambda*lambda/(4*Math.PI),pr=flux*area;let s='';
+      for(let r of [55,100,150])s+=U.circle(200,220,r,'none',U.C.grid);s+=U.circle(200,220,9,U.C.b,U.C.b)+U.arrow(220,220,610,220,U.C.a)+U.text(430,198,'R','middle')+`<rect x="610" y="180" width="10" height="80" fill="${U.C.c}"/>`+U.text(70,40,'Same radiated power crosses each enclosing sphere')+U.text(395,300,'Flux S = EIRP / (4πR²)')+U.text(395,335,'Receiver: Pr = S Ae')+U.text(395,370,'Ae = Gr λ² / (4π)');
+      return{svg:U.svg(s,'Expanding spherical power flow and a receiver effective aperture'),stats:[['Power flux density',flux.toExponential(3)+' W/m²'],['Effective aperture',U.fmt(area,4)+' m²'],['Received power',U.fmt(10*Math.log10(pr)+30,2)+' dBm']],equation:'Pr = Pt Gt Gr (λ / 4πR)²; &nbsp; LFS = 20 log₁₀(4πR/λ)',note:'Far-field, free-space, matched polarization and receiver port; no atmospheric, pointing or mismatch losses. Free-space loss describes spreading plus the receiver gain/aperture convention, with no absorption required. Gain is held fixed as frequency changes.'};},checks:()=>[{name:'Doubling range reduces flux by four',pass:close((1/2**2)/(1/1**2),.25)},{name:'Effective aperture has λ² scaling at fixed gain',pass:close((.5**2)/(1**2),.25)}]});
+
+  modules.push({id:'rectangular-pulse-spectrum',group:'Digital',title:'Pulse width and spectrum',heading:'A short rectangular pulse spreads across a wide range of frequencies',intro:'Time concentration and spectral spread constrain a transmitted waveform.',sources,
+    controls:controls([['width','Pulse duration T',.2,2,.1,1,'ms'],['amplitude','Pulse amplitude A',.5,2,.1,1,'V']]),
+    render(v,U){const T=v.width;const time=[[-3,0],[-T/2,0],[-T/2,v.amplitude],[T/2,v.amplitude],[T/2,0],[3,0]],spectrum=U.range(500,t=>{let f=-10+20*t;return[f,v.amplitude*T*sinc(f*T)]});return{svg:U.plot([{name:'Rectangular voltage pulse',points:time}],{xmin:-3,xmax:3,ymin:-.2,ymax:2.2,xlabel:'Time (ms)',ylabel:'Voltage (V)',title:'A rect(t/T)'})+U.plot([{name:'Fourier amplitude',points:spectrum,color:U.C.b}],{xmin:-10,xmax:10,ymin:-1,ymax:4,xlabel:'Frequency (kHz)',ylabel:'Spectrum (V·ms)',title:'AT sinc(fT): an ideal pulse has infinite spectral support'}),stats:[['First spectral zero',U.fmt(1/T,2)+' kHz'],['DC amplitude',U.fmt(v.amplitude*T,2)+' V·ms'],['Voltage-squared integral',U.fmt(v.amplitude**2*T,2)+' V²·ms']],equation:'X(f) = AT sinc(fT); &nbsp; sinc(x) = sin(πx)/(πx); &nbsp; first zeros f = ±1/T',note:'Continuous-time Fourier transform with frequency in cycles per unit time. V²·ms is proportional to energy for a specified resistive load; it is not joules by itself.'};},checks:()=>[{name:'sinc(0)=1',pass:sinc(0)===1},{name:'Pulse first spectral zero at 1/T',pass:Math.abs(sinc(1))<1e-12}]});
+
+  const pulse=[.2,.5,1,.5,.2];
+  const overlap=lag=>pulse.reduce((sum,x,i)=>sum+x*(pulse[i-lag]||0),0);
+  modules.push({id:'matched-filter',group:'Digital',title:'Matched filter and timing',heading:'A time-reversed pulse collects a known waveform into a decision sample',intro:'A receiver must identify the pulse and its arrival time while reducing noise effects.',sources,
+    controls:controls([['delay','Pulse arrival index',5,18,1,10,'samples'],['trial','Template start index',0,26,1,10,'samples'],['noise','Illustrative noise amplitude',0,1.5,.1,.3,'V']]),
+    render(v,U){const r=Array.from({length:32},(_,i)=>(pulse[i-v.delay]||0)+v.noise*(.5*Math.sin(i*2.3)+.3*Math.cos(i*1.37))),corr=Array.from({length:28},(_,k)=>pulse.reduce((sum,x,i)=>sum+x*r[k+i],0)),best=corr.indexOf(Math.max(...corr)),trial=Math.round(v.trial);return{svg:U.plot([{name:'Received samples',points:r.map((x,i)=>[i,x])},{name:'Shifted template',color:U.C.b,points:Array.from({length:32},(_,i)=>[i,pulse[i-trial]||0])}],{xmin:0,xmax:31,ymin:-1.4,ymax:2.4,xlabel:'Sample index n',ylabel:'Voltage (V)',title:'Known pulse in one fixed illustrative noise realization'})+U.plot([{name:'Correlation versus template start',color:U.C.c,points:corr.map((x,i)=>[i,x])},{name:'Trial delay',color:U.C.d,points:[[trial,-1],[trial,3]]}],{xmin:0,xmax:27,ymin:-1,ymax:3,xlabel:'Template start index k',ylabel:'Correlation (V²)',title:'Matched filtering is correlation with the expected pulse'}),stats:[['True start',v.delay+' samples'],['Largest correlation',best+' samples'],['Trial correlation',U.fmt(corr[trial],3)+' V²']],equation:'h[n] = s*[N − 1 − n]; &nbsp; c[k] = Σ r[k+i] s*[i]',note:'Real-valued five-sample pulse and fixed deterministic noise for repeatable exploration. A matched filter maximizes sample SNR for known pulse shape in white noise; it does not guarantee correct timing in every noisy realization.'};},checks:()=>[{name:'Aligned correlation equals pulse energy',pass:close(overlap(0),1.58)},{name:'Aligned autocorrelation exceeds shifted overlap',pass:overlap(0)>overlap(1)}]});
+
+  const code31=()=>{const a=[1,1,1,1,1];for(let i=0;i<31;i++)a.push(a[i]^a[i+2]);return a.slice(0,31);};
+  modules.push({id:'lfsr-code',group:'Navigation',title:'Shift register and PN code',heading:'A short binary recurrence creates a long recognizable chip sequence',intro:'A navigation receiver can correlate a known sequence instead of relying on an isolated pulse.',sources,
+    controls:controls([['clock','Register clock',0,30,1,0,'chips'],['shift','Correlation shift',0,30,1,0,'chips']]),animate:{id:'clock',min:0,max:30,step:1},
+    render(v,U){const bits=code31(),bipolar=bits.map(x=>2*x-1),corr=k=>bipolar.reduce((s,x,i)=>s+x*bipolar[(i+k)%31],0),k=Math.round(v.clock);let s=U.text(65,36,'c[n+5] = c[n+2] XOR c[n]   ·   nonzero initial state 11111');
+      for(let i=0;i<5;i++){let x=70+i*115;s+=`<rect x="${x}" y="90" width="70" height="65" rx="6" fill="${U.C.grid}"/>`+U.text(x+35,132,bits[(k+i)%31],'middle');if(i<4)s+=U.arrow(x+108,122,x+75,122,U.C.a);}
+      s+=U.text(65,205,'Five register bits; 31 chip phases before repeating');return{svg:U.svg(s,'Five-bit shift register generating a length-31 maximal sequence',800,240)+U.plot([{name:'Periodic bipolar autocorrelation',points:bits.map((_,i)=>[i,corr(i)])},{name:'Selected shift',color:U.C.b,points:[[v.shift,-3],[v.shift,32]]}],{xmin:0,xmax:30,ymin:-3,ymax:32,xlabel:'Cyclic chip shift',ylabel:'Correlation sum',title:'Aligned code has a narrow correlation peak'}),stats:[['Aligned sum',corr(0)],['Selected sum',corr(v.shift)],['Sequence period','31 chips']],equation:'c[n+5] = c[n+2] ⊕ c[n]; &nbsp; b[n] = 2c[n] − 1; &nbsp; R[k] = Σ b[n]b[n+k]',note:'A teaching m-sequence, not the complete GPS C/A Gold-code generator. XOR operates on binary bits; correlation uses ±1 values. Actual GPS C/A combines two ten-stage registers.'};},checks:()=>{const b=code31().map(x=>2*x-1);return[{name:'m-sequence has 31 distinct cyclic phases',pass:new Set(b.map((_,i)=>b.slice(i).concat(b.slice(0,i)).join(','))).size===31},{name:'Every nonzero cyclic autocorrelation is −1',pass:b.slice(1).every((_,j)=>b.reduce((s,x,i)=>s+x*b[(i+j+1)%31],0)===-1)}];}});
+
+  modules.push({id:'processing-gain',group:'Navigation',title:'Spreading and processing gain',heading:'A known fast code lets the receiver collect a slow data bit coherently',intro:'Spread-spectrum reception trades bandwidth for recognizable correlation structure.',sources,
+    controls:controls([['chips','Chips per data bit',8,256,8,64,''],['snr','Input SNR over chip-rate bandwidth',-30,0,1,-20,'dB']]),
+    render(v,U){const gp=10*Math.log10(v.chips),out=v.snr+gp,s=U.text(60,40,'One data-bit interval Tb contains N known ±1 chips')+U.path(U.range(128,t=>[70+660*t,150+35*(Math.floor(t*v.chips)%2?1:-1)]),U.C.a)+U.text(70,225,'Multiply by the local code → align the desired chips')+U.path([[70,310],[730,310]],U.C.b,4)+U.text(70,370,'Integrate over Tb: signal adds coherently; independent noise adds in variance');return{svg:U.svg(s,'Fast code chips become a coherent data-bit estimate after despreading'),stats:[['Ideal processing gain',U.fmt(gp,2)+' dB'],['Approximate output SNR',U.fmt(out,2)+' dB'],['Rate ratio Rc/Rb',v.chips]],equation:'Gp = Rc/Rb = N; &nbsp; Gp,dB = 10 log₁₀ N; &nbsp; SNRout ≈ SNRin + Gp,dB',note:'Ideal synchronization and independent white-noise chips; input noise bandwidth is approximated by Rc. Receiver filtering and bandwidth conventions can add order-one factors. Spreading redistributes spectrum and creates a correlation handle; energy is supplied by integration time.'};},checks:()=>[{name:'100 chips yield 20 dB processing gain',pass:close(10*Math.log10(100),20)}]});
+
+  modules.push({id:'gnss-error-budget',group:'Navigation',title:'Range-error budget',heading:'Independent range uncertainties add through their variances',intro:'Separate measurement errors before using satellite geometry to estimate position uncertainty.',sources,
+    controls:controls([['clock','Residual satellite clock σ',0,10,.5,1,'m'],['iono','Residual ionosphere σ',0,20,.5,4,'m'],['tropo','Residual troposphere σ',0,5,.1,.5,'m'],['receiver','Receiver and multipath σ',0,10,.5,2,'m'],['dop','Illustrative position DOP',1,8,.5,2,'']]),
+    render(v,U){const terms=[['Clock',v.clock],['Ionosphere',v.iono],['Troposphere',v.tropo],['Receiver / multipath',v.receiver]],variance=terms.reduce((s,[,x])=>s+x*x,0),sigma=Math.sqrt(variance);let s=U.text(60,35,'Range variance contributions (m²)');terms.forEach(([name,x],i)=>{const y=90+i*72;s+=U.text(60,y,name)+`<rect x="255" y="${y-22}" width="${Math.min(430,x*x/400*430)}" height="27" fill="${[U.C.a,U.C.b,U.C.c,U.C.d][i]}"/>`+U.text(705,y,U.fmt(x*x,2),'end');});s+=U.text(60,405,'Range uncertainty × geometry factor → approximate position uncertainty');return{svg:U.svg(s,'Independent range error variances and the geometry factor'),stats:[['Range standard deviation',U.fmt(sigma,3)+' m'],['Position scale σ × DOP',U.fmt(sigma*v.dop,3)+' m'],['Total range variance',U.fmt(variance,3)+' m²']],equation:'σrange² = Σ σᵢ² (independent zero-mean errors); &nbsp; σposition ≈ DOP · σrange',note:'RSS assumes uncorrelated, zero-mean residual errors. Persistent biases and correlated atmospheric/multipath errors require a covariance or bias model. DOP must match the reported coordinate/error metric; this is a scalar teaching approximation.'};},checks:()=>[{name:'3 m and 4 m independent errors give 5 m RSS',pass:close(Math.hypot(3,4),5)}]});
+
+  modules.push({id:'navigation-frames',group:'Navigation',title:'Earth-fixed coordinates',heading:'Earth-fixed coordinates turn latitude and longitude into Cartesian positions',intro:'Satellite and receiver coordinates must share a frame and observation epoch before ranges are calculated.',sources,
+    controls:controls([['latitude','Geocentric latitude',-80,80,5,35,'°'],['longitude','Earth-fixed longitude',-180,180,5,-85,'°'],['rotation','Earth rotation angle',0,360,5,0,'°'],['altitude','Height above spherical Earth',0,20200,100,0,'km']]),
+    render(v,U){const lat=U.rad(v.latitude),lon=U.rad(v.longitude),rot=U.rad(v.rotation),r=6378+v.altitude,x=r*Math.cos(lat)*Math.cos(lon),y=r*Math.cos(lat)*Math.sin(lon),z=r*Math.sin(lat);const X=x*Math.cos(rot)-y*Math.sin(rot),Y=x*Math.sin(rot)+y*Math.cos(rot),scale=145/(6378+20200);let s=U.circle(235,230,6378*scale,'none',U.C.c)+U.line(60,230,420,230)+U.line(235,405,235,55)+U.arrow(235,230,235+X*scale,230-Y*scale,U.C.a)+U.text(60,36,'Equatorial projection: inertial x-y axes')+U.text(440,100,'ECEF x: '+U.fmt(x,1)+' km')+U.text(440,145,'ECEF y: '+U.fmt(y,1)+' km')+U.text(440,190,'ECEF z: '+U.fmt(z,1)+' km')+U.text(440,260,'Rotate ECEF x,y by Earth angle')+U.text(440,310,'Inertial x: '+U.fmt(X,1)+' km')+U.text(440,350,'Inertial y: '+U.fmt(Y,1)+' km');return{svg:U.svg(s,'Spherical Earth-fixed coordinates and rotating equatorial projection'),stats:[['Radius',U.fmt(r,1)+' km'],['Latitude',v.latitude+'°'],['Inertial longitude',U.fmt(v.longitude+v.rotation,1)+'°']],equation:'rECEF = (R+h)[cosL cosλ, cosL sinλ, sinL]; &nbsp; rECI = Rz(θEarth) rECEF',note:'Spherical Earth and geocentric latitude. Real GNSS uses an ellipsoid, geodetic latitude, reference epochs and Earth-rotation corrections during signal flight. Only x-y is drawn; z is listed numerically.'};},checks:()=>[{name:'Rotation preserves equatorial distance',pass:close(Math.hypot(Math.cos(.7),Math.sin(.7)),1)}]});
+
+  modules.push({id:'near-far',group:'Navigation',title:'CDMA near–far effect',heading:'A strong unwanted code can overwhelm a weaker desired correlation',intro:'Code separation depends on both cross-correlation and received power.',sources,
+    controls:controls([['ratio','Interferer / desired power',0,60,2,30,'dB'],['rho','Normalized cross-correlation magnitude',.01,.5,.01,.1,'']]),
+    render(v,U){const amplitude=10**(v.ratio/20),leak=amplitude*v.rho,sir=1/(leak*leak),s=U.text(60,42,'Desired code after matching: amplitude = 1')+U.line(60,130,710,130,U.C.grid)+`<rect x="80" y="100" width="80" height="30" fill="${U.C.a}"/>`+U.text(60,205,'Interferer residual amplitude = √(Pi/Ps) × |ρ|')+`<rect x="80" y="245" width="${Math.min(620,80*leak)}" height="30" fill="${U.C.b}"/>`+U.text(60,340,'Residual: '+U.fmt(leak,3)+' × desired amplitude')+U.text(60,385,'A small code cross-correlation can multiply a large input imbalance.');return{svg:U.svg(s,'Desired correlation versus leaked interfering code amplitude'),stats:[['Input imbalance',v.ratio+' dB'],['Output SIR',U.fmt(10*Math.log10(sir),2)+' dB'],['Interference amplitude',U.fmt(leak,3)]],equation:'SIRout = Ps / (Pi |ρ|²); &nbsp; ΔdB,out = −ΔdB,in − 20 log₁₀|ρ|',note:'Single-interferer, real aligned leakage magnitude; timing, data transitions, multiple access interference and noise are omitted. Bar length is capped; the numeric residual remains exact. Power control is especially important in terrestrial CDMA; navigation signals also face interference and receiver dynamic-range limits.'};},checks:()=>[{name:'20 dB excess power with ρ=.1 gives 0 dB SIR',pass:close(10*Math.log10(1/(100*.1**2)),0)}]});
+
+  modules.push({id:'ofdm-multipath',group:'Digital',title:'Multipath and OFDM',heading:'A delayed echo makes channel gain vary across frequency',intro:'Narrow subcarriers can make equalization simpler when the guard interval covers the channel memory.',sources,
+    controls:controls([['echo','Echo voltage ratio',0,.9,.1,.5,''],['delay','Echo delay τ',.2,4,.2,1,'µs'],['spacing','Subcarrier spacing',10,500,10,100,'kHz'],['prefix','Cyclic prefix',0,5,.2,1.2,'µs']]),
+    render(v,U){const H=f=>Math.hypot(1+v.echo*Math.cos(tau*f*v.delay),-v.echo*Math.sin(tau*f*v.delay)),points=U.range(600,t=>{let f=-2+4*t;return[f,20*Math.log10(Math.max(1e-9,H(f)))];}),spacing=v.spacing/1000,Tu=1000/v.spacing,cp=v.prefix,adequate=cp>=v.delay;return{svg:U.plot([{name:'Direct path + delayed echo',points}],{xmin:-2,xmax:2,ymin:-22,ymax:7,xlabel:'Baseband frequency (MHz)',ylabel:'Channel magnitude (dB)',title:'H(f) = 1 + a exp(−j2πfτ)'})+U.svg(U.text(65,45,'Useful symbol Tu = '+U.fmt(Tu,2)+' µs; prefix = '+U.fmt(cp,2)+' µs')+`<rect x="65" y="85" width="${Math.max(1,650*cp/(cp+Tu))}" height="50" fill="${U.C.b}"/><rect x="${65+650*cp/(cp+Tu)}" y="85" width="${650*Tu/(cp+Tu)}" height="50" fill="${U.C.a}"/>`+U.text(65,180,adequate?'Prefix covers this two-path delay.':'Echo exceeds the prefix: intersymbol interference can remain.'), 'OFDM symbol useful time and cyclic-prefix overhead',800,220),stats:[['Subcarrier spacing',v.spacing+' kHz'],['Useful symbol time',U.fmt(Tu,2)+' µs'],['Prefix overhead',U.fmt(100*cp/(Tu+cp),1)+'%']],equation:'H(f) = 1 + a e<sup>−j2πfτ</sup>; &nbsp; Δf = 1/Tu; &nbsp; Tcp ≥ τmax (ideal timing)',note:'Two static paths with an in-phase direct path, ideal synchronization and a rectangular OFDM useful interval. A sufficient prefix enables circular convolution and per-subcarrier equalization; deep fades still amplify noise. Smaller spacing also increases sensitivity to frequency offset and time variation.'};},checks:()=>[{name:'Equal paths have a null at fτ=.5',pass:Math.hypot(1+Math.cos(Math.PI),Math.sin(Math.PI))<1e-10},{name:'100 kHz spacing corresponds to 10 µs',pass:1000/100===10}]});
+
+  modules.push({id:'beamforming-frontends',group:'Antennas',title:'Analog and digital combining',heading:'The location of beamforming changes which hardware sees interference',intro:'Digital beamforming can suppress an interferer only after the front end has measured it without clipping.',sources,
+    controls:controls([['wanted','Wanted input',-90,-30,5,-70,'dBm'],['jammer','Interferer input',-70,10,5,-10,'dBm'],['null','Ideal spatial suppression',0,60,5,40,'dB'],['limit','Front-end linear-power limit',-40,10,5,-5,'dBm']]),
+    render(v,U){const dbsum=(a,b)=>10*Math.log10(10**(a/10)+10**(b/10)),raw=dbsum(v.wanted,v.jammer),after=dbsum(v.wanted,v.jammer-v.null),clip=raw>v.limit;let s=U.text(55,35,'Same spatial suppression, different place in the receiver chain');
+      const box=(x,y,w,label,color)=>`<rect x="${x}" y="${y}" width="${w}" height="55" rx="6" fill="none" stroke="${color}"/>`+U.text(x+w/2,y+33,label,'middle');
+      s+=U.text(55,90,'Analog combining')+box(55,115,180,'Spatial combiner',U.C.a)+U.arrow(240,143,290,143)+box(300,115,180,'Front end',U.C.b)+U.arrow(485,143,535,143)+box(545,115,180,'ADC',U.C.c)+U.text(55,225,'Digital combining')+box(55,250,180,'Front ends',U.C.b)+U.arrow(240,278,290,278)+box(300,250,180,'ADCs',U.C.c)+U.arrow(485,278,535,278)+box(545,250,180,'Digital weights',U.C.a)+U.text(55,360,'Before digital weights: '+U.fmt(raw,1)+' dBm; linear limit '+v.limit+' dBm')+U.text(55,400,clip?'Front-end limit exceeded: downstream null cannot recover clipped samples.':'Front-end power stays within this simplified linear limit.');return{svg:U.svg(s,'Analog suppression before the front end versus digital suppression after ADCs'),stats:[['Raw total input',U.fmt(raw,2)+' dBm'],['After ideal null',U.fmt(after,2)+' dBm'],['Front-end margin',U.fmt(v.limit-raw,2)+' dB']],equation:'y = wᴴx; &nbsp; Ptotal,dBm = 10 log₁₀(Σ 10<sup>Pi,dBm/10</sup>)',note:'Illustrative power-headroom model; no real ADC quantization, per-element phase solve, noise figure or automatic gain control is simulated. Analog combining and hybrid architectures have their own losses and flexibility tradeoffs.'};},checks:()=>[{name:'Two 0 dBm inputs sum to 3.0103 dBm',pass:close(10*Math.log10(2),3.01029995664,1e-9)}]});
+})();
+
+/* Generic navigation and modem examples; no assignment solution data. */
+(() => {
+  const c = 299792458, tau = 2 * Math.PI;
+  const close = (a, b, tolerance = 1e-9) => Math.abs(a - b) < tolerance;
+  const ctl = (id, label, min, max, step, value, unit = '') => ({id, label, min, max, step, value, unit});
+  const pick = (id, label, value, choices) => ({id, label, value, options: choices.map(([value, label]) => ({value, label}))});
+  const sources = ['Course: November navigation and digital-modulation topics; generic mathematical examples'];
+  const sinc = x => Math.abs(x) < 1e-12 ? 1 : Math.sin(Math.PI * x) / (Math.PI * x);
+
+  const f1 = 1575.42, f2 = 1227.60; // MHz; ratios and combination coefficients are dimensionless.
+  const alpha = f1 * f1 / (f1 * f1 - f2 * f2);
+  const beta = -f2 * f2 / (f1 * f1 - f2 * f2);
+  const ionoRatio = (f1 / f2) ** 2;
+  const noiseGain = Math.hypot(alpha, beta);
+  modules.push({
+    id: 'dual-frequency', group: 'Navigation', title: 'Dual-frequency ranging',
+    heading: 'Two frequencies separate the leading ionospheric delay from common range',
+    intro: 'Cancel a 1/f² code-delay term while tracking the noise and common biases that remain.', sources,
+    controls: [ctl('iono', 'L1 ionospheric code delay', 0, 30, 1, 5, 'm'), ctl('common', 'Common residual bias', 0, 20, 1, 3, 'm'), ctl('sigma', 'Independent noise σ per frequency', .1, 3, .1, .5, 'm')],
+    render(v, U) {
+      const i1 = v.iono, i2 = v.iono * ionoRatio, residual = alpha * i1 + beta * i2;
+      const bars = [{name: 'L1 code', iono: i1}, {name: 'L2 code', iono: i2}, {name: 'Ionosphere-free', iono: 0}];
+      const ymax = Math.max(1, i2 + v.common), scale = 175 / ymax, baseline = 320;
+      let s = U.text(60, 35, 'L1: 1575.42 MHz; L2: 1227.60 MHz') + U.text(60, 75, 'First-order code delay grows as 1/f²');
+      bars.forEach((b, i) => {
+        const x = 110 + i * 225, hc = v.common * scale, hi = b.iono * scale;
+        s += `<rect x="${x}" y="${baseline - hc}" width="90" height="${hc}" fill="${U.C.b}"/>`;
+        s += `<rect x="${x}" y="${baseline - hc - hi}" width="90" height="${hi}" fill="${U.C.a}"/>`;
+        s += U.text(x + 45, 350, b.name, 'middle') + U.text(x + 45, 378, U.fmt(b.iono + v.common, 3) + ' m', 'middle');
+      });
+      s += U.line(70, baseline, 740, baseline, U.C.grid) + U.text(60, 420, 'Teal: first-order ionosphere; orange: common residual bias');
+      s += U.text(60, 460, 'α = ' + U.fmt(alpha, 5) + '; β = ' + U.fmt(beta, 5) + '; independent-noise gain = ' + U.fmt(noiseGain, 3));
+      return {svg: U.svg(s, 'L1 and L2 ionospheric delay and the retained common bias after combination', 800, 490),
+        stats: [['First-order residual', U.fmt(residual, 6) + ' m'], ['Retained common bias', U.fmt((alpha + beta) * v.common, 3) + ' m'], ['Combined noise σ', U.fmt(v.sigma * noiseGain, 3) + ' m']],
+        equation: 'P<sub>IF</sub> = αP₁ + βP₂; &nbsp; α = f₁²/(f₁²−f₂²); &nbsp; β = −f₂²/(f₁²−f₂²); &nbsp; σ<sub>IF</sub> = σ√(α²+β²)',
+        note: 'Code pseudoranges with a common geometric/clock term and a first-order 1/f² ionospheric delay. Equal independent per-frequency noise is assumed; the plotted bars omit random realizations. Higher-order ionosphere, hardware biases and other residuals remain outside this model.',
+        question: 'Why can removing the leading ionospheric term increase the measurement noise standard deviation?'};
+    },
+    checks: () => [
+      {name: 'Ionosphere-free coefficients preserve a common range term', pass: close(alpha + beta, 1)},
+      {name: 'L1/L2 first-order ionospheric term cancels', pass: Math.abs(alpha + beta * ionoRatio) < 1e-12},
+      {name: 'L1/L2 independent equal-noise gain is approximately 2.978', pass: close(noiseGain, 2.978255244444737, 1e-9)}
+    ]
+  });
+
+  const code31 = () => {
+    const bits = [1, 1, 1, 1, 1];
+    for (let i = 0; i < 31; i++) bits.push(bits[i] ^ bits[i + 2]);
+    return bits.slice(0, 31).map(x => 2 * x - 1);
+  };
+  const code = code31();
+  const codeCorrelation = shift => code.reduce((sum, x, i) => sum + x * code[(i + ((shift % 31) + 31) % 31) % 31], 0) / 31;
+  const acquisitionScore = (delayError, frequencyError, seconds) => codeCorrelation(delayError) ** 2 * sinc(frequencyError * seconds) ** 2;
+  const scoreDb = score => 10 * Math.log10(Math.max(1e-12, score));
+  modules.push({
+    id: 'gnss-acquisition', group: 'Navigation', title: 'Code-delay and Doppler search',
+    heading: 'A receiver searches code alignment and carrier frequency together',
+    intro: 'Inspect a sampled acquisition surface and the coherent loss from a wrong frequency hypothesis.', sources,
+    controls: [ctl('delay', 'True code delay', 0, 30, 1, 9, 'chips'), ctl('doppler', 'True carrier offset', -1000, 1000, 25, 375, 'Hz'), ctl('time', 'Coherent integration T', 1, 20, 1, 5, 'ms'), ctl('trialDelay', 'Trial code delay', 0, 30, 1, 9, 'chips'), ctl('trialDoppler', 'Trial carrier offset', -1000, 1000, 100, 300, 'Hz')],
+    render(v, U) {
+      const T = v.time / 1000, x0 = 80, y0 = 60, dx = 15, dy = 12;
+      let s = U.text(60, 28, 'Fixed 100 Hz frequency grid; color is power relative to exact alignment');
+      let best = {score: -1, delay: 0, frequency: 0};
+      for (let row = 0; row < 21; row++) {
+        const frequency = 1000 - row * 100;
+        for (let delay = 0; delay < 31; delay++) {
+          const score = acquisitionScore(delay - v.delay, frequency - v.doppler, T);
+          if (score > best.score) best = {score, delay, frequency};
+          const level = Math.max(0, Math.min(1, (scoreDb(score) + 40) / 40));
+          s += `<rect x="${x0 + delay * dx}" y="${y0 + row * dy}" width="${dx}" height="${dy}" fill="${U.C.a}" opacity="${.08 + .92 * level}"/>`;
+        }
+      }
+      const row = (1000 - v.trialDoppler) / 100;
+      s += `<rect x="${x0 + v.trialDelay * dx}" y="${y0 + row * dy}" width="${dx}" height="${dy}" fill="none" stroke="${U.C.b}" stroke-width="2"/>`;
+      for (const delay of [0, 5, 10, 15, 20, 25, 30]) s += U.text(x0 + (delay + .5) * dx, 340, delay, 'middle');
+      for (const frequency of [-1000, 0, 1000]) s += U.text(70, y0 + (1000 - frequency) / 100 * dy + 10, frequency, 'end');
+      s += U.text(310, 380, 'Code-delay hypothesis (chips)', 'middle') + U.text(60, 420, 'Rows: frequency hypothesis in Hz; dark color: 0 dB; faint color: −40 dB or below');
+      s += U.text(575, 90, 'Best sampled cell') + U.text(575, 125, best.delay + ' chips') + U.text(575, 160, best.frequency + ' Hz');
+      s += U.text(575, 215, 'First frequency null') + U.text(575, 250, U.fmt(1 / T, 1) + ' Hz from truth');
+      if (best.score < 1e-12) s += U.text(575, 300, 'Grid misses the narrow peak');
+      const codePower = codeCorrelation(v.trialDelay - v.delay) ** 2;
+      const dopplerPower = sinc((v.trialDoppler - v.doppler) * T) ** 2;
+      return {svg: U.svg(s, 'Code delay and carrier-offset acquisition grid with a selected trial cell', 800, 450),
+        stats: [['Trial code factor', U.fmt(codePower, 4)], ['Trial Doppler factor', U.fmt(dopplerPower, 4)], ['Trial score, −120 dB floor', U.fmt(scoreDb(codePower * dopplerPower), 2) + ' dB']],
+        equation: 'A(Δd,Δf) = |R<sub>code</sub>(Δd)|² |sinc(ΔfT)|²; &nbsp; sinc(x) = sin(πx)/(πx)',
+        note: 'A separable teaching acquisition surface using a periodic 31-chip code, ideal code timing and a constant data sign. It omits noise and actual code/Doppler coupling. Longer integration narrows the frequency response, so a fixed grid can miss a between-bin peak. Code delay is modulo the code period.',
+        question: 'If integration time doubles, how should the frequency grid change to keep a similar worst-case coherent loss?'};
+    },
+    checks: () => [
+      {name: 'Acquisition code factor has unit aligned and 1/961 off-peak power', pass: close(codeCorrelation(0), 1) && close(codeCorrelation(1) ** 2, 1 / 961)},
+      {name: 'Exact code and frequency alignment has unit acquisition score', pass: close(acquisitionScore(0, 0, .005), 1)},
+      {name: 'Residual frequency 1/T gives the first coherent null', pass: acquisitionScore(0, 200, .005) < 1e-25},
+      {name: 'Half-cycle coherent mismatch has power 4/pi squared', pass: close(acquisitionScore(0, 100, .005), 4 / Math.PI ** 2)}
+    ]
+  });
+
+  const raised = (t, a) => {
+    if (a === 0) return sinc(t);
+    if (Math.abs(1 - (2 * a * t) ** 2) < 1e-9) return Math.PI / 4 * sinc(1 / (2 * a));
+    return sinc(t) * Math.cos(Math.PI * a * t) / (1 - (2 * a * t) ** 2);
+  };
+  const alphabet = M => {
+    if (M === 2) return [[-1, 0], [1, 0]];
+    const q = Math.sqrt(M), scale = Math.sqrt(2 * (M - 1) / 3), result = [];
+    for (let y = 0; y < q; y++) for (let x = 0; x < q; x++) result.push([(2 * x - q + 1) / scale, (2 * y - q + 1) / scale]);
+    return result;
+  };
+  modules.push({
+    id: 'modem-chain', group: 'Digital', title: 'The modem signal chain',
+    heading: 'Rates and waveform choices belong to specific stages of the modem',
+    intro: 'Connect information bits, channel coding, constellation symbols and the combined pulse response.', sources,
+    controls: [ctl('rate', 'Information bit rate', 1, 12, 1, 6, 'Mbit/s'), pick('codeRate', 'Channel code rate', .75, [[.5, '1/2'], [.75, '3/4'], [1, '1 (uncoded)']]), pick('M', 'Modulation alphabet', 16, [[2, 'BPSK'], [4, 'QPSK'], [16, '16-QAM'], [64, '64-QAM']]), ctl('rolloff', 'Combined raised-cosine rolloff', 0, 1, .05, .25, '')],
+    render(v, U) {
+      const coded = v.rate / v.codeRate, symbols = coded / Math.log2(v.M), bandwidth = (1 + v.rolloff) * symbols;
+      const labels = [['Information bits', v.rate + ' Mbit/s'], ['Channel encoder', U.fmt(coded, 3) + ' Mbit/s'], ['Symbol mapper', U.fmt(symbols, 3) + ' Mbaud'], ['Pulse / channel', U.fmt(bandwidth, 3) + ' MHz RF']];
+      let s = U.text(45, 32, 'Information → coded bits → I/Q symbols → occupied passband');
+      labels.forEach(([name, rate], i) => {
+        const x = 40 + 190 * i;
+        s += `<rect x="${x}" y="65" width="150" height="85" rx="5" fill="none" stroke="${U.C.grid}"/>` + U.text(x + 75, 95, name, 'middle') + U.text(x + 75, 126, rate, 'middle');
+        if (i < 3) s += U.arrow(x + 155, 106, x + 180, 106, U.C.a);
+      });
+      s += U.text(60, 215, 'Combined Nyquist pulse h(t)') + U.line(70, 350, 450, 350, U.C.grid) + U.line(260, 255, 260, 425, U.C.grid);
+      s += U.path(Array.from({length: 361}, (_, i) => {const t = -3 + i / 60; return [70 + (t + 3) / 6 * 380, 350 - 70 * raised(t, v.rolloff)];}), U.C.a, 2);
+      for (const t of [-3, 0, 3]) s += U.text(70 + (t + 3) / 6 * 380, 380, t, 'middle');
+      s += U.text(260, 430, 't / T (symbol periods)', 'middle') + U.text(515, 215, 'Unit-average-energy I/Q');
+      s += U.line(530, 330, 750, 330, U.C.grid) + U.line(640, 235, 640, 425, U.C.grid) + U.text(760, 336, 'I') + U.text(648, 238, 'Q');
+      for (const point of alphabet(v.M)) s += U.circle(640 + point[0] * 70, 330 - point[1] * 70, 3.5, U.C.b, U.C.b);
+      s += U.text(60, 480, 'The plotted pulse is the combined transmit/channel/receive reference response.');
+      return {svg: U.svg(s, 'Modem rate chain with a raised-cosine pulse and normalized modulation alphabet', 800, 510),
+        stats: [['Coded rate', U.fmt(coded, 3) + ' Mbit/s'], ['Symbol rate', U.fmt(symbols, 3) + ' Mbaud'], ['Occupied RF width', U.fmt(bandwidth, 3) + ' MHz']],
+        equation: 'R<sub>coded</sub> = Rb/Rc; &nbsp; Rs = Rb/(Rc log₂M); &nbsp; B<sub>RF</sub> ≈ (1+α)Rs',
+        note: 'Source compression is already included in the information input. Framing, pilots, synchronization overhead and channel errors are omitted. The pulse is a combined raised-cosine reference, which can be implemented with suitable root-raised-cosine transmit and matched-receive filters. The I/Q alphabet is energy normalized; no BER is predicted.',
+        question: 'If code rate falls while information rate and modulation stay fixed, which downstream rates must rise?'};
+    },
+    checks: () => [
+      {name: '6 Mbps, rate 3/4, 16-QAM, rolloff .25 gives 2.5 MHz RF', pass: close((6 / .75 / 4) * 1.25, 2.5)},
+      {name: 'Every modem alphabet has unit average symbol energy', pass: [2, 4, 16, 64].every(M => close(alphabet(M).reduce((s, p) => s + p[0] ** 2 + p[1] ** 2, 0) / M, 1))},
+      {name: 'Combined raised-cosine pulse has integer Nyquist zeros', pass: [0, .25, .5, 1].every(a => [1, 2, 3].every(n => Math.abs(raised(n, a)) < 1e-10))},
+      {name: 'Raised-cosine removable singularity is evaluated', pass: close(raised(.5, 1), .5)}
+    ]
+  });
+
+  const inverse4 = matrix => {
+    const a = matrix.map((row, i) => row.concat([0, 1, 2, 3].map(j => +(i === j))));
+    const norm = Math.max(...matrix.map(row => row.reduce((s, x) => s + Math.abs(x), 0)));
+    for (let j = 0; j < 4; j++) {
+      let pivot = j;
+      for (let i = j + 1; i < 4; i++) if (Math.abs(a[i][j]) > Math.abs(a[pivot][j])) pivot = i;
+      if (Math.abs(a[pivot][j]) < 1e-11 * Math.max(1, norm)) return null;
+      [a[j], a[pivot]] = [a[pivot], a[j]];
+      const divisor = a[j][j];
+      for (let k = 0; k < 8; k++) a[j][k] /= divisor;
+      for (let i = 0; i < 4; i++) if (i !== j) {
+        const factor = a[i][j];
+        for (let k = 0; k < 8; k++) a[i][k] -= factor * a[j][k];
+      }
+    }
+    const result = a.map(row => row.slice(4));
+    const inverseNorm = Math.max(...result.map(row => row.reduce((s, x) => s + Math.abs(x), 0)));
+    if (!result.flat().every(Number.isFinite) || norm * inverseNorm > 1e12) return null;
+    return result.map((row, i) => row.map((x, j) => (x + result[j][i]) / 2));
+  };
+  const skyFor = v => Array.from({length: 6}, (_, i) => ({az: (-v.spread / 2 + v.spread * i / 5) * Math.PI / 180, el: (i % 2 ? Math.min(85, v.low + v.separation) : v.low) * Math.PI / 180}));
+  const dopFor = sky => {
+    const H = sky.map(({az, el}) => [-Math.cos(el) * Math.sin(az), -Math.cos(el) * Math.cos(az), -Math.sin(el), 1]);
+    const normal = Array.from({length: 4}, (_, i) => Array.from({length: 4}, (_, j) => H.reduce((s, row) => s + row[i] * row[j], 0)));
+    const Q = inverse4(normal);
+    if (!Q || [0, 1, 2, 3].some(i => Q[i][i] < 0)) return {ok: false};
+    return {ok: true, Q, HDOP: Math.sqrt(Q[0][0] + Q[1][1]), VDOP: Math.sqrt(Q[2][2]), TDOP: Math.sqrt(Q[3][3]), PDOP: Math.sqrt(Q[0][0] + Q[1][1] + Q[2][2]), GDOP: Math.sqrt(Q[0][0] + Q[1][1] + Q[2][2] + Q[3][3])};
+  };
+  modules.push({
+    id: 'gnss-dop-3d', group: 'Navigation', title: 'Three-dimensional DOP',
+    heading: 'Six sky directions constrain east, north, up and receiver clock together',
+    intro: 'Calculate the actual ENU-and-clock normal matrix and see when sky geometry loses a dimension.', sources,
+    controls: [ctl('spread', 'Azimuth spread', 30, 360, 15, 300, '°'), ctl('low', 'Lower elevation group', 5, 60, 5, 20, '°'), ctl('separation', 'Elevation-group separation', 0, 60, 5, 35, '°'), ctl('sigma', 'Independent range-error σ', .5, 10, .5, 2, 'm')],
+    render(v, U) {
+      const sky = skyFor(v), result = dopFor(sky), cx = 225, cy = 255, R = 145;
+      let s = U.text(55, 30, 'Generic six-source sky: north up, east right') + U.circle(cx, cy, R, 'none', U.C.muted) + U.circle(cx, cy, R / 2, 'none', U.C.grid);
+      s += U.line(cx - R, cy, cx + R, cy, U.C.grid) + U.line(cx, cy - R, cx, cy + R, U.C.grid);
+      s += U.text(cx, 90, 'N', 'middle') + U.text(390, cy + 5, 'E') + U.text(45, cy + 5, 'W') + U.text(cx, 430, 'S', 'middle');
+      sky.forEach(({az, el}, i) => {
+        const x = cx + R * Math.cos(el) * Math.sin(az), y = cy - R * Math.cos(el) * Math.cos(az);
+        s += U.line(cx, cy, x, y, U.C.grid) + U.circle(x, y, 6, i % 2 ? U.C.b : U.C.a, i % 2 ? U.C.b : U.C.a);
+      });
+      s += U.text(55, 475, 'Sky radius = cos(elevation); the center is zenith.');
+      if (result.ok) {
+        [['HDOP', result.HDOP], ['VDOP', result.VDOP], ['PDOP', result.PDOP], ['TDOP', result.TDOP], ['GDOP', result.GDOP]].forEach(([name, value], i) => {s += U.text(440, 110 + i * 43, name + ' = ' + U.fmt(value, 3));});
+        s += U.text(440, 365, '3-D position RMS scale:') + U.text(440, 398, U.fmt(v.sigma * result.PDOP, 3) + ' m');
+        s += U.text(440, 443, 'Clock-time σ: ' + U.fmt(v.sigma * result.TDOP / c * 1e9, 2) + ' ns');
+      } else {
+        s += U.text(440, 140, 'Rank-deficient geometry') + U.text(440, 190, 'Equal elevations confound') + U.text(440, 225, 'height and clock distance.') + U.text(440, 290, 'Separate elevation groups') + U.text(440, 325, 'to recover this dimension.');
+      }
+      return {svg: U.svg(s, 'Six generic sky directions and a full ENU-plus-clock DOP calculation', 800, 505),
+        stats: result.ok ? [['HDOP', U.fmt(result.HDOP, 3)], ['VDOP', U.fmt(result.VDOP, 3)], ['GDOP', U.fmt(result.GDOP, 3)]] : [['Matrix rank', 'Deficient'], ['Position DOP', 'Unavailable'], ['Clock DOP', 'Unavailable']],
+        equation: 'Hᵢ = [−cosEᵢ sinAᵢ, −cosEᵢ cosAᵢ, −sinEᵢ, 1]; &nbsp; Q = (HᵀH)⁻¹; &nbsp; Cov = σ²Q<br>HDOP²=Qee+Qnn; VDOP²=Quu; TDOP²=Qbb; PDOP²=HDOP²+VDOP²; GDOP²=PDOP²+TDOP²',
+        note: 'A local linearized 3-D model with six generic directions, equal independent range errors, and receiver clock expressed as distance cb. DOP is dimensionless; σPDOP is a three-coordinate RMS scale, not a confidence radius. Elevations cap at 85°. Rank-deficient or severely ill-conditioned matrices are reported rather than regularized into a false solution.',
+        question: 'Why do six measurements at the same elevation still fail to separate height from clock bias?'};
+    },
+    checks: () => {
+      const sky = skyFor({spread: 300, low: 20, separation: 35}), d = dopFor(sky), rotated = dopFor(sky.map(x => ({az: x.az + Math.PI / 2, el: x.el})));
+      return [
+        {name: 'Six mixed-elevation directions give finite positive 3-D DOP', pass: d.ok && [d.HDOP, d.VDOP, d.TDOP, d.PDOP, d.GDOP].every(x => Number.isFinite(x) && x > 0)},
+        {name: 'Equal-elevation geometry exposes height/clock rank loss', pass: !dopFor(skyFor({spread: 300, low: 20, separation: 0})).ok},
+        {name: 'Standard position/time/geometric DOP trace identities hold', pass: d.ok && close(d.PDOP ** 2, d.HDOP ** 2 + d.VDOP ** 2) && close(d.GDOP ** 2, d.PDOP ** 2 + d.TDOP ** 2)},
+        {name: 'Rotating sky azimuth preserves horizontal and vertical DOP', pass: d.ok && rotated.ok && close(d.HDOP, rotated.HDOP) && close(d.VDOP, rotated.VDOP)}
+      ];
+    }
+  });
+})();
+
 const groups=[['Orbits','Orbits & look angles'],['Systems','Spacecraft systems'],['Waves','Waves & fields'],['RF','RF links'],['Antennas','Antennas'],['Navigation','Navigation'],['Digital','Digital signals']];
+if(document.querySelector('[data-project-overview]')) { window.CourseLab={modules,U,checks:()=>modules.flatMap(m=>(m.checks?.()||[]).map(x=>({module:m.id,...x})))}; return; }
 const root=document.getElementById('course-lab'),$=id=>root.querySelector('#'+id),values={};let active=modules[0].id,frame=0,playing=false,lastFrame=0;
 for(const m of modules)values[m.id]=Object.fromEntries(m.controls.map(c=>[c.id,c.value]));
 try{const s=JSON.parse(localStorage.getItem('ece6390-course-lab-v1')||'null');if(s&&modules.some(m=>m.id===s.active)){active=s.active;for(const m of modules)for(const c of m.controls){const x=s.values?.[m.id]?.[c.id];if(Number.isFinite(x)&&(c.options?c.options.some(o=>o.value===x):x>=c.min&&x<=c.max))values[m.id][c.id]=x}}}catch{}
 if(location.hash&&modules.some(m=>m.id===location.hash.slice(1)))active=location.hash.slice(1);
-const save=()=>{try{localStorage.setItem('ece6390-course-lab-v1',JSON.stringify({active,values}))}catch{}};
+if(root.dataset.topic) active=root.dataset.topic;
+if(root.dataset.topic) {
+  const params=new URLSearchParams(location.search),m=modules.find(x=>x.id===active);
+  for(const c of m.controls) {
+    const raw=params.get('c_'+c.id),n=Number(raw);
+    if(raw===null||raw.trim()===''||!Number.isFinite(n))continue;
+    if(c.options ? c.options.some(x=>x.value===n) : n>=c.min&&n<=c.max)
+      values[active][c.id]=c.options?n:Number(Math.min(c.max,Math.max(c.min,c.min+Math.round((n-c.min)/c.step)*c.step)).toPrecision(12));
+  }
+}
+const save=()=>{
+  try{localStorage.setItem('ece6390-course-lab-v1',JSON.stringify({active,values}))}catch{}
+  if(root.dataset.topic)try{
+    const url=new URL(location.href),m=modules.find(x=>x.id===active);
+    for(const c of m.controls){const key='c_'+c.id;if(values[active][c.id]===c.value)url.searchParams.delete(key);else url.searchParams.set(key,values[active][c.id]);}
+    history.replaceState(null,'',url.pathname+url.search+url.hash);
+  }catch{}
+};
 function pause(){playing=false;cancelAnimationFrame(frame);const b=$('play');if(b){b.textContent='Play';b.setAttribute('aria-pressed','false')}}
 function draw(){const m=modules.find(m=>m.id===active);try{const r=m.render(values[active],U);$('figure').innerHTML=r.svg;$('stats').innerHTML=(r.stats||[]).slice(0,3).map(s=>`<div class="stat"><span>${esc(s[0])}</span><strong>${esc(s[1])}</strong></div>`).join('');$('equation').innerHTML=r.equation||'';$('note').textContent=r.note||'';$('question').textContent=r.question?'Think it through: '+r.question:'';$('figure').classList.remove('error');for(const c of m.controls){const out=$('value-'+c.id);if(out)out.textContent=fmt(values[active][c.id],3)+(c.unit?' '+c.unit:'')}}catch(e){$('figure').classList.add('error');$('figure').textContent='This graphic could not be drawn: '+e.message;console.error(active,e)}}
-function select(id,focus=false){pause();active=id;const m=modules.find(x=>x.id===id);$('subjects').innerHTML=groups.map(([g,label])=>`<button type="button" role="tab" id="subject-${g}" aria-selected="${m.group===g}" aria-controls="panel">${label}</button>`).join('');$('concepts').innerHTML=modules.filter(x=>x.group===m.group).map(x=>`<button type="button" role="tab" id="tab-${x.id}" aria-selected="${id===x.id}" aria-controls="panel">${esc(x.title)}</button>`).join('');$('panel').setAttribute('aria-labelledby','tab-'+id);$('heading').textContent=m.heading;$('intro').textContent=m.intro;$('controls').innerHTML=m.controls.map(c=>`<div class="control"><label for="input-${c.id}"><span>${esc(c.label)}</span>${c.options?'':`<output id="value-${c.id}" for="input-${c.id}"></output>`}</label>${c.options?`<select id="input-${c.id}">${c.options.map(o=>`<option value="${o.value}" ${values[id][c.id]===o.value?'selected':''}>${esc(o.label)}</option>`).join('')}</select>`:`<input type="range" id="input-${c.id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${values[id][c.id]}">`}</div>`).join('')+`<div class="actions">${m.animate?'<button type="button" id="play" aria-pressed="false">Play</button>':''}<button type="button" id="reset">Reset example</button></div>`;$('sources').innerHTML=(m.sources||[]).map(s=>`<li>${esc(sourceLabel(s))}</li>`).join('');$('footer').textContent=modules.length+' interactive concepts · Class through October 29, 2026; assigned digital review · Illustrative examples';for(const c of m.controls)$('input-'+c.id).addEventListener('input',e=>{pause();values[id][c.id]=Number(e.target.value);draw();save()});$('reset').onclick=()=>{pause();values[id]=Object.fromEntries(m.controls.map(c=>[c.id,c.value]));select(id)};if(m.animate)$('play').onclick=()=>{if(playing){pause();return}playing=true;$('play').textContent='Pause';$('play').setAttribute('aria-pressed','true');const a=m.animate;if(values[id][a.id]>=a.max)values[id][a.id]=a.min;lastFrame=0;const tick=t=>{if(!playing)return;if(t-lastFrame>=80){lastFrame=t;values[id][a.id]=Math.min(a.max,values[id][a.id]+a.step);$('input-'+a.id).value=values[id][a.id];draw();if(values[id][a.id]>=a.max){pause();save();return}}frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick)};draw();save();try{history.replaceState(null,'','#'+id)}catch{}if(focus)$('tab-'+id).focus()}
+function select(id,focus=false){pause();id=root.dataset.topic||id;active=id;const m=modules.find(x=>x.id===id);$('subjects').innerHTML=groups.map(([g,label])=>`<button type="button" role="tab" id="subject-${g}" aria-selected="${m.group===g}" aria-controls="panel">${label}</button>`).join('');$('concepts').innerHTML=modules.filter(x=>x.group===m.group).map(x=>`<button type="button" role="tab" id="tab-${x.id}" aria-selected="${id===x.id}" aria-controls="panel">${esc(x.title)}</button>`).join('');$('panel').setAttribute('aria-labelledby',root.dataset.topic?'topic-title':'tab-'+id);$('heading').textContent=m.heading;$('intro').textContent=m.intro;$('controls').innerHTML=m.controls.map(c=>`<div class="control"><label for="input-${c.id}"><span>${esc(c.label)}</span>${c.options?'':`<output id="value-${c.id}" for="input-${c.id}"></output>`}</label>${c.options?`<select id="input-${c.id}">${c.options.map(o=>`<option value="${o.value}" ${values[id][c.id]===o.value?'selected':''}>${esc(o.label)}</option>`).join('')}</select>`:`<input type="range" id="input-${c.id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${values[id][c.id]}">`}</div>`).join('')+`<div class="actions">${m.animate?'<button type="button" id="play" aria-pressed="false">Play</button>':''}<button type="button" id="reset">Reset example</button></div>`;$('sources').innerHTML=(m.sources||[]).map(s=>`<li>${esc(sourceLabel(s))}</li>`).join('');$('footer').textContent='';for(const c of m.controls)$('input-'+c.id).addEventListener('input',e=>{pause();values[id][c.id]=Number(e.target.value);draw();save()});$('reset').onclick=()=>{pause();values[id]=Object.fromEntries(m.controls.map(c=>[c.id,c.value]));select(id)};if(m.animate)$('play').onclick=()=>{if(playing){pause();return}playing=true;$('play').textContent='Pause';$('play').setAttribute('aria-pressed','true');const a=m.animate;if(values[id][a.id]>=a.max)values[id][a.id]=a.min;lastFrame=0;const tick=t=>{if(!playing)return;if(t-lastFrame>=80){lastFrame=t;values[id][a.id]=Math.min(a.max,values[id][a.id]+a.step);$('input-'+a.id).value=values[id][a.id];draw();if(values[id][a.id]>=a.max){pause();save();return}}frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick)};draw();save();try{!root.dataset.topic&&history.replaceState(null,'','#'+id)}catch{}if(focus)$('tab-'+id).focus()}
 $('subjects').addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(b)select(modules.find(m=>m.group===b.id.replace('subject-','')).id)});$('concepts').addEventListener('click',e=>{const b=e.target.closest('[role=tab]');if(b)select(b.id.slice(4))});
 for(const id of ['subjects','concepts'])$(id).addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;const tabs=[...$(id).querySelectorAll('[role=tab]')],i=tabs.indexOf(document.activeElement);if(i<0)return;e.preventDefault();const j=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[j].click();const fresh=[...$(id).querySelectorAll('[role=tab]')];fresh[j].focus()});
 window.addEventListener('hashchange',()=>{const id=location.hash.slice(1);if(modules.some(m=>m.id===id))select(id)});document.addEventListener('visibilitychange',()=>{if(document.hidden)pause()});

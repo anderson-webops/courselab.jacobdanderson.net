@@ -1,0 +1,3 @@
+User-agent: *
+Disallow: /courses/gt/ece6390/admin/
+Sitemap: https://courselab.jacobdanderson.net/sitemap.xml

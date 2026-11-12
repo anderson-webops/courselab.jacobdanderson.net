@@ -1,0 +1,120 @@
+{
+  "plane-wave": [
+    {
+      "title": "Electromagnetic waves and energy flow",
+      "url": "https://adamdjellouli.com/tools/em_waves/"
+    }
+  ],
+  "double-curl": [
+    {
+      "title": "Electromagnetic waves and energy flow",
+      "url": "https://adamdjellouli.com/tools/em_waves/"
+    }
+  ],
+  "polarization": [
+    {
+      "title": "Polarization and Jones/Mueller calculus",
+      "url": "https://adamdjellouli.com/tools/polarization/"
+    }
+  ],
+  "standing-wave": [
+    {
+      "title": "Standing waves",
+      "url": "https://adamdjellouli.com/tools/standing_waves/"
+    },
+    {
+      "title": "Reflection and Fresnel coefficients",
+      "url": "https://adamdjellouli.com/tools/fresnel/"
+    }
+  ],
+  "phasor-interference": [
+    {
+      "title": "Interference and beating",
+      "url": "https://adamdjellouli.com/tools/interference/"
+    }
+  ],
+  "aperture-phasors": [
+    {
+      "title": "Near- and far-field aperture propagation",
+      "url": "https://adamdjellouli.com/tools/aperture_propagation/"
+    }
+  ],
+  "circular-aperture": [
+    {
+      "title": "Single-slit and circular diffraction",
+      "url": "https://adamdjellouli.com/tools/diffraction/"
+    }
+  ],
+  "dish-gain": [
+    {
+      "title": "Fourier optics, imaging and resolution",
+      "url": "https://adamdjellouli.com/tools/fourier_optics/"
+    }
+  ],
+  "array-multiplication": [
+    {
+      "title": "Interference and beating",
+      "url": "https://adamdjellouli.com/tools/interference/"
+    }
+  ],
+  "array-normalization": [
+    {
+      "title": "Electromagnetic waves and energy flow",
+      "url": "https://adamdjellouli.com/tools/em_waves/"
+    }
+  ],
+  "nyquist-pulse": [
+    {
+      "title": "Signal processing visualizer",
+      "url": "https://adamdjellouli.com/tools/filters/"
+    }
+  ],
+  "rectangular-pulse-spectrum": [
+    {
+      "title": "Signal processing visualizer",
+      "url": "https://adamdjellouli.com/tools/filters/"
+    }
+  ],
+  "matched-filter": [
+    {
+      "title": "Signal processing visualizer",
+      "url": "https://adamdjellouli.com/tools/filters/"
+    }
+  ],
+  "sampling-alias": [
+    {
+      "title": "Signal processing visualizer",
+      "url": "https://adamdjellouli.com/tools/filters/"
+    }
+  ],
+  "ofdm-multipath": [
+    {
+      "title": "Signal processing visualizer",
+      "url": "https://adamdjellouli.com/tools/filters/"
+    }
+  ],
+  "lfsr-code": [
+    {
+      "title": "Logic gates and XOR",
+      "url": "https://adamdjellouli.com/tools/logic_gates/"
+    }
+  ],
+  "navigation-frames": [
+    {
+      "title": "Matrix multiplication and geometric composition",
+      "url": "https://adamdjellouli.com/tools/matrix_multiplication/"
+    }
+  ],
+  "gnss-geometry": [
+    {
+      "title": "Covariance and uncertainty ellipses",
+      "url": "https://adamdjellouli.com/tools/correlation_visualizer/"
+    }
+  ],
+  "gnss-error-budget": [
+    {
+      "title": "Covariance and correlation",
+      "url": "https://adamdjellouli.com/tools/correlation_visualizer/"
+    }
+  ]
+}

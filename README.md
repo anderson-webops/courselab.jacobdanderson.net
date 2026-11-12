@@ -1,37 +1,55 @@
-# Orbital HW
+# Course Lab
 
-Local source for `orbitalHW.jacobdanderson.net`. Browser-only learning tools: Orbit & Code, Solar Components, and a 50-concept Course Lab. The orbit-to-solar link transfers the current direction angles, rounded to the attached tool's whole-degree inputs.
+Shared course notes, explanations, figures, simulations and attempt-first practice. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
 
-## Run
+Source: [anderson-webops/courselab.jacobdanderson.net](https://github.com/anderson-webops/courselab.jacobdanderson.net).
+
+## Build and preview
+
+Use Node 26.13.1 and npm 12.2.1. There are no application dependencies or server database.
 
 ```sh
-python3 scripts/build.py
+npm ci
+npm run validate
 python3 scripts/serve.py --port 4178
 ```
 
-Open `http://127.0.0.1:4178`. There is no site dependency installation, database, or backend. The site makes no external requests. Browser storage is optional and used only to retain orbit controls.
-
-The main page shows the orbital physics views. Open `/lab/` for tabbed experiments in orbits and look angles, spacecraft systems, waves and fields, RF links, antennas, navigation, and digital signals. Open `/admin` (normally redirected to `/admin/`) to also see the RK4 and simulation-code walkthrough. Public pages do not link to this route or contain its walkthrough markup. This is a presentation split, not authentication: anyone with the URL can open it.
-
-The Sun-centered overview and enlarged Earth neighborhood share the existing simulation's time, satellite state and solar-direction phase. They remain space-fixed even when Orbit & observer uses the Earth-fixed camera. The Sun-to-Earth direction represents the prescribed push away from the Sun, not a new heliocentric integration or a calendar ephemeris. The original integrator and equations are unchanged.
-
-## Validate
+Open `http://127.0.0.1:4178`. Serve only `dist/`. The builder regenerates that directory, including routes, local assets, canonical links, search data, `sitemap.xml`, `robots.txt`, security headers and source hashes.
 
 ```sh
-npm run validate
-ORBITALHW_URL=http://127.0.0.1:4178 npm run test:browser
+PLAYWRIGHT_MODULE=/path/to/playwright PLAYWRIGHT_CHANNEL=chrome npm run test:browser
 ```
 
-Browser tests need Playwright; set `PLAYWRIGHT_MODULE` to an existing Playwright module path and `QA_OUTPUT` to a repository-local evidence directory if it is not installed locally. Set `PLAYWRIGHT_CHANNEL=chrome` to use an existing Chrome installation. Use Node 26.13.0 and npm 12.2.1 for those commands.
+Browser checks cover the preserved orbital models, course topics, project figures, course navigation, mobile layouts, state and requested-hostname behavior. The two-host test replays the local artifact under the requested HTTPS origins; production DNS, certificate validity and server routing require the separate live domain checks.
 
-## Structure and provenance
+## Courses and topics
 
-`src/orbit.html`, `src/solar-acceleration-visualizer.html`, and `src/course-lab.html` retain the supplied sources. `src/course-update.js` adds original array, navigation, and digital-signal experiments. `scripts/build.py` extracts local assets and applies only site integration changes. `dist/` is the complete static deployment tree. Shared presentation follows the minimal Vitesse Lite approach; the no-framework static delivery convention matches the local Liar's Dice site. Source hashes and adaptations are listed in `dist/source-info.json`.
+- `/courses/gt/ece6390/`: Satellite Communications and Navigation Systems.
+- `/courses/gt/ece6612/`: Computer Network Security.
+- `/courses/byu/phscs587/`: Physics of Semiconductor Devices.
 
-This is a learning visualization, not a solver for homework thresholds or the optimized assignment orbit. The Solar Components page demonstrates geometry, not time integration. Imported angles are approximate to one degree, and its normalized arrows do not compare force magnitudes.
+Each course has its own landing page. Topics use `/courses/<institution>/<course>/topics/<stable-topic-id>/`. ECE 6390 also retains `/orbit/`, `/solar/`, `/project/` and `/lab/` within its course. Its unlinked `/admin/` route contains the code walkthrough. That route is a presentation choice, not authentication.
 
-## Publishing boundary
+`src/courses.json` is the shared course registry. `scripts/catalog.py` generates the site home, course pages, navigation, breadcrumbs, search, canonical URLs and sitemap. `scripts/topics.py` builds the ECE 6390 lesson pages around the preserved model registry. All courses share figure utilities, control presentation, practice feedback and optional browser storage.
 
-The public source repository is [anderson-webops/orbitalHW.jacobdanderson.net](https://github.com/anderson-webops/orbitalHW.jacobdanderson.net). Source publication is separate from website deployment.
+ECE 6390 authoring sources are `src/course-lab.html`, `src/course-update.js`, `src/course-extensions.js` and `src/course-navigation.js`; lesson prose and practice are in the corresponding `topic-*.json` files. The supplied HTML originals retain their original bytes. Adaptations belong in the builder and shared assets.
 
-Only `dist/` should be served. No public deployment, DNS changes, remote repository creation, or certificate provisioning are performed by these scripts. Apply `dist/_headers` on compatible static hosts, or use the reviewed Nginx snippet in `deploy/`. Confirm the actual hostname configuration before production use.
+Other courses use the topic-array schema demonstrated by `src/additional-course-topics.json` and the BYU topic parts. Each entry provides `course`, `id`, `title`, `heading`, a figure-led `problem`, original `figureSvg`, explanatory paragraphs, an example, 1–2 staged questions and source notes. Optional `simulation` selects a model from the shared device registry. Figures and equations must state their units, assumptions and model limits.
+
+To add a course, add its verified institution/code/title to `courses.json`, then add topic entries using that course key in a file under `src/course-topics/`. Reuse the shared shell and components. Keep topic IDs stable, validate the build, and review rendered pages on desktop and mobile. Mark incomplete course coverage `in-progress` and describe the gap. Publish original learning material; retain raw course documents, personal assignments, solutions, grades and confidential material outside this public repository.
+
+## State and sharing
+
+Existing storage keys are preserved: `orbitalhw:orbit:v1`, `ece6390-course-lab-v1` and `orbitalhw-attempt-*`. Storage failure does not disable simulations. Written attempts stay local and comparison feedback begins hidden. Topic controls use validated `c_<control-id>` query parameters where supported; direct links and refreshes restore those values. Question answers are never put in URLs.
+
+Browser storage is isolated by origin. Consequently courselab, learn and the former orbitalhw hostname each have separate browser-local settings and progress, despite serving shared application content. `/progress/` exports supported entries to a JSON file and imports them on another hostname. Import keeps conflicting existing entries unless the user explicitly selects replacement. Existing saved keys are neither cleared nor renamed by this migration. If the former hostname continues to serve this build, its `/progress/` can export its prior local state.
+
+No accounts or shared server-side progress store are introduced. Cross-host automatic progress or sign-in would be a separate architecture/privacy decision. Both domains use the same deployed artifact and content sources.
+
+## Domains and delivery
+
+All internal links and assets are relative. Course Lab retains the opened hostname during ordinary navigation. Every page’s canonical URL uses `https://courselab.jacobdanderson.net`; sitemap entries use that primary hostname. `learn` is an alias serving content directly, with no canonical-host navigation redirect.
+
+`deploy/` contains the reviewed static-host and domain configuration. DNS, valid TLS for both names, and both hostnames selecting the same exact `dist/` release are production prerequisites. HTTP may redirect to HTTPS on its **same hostname**. Preserve the existing IPv4 and IPv6 records and rollback release when activating a new artifact.
+
+Source publication is separate from protected deployment. Source agents commit, push and publish a verified immutable release through this repository. Production activation and server access remain with the protected server-side process. Consult the domain verification receipt for the exact observed state and remaining access/configuration requirements; a successful local build does not establish a public deployment.

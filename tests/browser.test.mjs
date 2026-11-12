@@ -23,7 +23,7 @@ const externalRequests = [];
 const consoleErrors = [];
 let browser;
 
-const url = (pathname = '/') => new URL(pathname, base).href;
+const url = (pathname = '/courses/gt/ece6390/orbit/') => new URL(pathname.startsWith('/courses/') ? pathname : pathname === '/' || pathname.startsWith('/?') || pathname.startsWith('/#') ? '/courses/gt/ece6390/orbit/'+pathname.slice(1) : '/courses/gt/ece6390'+pathname, base).href;
 const closeTo = (actual, expected, tolerance, label) => assert.ok(
   Number.isFinite(actual) && Math.abs(actual - expected) <= tolerance,
   `${label}: ${actual} differs from ${expected} by more than ${tolerance}`,
@@ -227,7 +227,7 @@ async function assertNoOverflow(page) {
 }
 
 async function assertNativeNavigation(page, admin = false) {
-  for (const [view, pathname] of [['orbit', admin ? '/admin/' : '/'], ['solar', '/solar/']]) {
+  for (const [view, pathname] of [['orbit', admin ? '/courses/gt/ece6390/admin/' : '/courses/gt/ece6390/orbit/'], ['solar', '/courses/gt/ece6390/solar/']]) {
     const link = page.locator(`a[data-site-view="${view}"]`).first();
     assert.equal(await link.count(), 1, `Missing native ${view} navigation link`);
     const target = new URL(await link.getAttribute('href'), page.url());
@@ -246,7 +246,7 @@ async function assertWalkthroughRoute(page, admin = false) {
   assert.equal(await page.locator('[data-lens]').count(), admin ? 8 : 0);
   if (!admin) {
     const adminLinks = await page.locator('a[href]').evaluateAll(links => links.filter(link =>
-      new URL(link.href).pathname.startsWith('/admin')).map(link => link.href));
+      new URL(link.href).pathname.startsWith('/courses/gt/ece6390/admin')).map(link => link.href));
     assert.deepEqual(adminLinks, [], 'Public navigation must not advertise the admin route');
     for (const id of ['orbit', 'force', 'elevation', 'azimuth']) {
       const diagram = page.locator(`#ol-${id}-svg`);
@@ -333,7 +333,7 @@ try {
   const page = await desktop.newPage();
 
   await check('Orbit page initializes and has native two-view navigation', async () => {
-    await navigate(page, '/');
+    await navigate(page, '/courses/gt/ece6390/orbit/');
     await orbitReady(page);
     await assertNativeNavigation(page);
     await assertWalkthroughRoute(page);
@@ -347,13 +347,13 @@ try {
   });
 
   await check('Public query strings and fragments do not reveal the code walkthrough', async () => {
-    for (const pathname of ['/?admin=true', '/#admin', '/?admin=true#admin']) {
+    for (const pathname of ['/courses/gt/ece6390/orbit/?admin=true', '/courses/gt/ece6390/orbit/#admin', '/courses/gt/ece6390/orbit/?admin=true#admin']) {
       await navigate(page, pathname);
       await orbitReady(page);
       await assertWalkthroughRoute(page);
       await assertNativeNavigation(page);
     }
-    await navigate(page, '/');
+    await navigate(page, '/courses/gt/ece6390/orbit/');
     await orbitReady(page);
   });
 
@@ -404,9 +404,9 @@ try {
   });
 
   await check('Admin route retains the code lens and RK4 walkthrough', async () => {
-    await navigate(page, '/admin');
+    await navigate(page, '/courses/gt/ece6390/admin');
     await orbitReady(page);
-    assert.equal(new URL(page.url()).pathname, '/admin/');
+    assert.equal(new URL(page.url()).pathname, '/courses/gt/ece6390/admin/');
     await assertNativeNavigation(page, true);
     await assertWalkthroughRoute(page, true);
     assert.equal(await page.locator('#sun-view').isVisible(), true);
@@ -447,7 +447,7 @@ try {
   await check('Returning from admin preserves physics settings without dimming public diagrams', async () => {
     const before = (await orbitSnapshot(page)).config;
     assert.equal(before.lens, 'geometry', 'Regression setup must save a non-default admin lens');
-    await navigate(page, '/');
+    await navigate(page, '/courses/gt/ece6390/orbit/');
     await orbitReady(page);
     const after = (await orbitSnapshot(page)).config;
     for (const key of ['orbit', 'frame', 'density', 'step', 'solar', 'phase', 'hours']) {
@@ -523,7 +523,7 @@ try {
   });
 
   await check('Admin RK4 stages handle the final simulation endpoint and native navigation', async () => {
-    await navigate(page, '/admin/');
+    await navigate(page, '/courses/gt/ece6390/admin/');
     await orbitReady(page);
     await range(page, '#ol-time', 48);
     assert.equal(await page.locator('[data-stage="0"]').isDisabled(), true);
@@ -531,15 +531,15 @@ try {
     await range(page, '#ol-time', 12);
     assert.equal(await page.locator('[data-stage="0"]').isEnabled(), true);
     await page.locator('a[data-site-view="orbit"]').first().click();
-    await page.waitForURL(url('/admin/'));
+    await page.waitForURL(url('/courses/gt/ece6390/admin/'));
     await orbitReady(page);
     await assertWalkthroughRoute(page, true);
     await page.locator('a[data-site-view="solar"]').first().click();
-    await page.waitForURL(url('/solar/'));
+    await page.waitForURL(url('/courses/gt/ece6390/solar/'));
     await solarReady(page);
     await assertNativeNavigation(page);
     await page.locator('a[data-site-view="orbit"]').first().click();
-    await page.waitForURL(url('/'));
+    await page.waitForURL(url('/courses/gt/ece6390/orbit/'));
     await orbitReady(page);
     await assertWalkthroughRoute(page);
   });
@@ -554,7 +554,7 @@ try {
     assert.equal(await link.count(), 1, 'Transfer must be a native link');
     const href = new URL(await link.getAttribute('href'), page.url());
     assert.equal(href.origin, base.origin);
-    assert.equal(href.pathname, '/solar/');
+    assert.equal(href.pathname, '/courses/gt/ece6390/solar/');
     const theta = Number(href.searchParams.get('theta'));
     const phi = Number(href.searchParams.get('phi'));
     assert.equal(Number.isInteger(theta) && Number.isInteger(phi), true);
@@ -667,10 +667,10 @@ try {
   });
 
   await check('Independent solar exploration clears the imported snapshot', async () => {
-    await navigate(page, '/solar/');
+    await navigate(page, '/courses/gt/ece6390/solar/');
     await solarReady(page);
     assert.match(await page.locator('#solar-import-status').innerText(), /independent/i);
-    await navigate(page, '/solar/?theta=10&phi=20&from=orbit');
+    await navigate(page, '/courses/gt/ece6390/solar/?theta=10&phi=20&from=orbit');
     await solarReady(page);
     await angle(page, 'theta', 15);
     assert.match(await page.locator('#solar-import-status').innerText(), /independent/i);
@@ -679,10 +679,10 @@ try {
 
   await check('Native site links navigate between both tools', async () => {
     await page.locator('a[data-site-view="orbit"]').first().click();
-    await page.waitForURL(url('/'));
+    await page.waitForURL(url('/courses/gt/ece6390/orbit/'));
     await orbitReady(page);
     await page.locator('a[data-site-view="solar"]').first().click();
-    await page.waitForURL(url('/solar/'));
+    await page.waitForURL(url('/courses/gt/ece6390/solar/'));
     await solarReady(page);
   });
 
@@ -692,7 +692,7 @@ try {
       await page.emulateMedia({ colorScheme: scheme });
       for (const width of [320, 390, 768, 1440]) {
         await page.setViewportSize({ width, height: 1000 });
-        for (const [name, pathname] of [['orbit', '/'], ['admin', '/admin/'], ['solar', '/solar/']]) {
+        for (const [name, pathname] of [['orbit', '/courses/gt/ece6390/orbit/'], ['admin', '/courses/gt/ece6390/admin/'], ['solar', '/courses/gt/ece6390/solar/']]) {
           await navigate(page, pathname);
           if (name === 'solar') await solarReady(page); else {
             await orbitReady(page);
@@ -717,7 +717,7 @@ try {
     const checked = [];
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 1000 });
-      await navigate(page, '/solar/');
+      await navigate(page, '/courses/gt/ece6390/solar/');
       await solarReady(page);
       for (const [name, phi] of [['default', 80], ['outward', 35], ['tangent', 125], ['inward', -145], ['negative-tangent', -55]]) {
         await angle(page, 'theta', 35);
@@ -758,7 +758,7 @@ try {
       await page.emulateMedia({ colorScheme: scheme });
       for (const width of [320, 390, 1440]) {
         await page.setViewportSize({ width, height: 1000 });
-        await navigate(page, '/');
+        await navigate(page, '/courses/gt/ece6390/orbit/');
         await orbitReady(page);
         await page.selectOption('#ol-step', '300');
         await page.locator('#ol-solar').check();
@@ -808,7 +808,7 @@ try {
       await orbitReady(isolatedPage);
       await range(isolatedPage, '#ol-time', 7);
       assert.equal((await orbitSnapshot(isolatedPage)).config.hours, 7);
-      await navigate(isolatedPage, '/solar/?theta=0&phi=90');
+      await navigate(isolatedPage, '/courses/gt/ece6390/solar/?theta=0&phi=90');
       await solarReady(isolatedPage);
       assert.equal(await isolatedPage.locator('#tangent-value').innerText(), '+1.0000');
     } finally { await isolated.close(); }

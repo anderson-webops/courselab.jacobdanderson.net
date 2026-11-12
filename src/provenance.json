@@ -1,13 +1,14 @@
 {
-  "site": "orbitalHW.jacobdanderson.net",
-  "scope": "Browser-only teaching tools and 50 interactive course concepts. No optimized homework solutions or personal submissions.",
+  "site": "courselab.jacobdanderson.net",
+  "scope": "Course Lab: shared course notes, explanations, figures, simulations and attempt-first practice. Existing ECE 6390 learning content is retained; private assignment deliverables are excluded.",
   "structure": "Dependency-free static build following the local Liar's Dice site convention; Vitesse Lite informs external assets, CSP and validation.",
   "template_reference": "Vitesse Lite local revision 39e8214b382be4f308a6f5eee068c295e42749ec",
   "inputs": [
     "Previously created Orbital Physics and Code visualization",
     "User-provided solar-acceleration-visualizer.html",
     "ECE 6390 Interactive Course Lab, validated 2026-10-29",
-    "Original array, navigation and digital-signal experiments, validated 2026-10-30"
+    "Original array, navigation and digital-signal experiments, validated 2026-10-30",
+    "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -22,7 +23,17 @@
     "Course Lab at /lab/ with subject and concept tabs, preserved equations and new illustrative values",
     "Course Lab scripts and styles externalized; runtime SVG colors use presentation attributes to preserve strict CSP",
     "Course Lab source labels show course topics instead of internal authoring paths",
-    "Sixteen original interactive experiments for array phase and footprints, GNSS geometry and timing, sampling, quantization, compression, modulation and amplifier backoff"
+    "Sixteen original interactive experiments for array phase and footprints, GNSS geometry and timing, sampling, quantization, compression, modulation and amplifier backoff",
+    "Separate /learn/<topic>/ routes with a leading live figure, physical motivation, explanation, worked example and one or two practice questions",
+    "Twelve original simulations for pattern normalization, solid angle, free-space flux, pulse spectra, matched filtering, PN generation, processing gain, range error, coordinate frames, near-far interference, OFDM and front-end headroom",
+    "Selected external Adam Djellouli tools linked by topic; no remote simulation code is embedded",
+    "Practice attempts persist locally; comparison feedback is initially hidden and requires a written attempt",
+    "GeorgiaTenna project learning section: eight linked figures with independent example controls for geometry, aperture components, phasing, steering, normalization, transmission, schematic coverage and calculation workflow; no solved design data",
+    "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
+    "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import"
   ],
-  "source_sha256": {}
+  "source_sha256": {},
+  "aliases": [
+    "learn.jacobdanderson.net"
+  ]
 }

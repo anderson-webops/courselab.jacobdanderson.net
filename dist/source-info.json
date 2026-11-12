@@ -1,13 +1,14 @@
 {
-  "site": "orbitalHW.jacobdanderson.net",
-  "scope": "Browser-only teaching tools and 50 interactive course concepts. No optimized homework solutions or personal submissions.",
+  "site": "courselab.jacobdanderson.net",
+  "scope": "Course Lab: shared course notes, explanations, figures, simulations and attempt-first practice. Existing ECE 6390 learning content is retained; private assignment deliverables are excluded.",
   "structure": "Dependency-free static build following the local Liar's Dice site convention; Vitesse Lite informs external assets, CSP and validation.",
   "template_reference": "Vitesse Lite local revision 39e8214b382be4f308a6f5eee068c295e42749ec",
   "inputs": [
     "Previously created Orbital Physics and Code visualization",
     "User-provided solar-acceleration-visualizer.html",
     "ECE 6390 Interactive Course Lab, validated 2026-10-29",
-    "Original array, navigation and digital-signal experiments, validated 2026-10-30"
+    "Original array, navigation and digital-signal experiments, validated 2026-10-30",
+    "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -22,13 +23,49 @@
     "Course Lab at /lab/ with subject and concept tabs, preserved equations and new illustrative values",
     "Course Lab scripts and styles externalized; runtime SVG colors use presentation attributes to preserve strict CSP",
     "Course Lab source labels show course topics instead of internal authoring paths",
-    "Sixteen original interactive experiments for array phase and footprints, GNSS geometry and timing, sampling, quantization, compression, modulation and amplifier backoff"
+    "Sixteen original interactive experiments for array phase and footprints, GNSS geometry and timing, sampling, quantization, compression, modulation and amplifier backoff",
+    "Separate /learn/<topic>/ routes with a leading live figure, physical motivation, explanation, worked example and one or two practice questions",
+    "Twelve original simulations for pattern normalization, solid angle, free-space flux, pulse spectra, matched filtering, PN generation, processing gain, range error, coordinate frames, near-far interference, OFDM and front-end headroom",
+    "Selected external Adam Djellouli tools linked by topic; no remote simulation code is embedded",
+    "Practice attempts persist locally; comparison feedback is initially hidden and requires a written attempt",
+    "GeorgiaTenna project learning section: eight linked figures with independent example controls for geometry, aperture components, phasing, steering, normalization, transmission, schematic coverage and calculation workflow; no solved design data",
+    "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
+    "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import"
   ],
   "source_sha256": {
-    "orbit.html": "798f06231e9148daeb3e31c972de0932f368b6f662ee173b46cf9aad6857721d",
-    "solar-acceleration-visualizer.html": "8f2b49f1315fde5973ff1bb87cadf40900ed27e94f9ea2326c11ff8764ce5cea",
+    "additional-course-topics.json": "83ee5d2fa5967cc2dddc41c0478feef07cc7f54b41d68f113ba217d75c3043ab",
+    "catalog.css": "cc76d844f8d2dc05e986dcaf80c9ebea59270a2d4a1cf2a9ec1c61ebda92a122",
+    "catalog.js": "a1711b6acd9f987ed76ee2fdfe36ccd3cd9e4c389d19c924cbed20379123057b",
+    "course-extensions.js": "d8b43594df994f8e92ddfb297d35e477b09b35b4849dc88aa3913b9d7b110e83",
+    "course-figures.js": "8f9dd76b423e945c23d2122bfd1929c9fa57442ce29aaef5164c1951ec91d625",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
-    "course-update.js": "2ea4272433d578b207b9a3e6ce0cfba0fa53772e4cdbf1b9073db4ff618e1722"
+    "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
+    "course-update.js": "2ea4272433d578b207b9a3e6ce0cfba0fa53772e4cdbf1b9073db4ff618e1722",
+    "courses.json": "c2c42b5faa6bbd25c9475aaa9e7a88f09dd8a1178cd004eb9f89ef152dc0703a",
+    "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
+    "orbit-runtime.css": "6dd52dbf5c67b5616c75cfbe576d6677d4cc94128dea92819195648f3eed2afa",
+    "orbit.html": "798f06231e9148daeb3e31c972de0932f368b6f662ee173b46cf9aad6857721d",
+    "progress.html": "b3a269c87cd2275db596ae879643668f374398d418475e3e6c361cdcb85cd763",
+    "progress.js": "0bff4a8f781755c8884d0acfb313aa45ae56253f72a64157140a4549d7ad4d11",
+    "project.css": "c8957fe94973c6b02b7890eccf70b67b4a7fad87484137cafdab3ab39a9e304e",
+    "project.html": "80250743280652b61b1cea430f9d5bdf984e44249c67da193196014d24851639",
+    "project.js": "7f612368ffe2e6e58fa5b437dcbf06c9318fbf784916d0f13c436ed8b5343836",
+    "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
+    "search.js": "700dbf04a7a4be504c2cccdcebcad350e4aad0d086bfc3c24a812fb2cc2bcba4",
+    "semiconductor-models.js": "1e91035f2c1c4abe5cb362d3b1338e14ee64eef51e04ef64ce6a8d5a50edf455",
+    "site.css": "17ff97b31254daaa8b34eb0bf6b37419e37b32553b6aa55b6558639da98d0430",
+    "site.js": "54e3d11c5eca82748f3a574a5526fe35b3160e20b9b1afb4d8d3e832a86cd427",
+    "solar-acceleration-visualizer.html": "8f2b49f1315fde5973ff1bb87cadf40900ed27e94f9ea2326c11ff8764ce5cea",
+    "sun-view.html": "621291cfebba79f65e737c85ec6d2109c742a1d82011802dc1c36a2ab0dfa1e6",
+    "sun-view.js": "70301ffa1b839e387ee0c4cfe787f4bdfceed2bffbe5cb7589beab5dc2a66de1",
+    "topic-content.json": "2ca1b6e080d0b838860130536078da432ca58565879d155d1d94d4aec2145bee",
+    "topic-extensions.json": "653d3ee8c32b92ff1af03609eb21d822a5c84755ab44ca4b70c49263e334db4c",
+    "topic-navigation.json": "d92cc056c59e1b19f4ae4644d008f4391864b70b96a1c465b2f05170265b3c8a",
+    "topic-practice.js": "0f730cf9322f1a558e200e91e224316f473e02db81d03a94049424b0a48bd56a",
+    "topics.css": "d044454c10e953a71321b28a7cc276d58065e27af09a69a253dd8f165253905c"
   },
-  "version": "0.5.1"
+  "aliases": [
+    "learn.jacobdanderson.net"
+  ],
+  "version": "1.0.0"
 }

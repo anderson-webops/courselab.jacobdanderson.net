@@ -1,0 +1,852 @@
+{
+  "kepler-ellipse": {
+    "problem": "how position, elapsed time and speed fit together along an elliptical orbit.",
+    "explanation": [
+      "For an ideal two-body orbit, Earth occupies a focus. The semimajor axis a fixes the orbital energy, while eccentricity e fixes the shape. The apsidal radii are rₚ = a(1 − e) and rₐ = a(1 + e), measured from Earth's center.",
+      "Mean anomaly M increases uniformly with time: M = nt, with n = √(μ/a³). Solve M = E − e sin E for eccentric anomaly E, then r = a(1 − e cos E). Equal time increments therefore produce unequal geometric angle increments.",
+      "Angular momentum and energy explain the changing speed: v² = μ(2/r − 1/a). At the two apsides the velocity is tangential, so rₚvₚ = rₐvₐ. Use consistent units, such as metres, seconds, and μ in m³/s²."
+    ],
+    "example": "With a = 10,000 km and e = 0.2, perigee is 8,000 km and apogee is 12,000 km from Earth's center. The perigee speed is 1.5 times the apogee speed.",
+    "questions": [
+      {
+        "prompt": "An orbit has a = 12,000 km and e = 0.25. Find its two apsidal radii and the ratio vₚ/vₐ.",
+        "hint": "Calculate a(1 − e) and a(1 + e), then apply angular-momentum conservation at the apsides.",
+        "answer": "rₚ = 9,000 km and rₐ = 15,000 km. Therefore vₚ/vₐ = rₐ/rₚ = 5/3. These radii include Earth's radius; they are not altitudes."
+      }
+    ],
+    "relatedTools": []
+  },
+  "geo-frames": {
+    "problem": "how a satellite can move rapidly in space while remaining at one position in an observer’s sky.",
+    "explanation": [
+      "An inertial frame describes the orbital motion around Earth. An Earth-fixed frame rotates eastward at angular rate ωₑ. For a circular equatorial prograde orbit, the relative longitude rate is n − ωₑ.",
+      "Geostationary motion requires a circular equatorial prograde orbit with n = ωₑ. Matching only the period produces geosynchronous motion; eccentricity or inclination can still make the satellite move in the sky.",
+      "Use the sidereal rotation period, approximately 86,164 s, when matching an inertial orbit to Earth's rotation. Changing frames changes coordinates and relative rates; the physical gravitational motion remains the same."
+    ],
+    "example": "If n − ωₑ = 10⁻⁶ rad/s, the Earth-fixed longitude changes by 0.01 rad, about 0.573°, in 10,000 s.",
+    "questions": [
+      {
+        "prompt": "A satellite has the sidereal orbital period but an inclined orbit. Does it remain geostationary? Explain which condition is missing.",
+        "hint": "Separate matching the rotation rate from keeping the subpoint on the equator.",
+        "answer": "It is geosynchronous, but its subpoint moves north and south because the orbital plane is inclined. A geostationary orbit also needs zero inclination, zero eccentricity, and prograde motion."
+      }
+    ],
+    "relatedTools": []
+  },
+  "look-triangle": {
+    "problem": "how Earth-center geometry and the station’s local horizon determine elevation.",
+    "explanation": [
+      "The central angle γ joins the station and satellite subpoint at Earth's center. Elevation E is measured at the station above its local horizontal. These angles have different vertices.",
+      "On a spherical Earth, E = atan2(rₛ cos γ − Rₑ, rₛ sin γ). The numerator is the outward radial component of the line of sight; the denominator is its horizontal magnitude. Here Rₑ and rₛ are geocentric radii in the same units.",
+      "The geometric horizon occurs at γₕ = acos(Rₑ/rₛ). The inverse-cosine elevation expression gives the magnitude of elevation; a visibility test can restore its sign. Terrain and atmospheric refraction require additional modeling."
+    ],
+    "example": "For the illustrative radius rₛ = 2Rₑ, the horizon lies at γ = 60°. At γ = 90°, signed elevation is atan2(−1, 2) = −26.565°.",
+    "questions": [
+      {
+        "prompt": "For rₛ = 2Rₑ and γ = 75°, is the satellite geometrically visible? What sign should its elevation have?",
+        "hint": "Compare γ with acos(1/2) before evaluating any elevation magnitude.",
+        "answer": "The horizon central angle is 60°. Since 75° exceeds it, the satellite is below the spherical horizon and its signed elevation is negative."
+      }
+    ],
+    "relatedTools": []
+  },
+  "azimuth-components": {
+    "problem": "how signed east and north components determine the antenna bearing.",
+    "explanation": [
+      "Project the line of sight onto local east and north directions. With station latitude Lₑ, subpoint latitude Lₛ, and longitude difference Δλ, proportional components are E = cos Lₛ sin Δλ and N = sin Lₛ cos Lₑ − cos Lₛ sin Lₑ cos Δλ.",
+      "The cartographic bearing is Az = atan2(E, N), wrapped into 0°–360°. North is 0° and east is 90°. Keeping both signs resolves all four quadrants without a separate inverse-sine ambiguity.",
+      "Azimuth describes a horizontal direction; visibility requires an elevation calculation as well. A purely radial line of sight has E = N = 0, making its azimuth undefined."
+    ],
+    "example": "Equal positive east and north components give 45°. Equal negative components give 225°, even though their unsigned component ratio is the same.",
+    "questions": [
+      {
+        "prompt": "A line of sight has proportional horizontal components E = −2 and N = 2. Find its azimuth and quadrant.",
+        "hint": "The satellite lies west of north. Evaluate atan2(E, N), then wrap a negative angle.",
+        "answer": "atan2(−2, 2) = −45°, which wraps to 315°. The horizontal direction is northwest."
+      }
+    ],
+    "relatedTools": []
+  },
+  "solar-pressure-components": {
+    "problem": "how an external acceleration projects onto rotating radial and tangential axes.",
+    "explanation": [
+      "Let β be the inertial direction of the solar push and θ the satellite's orbital angle. The local radial and tangential axes rotate with θ, so the force direction relative to them is β − θ.",
+      "Project the acceleration as aᵣ = aₛ cos(β − θ) and aθ = aₛ sin(β − θ). The supplied pressure convention gives aₛ = 9.08 × 10⁻⁶ αᵣ/ρₐ m/s², where ρₐ = m/A is area density in kg/m² and αᵣ is the model's reflectivity parameter.",
+      "These components enter the equations of motion as rates of change of velocity. A drawing may normalize arrow lengths to show geometry, while the numerical acceleration still scales with mass, area, and reflectivity."
+    ],
+    "example": "At β − θ = 0°, the push is entirely outward: aᵣ = aₛ and aθ = 0. At 90°, it is entirely along the positive tangential axis.",
+    "questions": [
+      {
+        "prompt": "Keeping reflectivity and geometry fixed, what happens to both acceleration components if spacecraft area density doubles?",
+        "hint": "Use aₛ ∝ 1/ρₐ; the sine and cosine projections stay unchanged.",
+        "answer": "Both components halve. Their directions and ratio remain unchanged because the projection angle is unchanged."
+      }
+    ],
+    "relatedTools": []
+  },
+  "numerical-orbits": {
+    "problem": "how different integration methods accumulate numerical error under the same gravitational model.",
+    "explanation": [
+      "The physical model supplies derivatives: d(x, y, vₓ, vᵧ)/dt = (vₓ, vᵧ, −μx/r³, −μy/r³). An integrator converts these instantaneous rates into a finite timestep update.",
+      "Forward Euler uses one slope per step. RK4 combines four slopes evaluated at trial states, improving the global error from first order to fourth order for sufficiently smooth solutions in the converged regime.",
+      "For an unforced two-body orbit, specific energy ε = v²/2 − μ/r and angular momentum are useful diagnostics. A timestep comparison separates numerical drift from genuine changes caused by an added force. RK4 still has finite error."
+    ],
+    "example": "In the normalized circle μ = r₀ = v₀ = 1, the exact period is 2π and specific energy is −1/2. These provide independent references for a numerical orbit.",
+    "questions": [
+      {
+        "prompt": "If an RK4 calculation is in its fourth-order convergence regime, how should halving its timestep change its leading global error?",
+        "hint": "The leading error scales as h⁴.",
+        "answer": "The leading error should decrease by approximately 2⁴ = 16. A weak or inconsistent change suggests that another error source or a different convergence regime dominates."
+      }
+    ],
+    "relatedTools": []
+  },
+  "hohmann-transfer": {
+    "problem": "why a transfer to a higher circular orbit uses separate departure and circularization burns.",
+    "explanation": [
+      "For circular coplanar starting and ending orbits with radii r₁ and r₂, the transfer ellipse has semimajor axis aₜ = (r₁ + r₂)/2. The first prograde impulse raises the opposite apsis.",
+      "Use vis-viva, v² = μ(2/r − 1/aₜ), to find transfer speeds at each endpoint. Compare each with the circular speed √(μ/r) at that same radius to calculate the burn magnitude.",
+      "At transfer apogee, the spacecraft reaches the correct radius but moves more slowly than the desired outer circular orbit. The second prograde burn circularizes it. Coast time is half the transfer period: π√(aₜ³/μ)."
+    ],
+    "example": "For r₂ = 2r₁, the ideal total Δv is approximately 0.2845 times the initial circular speed. The two burn magnitudes are different.",
+    "questions": [
+      {
+        "prompt": "Why does a spacecraft at the transfer ellipse's apogee fall back inward if it skips the circularization burn?",
+        "hint": "Reaching a radius and having the circular speed there are separate conditions.",
+        "answer": "Its existing energy and angular momentum still describe the transfer ellipse. Its apogee tangential speed is below the circular speed at that radius, so gravity carries it back toward perigee."
+      }
+    ],
+    "relatedTools": []
+  },
+  "eclipse-battery": {
+    "problem": "how eclipse capacity and orbit-to-orbit energy balance constrain battery sizing.",
+    "explanation": [
+      "A constant electrical load P over an eclipse of duration t uses Pt of bus energy. If discharge efficiency is ηd, the stored-energy reduction is Pt/ηd. Use watts and hours for watt-hours, or watts and seconds for joules.",
+      "During sunlight, only array power beyond the simultaneous load can recharge storage. The stored-energy gain is ηc(Pₐ − P)tₛ when the surplus is positive, with charging curtailed at full capacity.",
+      "Capacity determines whether one eclipse can be served. Sustainable operation also requires each orbit to replace its losses. A larger battery can delay a persistent energy deficit while the average deficit remains."
+    ],
+    "example": "A 100 W load for 30 minutes with ηd = 0.92 removes 54.3 Wh from storage. A recharge interval that returns only 40 Wh leaves a 14.3 Wh deficit per cycle.",
+    "questions": [
+      {
+        "prompt": "The battery can serve the first eclipse, but its charge before each eclipse keeps falling. Which calculation should be checked next?",
+        "hint": "Compare energy removed and replaced over a whole orbit.",
+        "answer": "Check the sunlight surplus and charging/discharging efficiencies. Orbit-averaged recharge is insufficient; increasing usable capacity alone does not restore a sustainable energy balance."
+      }
+    ],
+    "relatedTools": []
+  },
+  "solar-array": {
+    "problem": "how orientation, temperature and aging affect useful solar-array power.",
+    "explanation": [
+      "A flat front-illuminated panel intercepts solar power proportional to projected area A max(0, cos α), where α is the angle between the panel normal and sunlight. Normal incidence maximizes the intercepted power.",
+      "The model multiplies intercepted power by reference cell efficiency, a temperature factor, an end-of-life factor, and bus efficiency: P = SAηref max(0, cos α)[1 + aT(T − Tref)]fEOLfbus.",
+      "Keep each factor attached to its physical role and apply it once. The supplied temperature and degradation coefficients illustrate a model; a particular cell or mission needs its own measured coefficients and illumination history."
+    ],
+    "example": "At reference temperature before aging and bus losses, a 1 m² panel with 30% efficiency under 1,361 W/m² illumination produces 408.3 W at normal incidence and 204.2 W at 60°.",
+    "questions": [
+      {
+        "prompt": "With all other factors unchanged, how much additional panel area compensates for moving from normal incidence to 60°?",
+        "hint": "The cosine factor falls from 1 to 1/2.",
+        "answer": "Twice the area restores the same modeled power, provided the added area has the same illumination, temperature, cell efficiency, and downstream losses."
+      }
+    ],
+    "relatedTools": []
+  },
+  "rocket-mass": {
+    "problem": "how carrying fuel for later burns increases the mass required for earlier burns.",
+    "explanation": [
+      "The ideal rocket equation is Δv = vₑ ln(mbefore/mafter), with effective exhaust speed vₑ = g₀Isp. Δv is the magnitude of the propulsive velocity change; masses include the propellant still carried at that stage.",
+      "Build a multi-burn budget backward from the final retained mass. A later burn's required propellant increases the mass that the earlier burn must accelerate.",
+      "For a common exhaust speed and no staging, the mass ratios multiply: minitial/mfinal = exp[(Δv₁ + Δv₂)/vₑ]. Gravity losses, drag, finite burn geometry, and discarded stages require additional terms or models."
+    ],
+    "example": "Two ideal burns totaling 3,000 m/s with vₑ = 3,000 m/s need a total mass ratio e ≈ 2.718. Retaining 100 kg at the end requires approximately 271.8 kg initially.",
+    "questions": [
+      {
+        "prompt": "At a fixed exhaust speed, what happens to the required mass ratio if total Δv doubles?",
+        "hint": "Compare exp(Δv/vₑ) with exp(2Δv/vₑ).",
+        "answer": "The mass ratio is squared. Doubling Δv produces an exponential mass penalty under the stated ideal, unstaged assumptions."
+      }
+    ],
+    "relatedTools": []
+  },
+  "electric-propulsion": {
+    "problem": "the trade between high exhaust speed, propellant savings and thrust at a fixed power.",
+    "explanation": [
+      "A steady directed exhaust carries momentum at rate F = ṁvₑ. Its kinetic power is ½ṁvₑ², supplied here by a fraction η of electrical input power P.",
+      "Combining the relations gives F = 2ηP/vₑ and ṁ = 2ηP/vₑ². At fixed electrical power, higher exhaust speed reduces both thrust and propellant flow.",
+      "The approximation Δv ≈ Ft/m estimates acceleration time when spacecraft mass changes little. A long continuous orbital maneuver also depends on thrust direction and changing orbit geometry."
+    ],
+    "example": "For P = 1,000 W, η = 0.60, and vₑ = 30,000 m/s, thrust is 0.040 N and mass flow is approximately 1.33 × 10⁻⁶ kg/s.",
+    "questions": [
+      {
+        "prompt": "At fixed power and efficiency, how do thrust and mass flow change if exhaust speed doubles?",
+        "hint": "Track the first and second powers of vₑ in the two formulas.",
+        "answer": "Thrust halves, while mass flow becomes one quarter. The trade saves propellant flow at the cost of acceleration and usually a longer maneuver."
+      }
+    ],
+    "relatedTools": []
+  },
+  "thermal-balance": {
+    "problem": "how transmitter efficiency sets the waste heat that a radiator must reject.",
+    "explanation": [
+      "An amplifier delivering RF power PRF at efficiency ηPA draws PRF/ηPA of DC power. Its waste heat is PRF(1/ηPA − 1), before other spacecraft heat loads are added.",
+      "A lumped radiating surface satisfies Q = εσA(T⁴ − Tenv⁴) at steady state. Temperature is in kelvin, area in m², and σ ≈ 5.67 × 10⁻⁸ W/(m² K⁴).",
+      "Increasing radiator area or emissivity supports the same heat flow at a lower temperature. This model assumes uniform temperatures and a specified effective environment; real surfaces also depend on illumination and view factors."
+    ],
+    "example": "A 100 W RF output at 50% efficiency draws 200 W and produces 100 W of amplifier heat. At 25% efficiency, the same RF output produces 300 W of heat.",
+    "questions": [
+      {
+        "prompt": "If the environment term is negligible, how does equilibrium temperature change when heat load quadruples at fixed area and emissivity?",
+        "hint": "Temperature scales as Q to the one-quarter power.",
+        "answer": "Temperature increases by 4¹ᐟ⁴ = √2, approximately 1.414. Apply this scaling to absolute kelvin temperature."
+      }
+    ],
+    "relatedTools": []
+  },
+  "db-distance": {
+    "problem": "how logarithmic power units simplify a free-space link comparison.",
+    "explanation": [
+      "A power level in dBW is 10 log₁₀(P/1 W); dBm uses 1 mW as its reference. Therefore PdBm = PdBW + 30. Negative logarithmic levels still represent positive physical power.",
+      "Power ratios use 10 log₁₀(P₂/P₁). Field-amplitude ratios use 20 log₁₀ only when the same impedance and power relation apply.",
+      "With fixed antenna gains and wavelength in a far-field free-space link, received power scales as 1/r². Changing distance from r₁ to r₂ changes received level by −20 log₁₀(r₂/r₁)."
+    ],
+    "example": "One milliwatt is 0 dBm and −30 dBW. Doubling link distance reduces received power to one quarter, a 6.02 dB decrease under the stated assumptions.",
+    "questions": [
+      {
+        "prompt": "How much must transmitter power increase to compensate for doubling range when gains and losses otherwise stay fixed?",
+        "hint": "Undo the inverse-square change.",
+        "answer": "Increase transmitter power by a factor of four, or approximately 6.02 dB."
+      }
+    ],
+    "relatedTools": []
+  },
+  "link-budget": {
+    "problem": "how carrier power, noise density and bit rate connect in one link budget.",
+    "explanation": [
+      "With consistent logarithmic references, received carrier power is C = EIRP − LFS − Lother + Gr. Each term belongs to a specified physical plane, and each included loss is applied once.",
+      "Input-referred noise density is N₀ = kBTsys in W/Hz. Subtracting its dBW/Hz value from carrier power in dBW gives C/N₀ in dB-Hz.",
+      "For bit rate Rb in bit/s, Eb/N₀ in dB equals C/N₀ − 10 log₁₀Rb. This metric separates energy per bit from the receiver's chosen noise bandwidth; a modulation and coding model is still needed to predict error rate."
+    ],
+    "example": "EIRP = 40 dBW, LFS = 200 dB, other losses = 2 dB, and Gr = 30 dBi give C = −132 dBW. Separately, C/N₀ = 70 dB-Hz at 1 Mbit/s gives Eb/N₀ = 10 dB.",
+    "questions": [
+      {
+        "prompt": "If carrier power and noise density remain fixed while bit rate doubles, what happens to Eb/N₀?",
+        "hint": "Only the 10 log₁₀Rb term changes.",
+        "answer": "Eb/N₀ falls by 10 log₁₀2 ≈ 3.01 dB because the same received power is spread across twice as many bits per second."
+      }
+    ],
+    "relatedTools": []
+  },
+  "receiver-noise": {
+    "problem": "why early receiver stages have disproportionate influence on input-referred noise.",
+    "explanation": [
+      "For matched cascaded stages, Friis' noise formula is Ftotal = F₁ + (F₂ − 1)/G₁ + (F₃ − 1)/(G₁G₂). Noise factors F and power gains G in this sum are linear quantities.",
+      "An early low-noise gain makes later stages' input-referred noise contributions smaller. A passive loss L at the reference temperature has gain 1/L and noise factor L, so placing it first carries a substantial noise penalty.",
+      "Equivalent input noise temperature is Te = (Ftotal − 1)T₀. A front filter can still serve an important overload or interference role; the small-signal noise calculation evaluates a different constraint."
+    ],
+    "example": "For a loss L = 2 and an amplifier with F = 2, G = 100, loss first gives Ftotal = 4. Amplifier first gives Ftotal = 2.01, assuming the common reference-temperature model.",
+    "questions": [
+      {
+        "prompt": "Why is it incorrect to insert a 20 dB gain directly as G₁ = 20 in Friis' linear noise sum?",
+        "hint": "Convert a power gain from decibels to a ratio first.",
+        "answer": "A 20 dB power gain is 10² = 100. Using 20 would divide later noise by the wrong gain and overestimate its contribution."
+      }
+    ],
+    "relatedTools": []
+  },
+  "doppler-shift": {
+    "problem": "the line-of-sight velocity component that changes the received carrier frequency.",
+    "explanation": [
+      "Instantaneous range rate is the projection of relative velocity onto the line from receiver to transmitter: ṙ = vrelative · r̂. Positive range rate means recession.",
+      "At speeds much smaller than light speed, Δf ≈ −fcṙ/c. Recession lowers received frequency, while approach raises it. Transverse motion contributes no first-order shift at that instant.",
+      "A large inertial orbital speed can coexist with a small Earth-station range rate. The reference frame and line-of-sight projection must be specified before interpreting a speed as Doppler."
+    ],
+    "example": "At a 1 GHz carrier, recession at 300 m/s gives approximately −1 kHz Doppler when c is rounded to 3 × 10⁸ m/s.",
+    "questions": [
+      {
+        "prompt": "At one instant, a spacecraft's relative velocity is perpendicular to its line of sight. What first-order Doppler shift does this model predict?",
+        "hint": "Evaluate the dot product before using the speed magnitude.",
+        "answer": "Zero at that instant, because the range rate is zero. Its direction can change later, producing a nonzero range rate and Doppler shift."
+      }
+    ],
+    "relatedTools": []
+  },
+  "rain-path": {
+    "problem": "why a low elevation angle gives a longer path through the same rain layer.",
+    "explanation": [
+      "A supplied empirical model gives specific attenuation γR = kRᵅ in dB/km for rain rate R in mm/h. Its coefficients depend on the adopted propagation model and conditions.",
+      "For a flat uniform rain layer of vertical thickness hR − hs, the path length is L = (hR − hs)/sin E. Total attenuation is γRL, with consistent distance units.",
+      "This geometric approximation lengthens the path as elevation falls. Earth's curvature, limited rain-cell size, and nonuniform weather become important near the horizon, so a flat-layer extrapolation needs a defined range of validity."
+    ],
+    "example": "A 4 km vertical rain thickness with γR = 2 dB/km gives 8 dB attenuation at zenith and 16 dB at 30° elevation in this uniform-layer model.",
+    "questions": [
+      {
+        "prompt": "For the same uniform rain layer, how does attenuation change from 90° to 30° elevation?",
+        "hint": "Compare 1/sin 90° with 1/sin 30°.",
+        "answer": "The modeled rain path and attenuation both double. This comparison keeps specific attenuation and layer thickness fixed."
+      }
+    ],
+    "relatedTools": []
+  },
+  "bandwidth-noise": {
+    "problem": "how wider bandwidth admits more noise while changing the ideal information capacity.",
+    "explanation": [
+      "For white input-referred noise, N = kBTsysB. At fixed total carrier power C, increasing equivalent noise bandwidth B increases noise power and decreases C/N.",
+      "The ideal additive-white-Gaussian-noise capacity is 𝒞 = B log₂(1 + C/N), in bit/s. Bandwidth and signal-to-noise ratio therefore have to be evaluated together.",
+      "A real filter must also pass the wanted signal. Reducing bandwidth can remove information-bearing signal energy or introduce distortion, even while it removes noise. The capacity expression is an upper bound under its specified channel assumptions."
+    ],
+    "example": "For the normalized teaching case C = 1 W and N₀ = 1 W/Hz, B = 1 Hz gives 1 bit/s capacity. At B = 2 Hz, SNR falls to 1/2 while capacity rises to approximately 1.17 bit/s.",
+    "questions": [
+      {
+        "prompt": "At fixed carrier power and white noise density, doubling bandwidth changes SNR by how many decibels?",
+        "hint": "Noise power is proportional to bandwidth.",
+        "answer": "SNR falls by approximately 3.01 dB because noise doubles. Throughput cannot be inferred from that SNR change alone; the available bandwidth also doubled."
+      }
+    ],
+    "relatedTools": []
+  },
+  "radiation-redundancy": {
+    "problem": "the independent bit faults that a three-channel majority vote can mask.",
+    "explanation": [
+      "With three independent channels, each wrong with probability p, a perfect majority voter fails when two or three channels are wrong. Thus PTMR = 3p²(1 − p) + p³ = 3p² − 2p³.",
+      "If a separate common-cause event flips all channels with probability q, the supplied model becomes P = q + (1 − q)PTMR. Shared power, clocks, environment, or voter faults require their own treatment.",
+      "Voting can mask an individual logic upset. Radiation effects also include cumulative material or device changes and destructive events, for which replicated logic and a perfect-voter probability model are insufficient."
+    ],
+    "example": "For independent p = 0.01 and a perfect voter, PTMR = 0.000298, or 0.0298%. A common-cause probability sets an additional floor in the extended model.",
+    "questions": [
+      {
+        "prompt": "If independent channel faults become arbitrarily rare but q = 0.01 remains, what failure probability does the common-cause model approach?",
+        "hint": "Let p tend to zero in q + (1 − q)PTMR.",
+        "answer": "It approaches q = 0.01, or 1%. Improving independent channels cannot remove the specified shared event."
+      }
+    ],
+    "relatedTools": []
+  },
+  "divergence-curl": {
+    "problem": "how outward flux and circulation describe independent local features of a vector field.",
+    "explanation": [
+      "Divergence measures net outward flux per unit volume in the small-volume limit. Curl measures circulation per unit area, with direction given by the right-hand rule.",
+      "For F = (ax − by, ay + bx, 0), direct differentiation gives ∇·F = 2a and ∇×F = (0, 0, 2b). The radial part controls divergence, while the rotational part controls curl.",
+      "A pinwheel axle represents the curl vector at a point. For a velocity field in rigid rotation, angular velocity is one half of curl; the diagram's animation speed is a visual convention."
+    ],
+    "example": "With a = 0 and b = 1, the field circulates with zero divergence and curl 2ẑ. With a = 1 and b = 0, it spreads outward with divergence 2 and zero curl.",
+    "questions": [
+      {
+        "prompt": "For a = 1 and b = 2, calculate divergence and curl. Which part of the field each result describes?",
+        "hint": "Apply the two derivatives independently; the coefficients do not compete for one result.",
+        "answer": "Divergence is 2 and curl is 4ẑ. The first describes the net outward flow, and the second describes local circulation about the z axis."
+      }
+    ],
+    "relatedTools": []
+  },
+  "standing-wave": {
+    "problem": "how reflection superposes traveling waves into a pattern with stationary nodes.",
+    "explanation": [
+      "A forward wave and a reflected wave propagate in opposite directions. Their relative phase varies with position, creating an amplitude envelope even though both constituent waves travel.",
+      "For incident amplitude 1 and reflected amplitude |Γ|, the envelope extremes are 1 + |Γ| and 1 − |Γ| in a lossless passive-reflection example. Exact nodes require equal amplitudes.",
+      "Adjacent envelope minima are separated by λ/2. The standing-wave ratio is (1 + |Γ|)/(1 − |Γ|) for |Γ| below 1; phase shifts move the envelope along the axis."
+    ],
+    "example": "With |Γ| = 0.5, the envelope ranges from 0.5 to 1.5, giving a standing-wave ratio of 3. The minima remain above zero.",
+    "questions": [
+      {
+        "prompt": "A reflected field has one quarter the incident amplitude. Find the envelope minimum, maximum, and standing-wave ratio.",
+        "hint": "Use field amplitudes 1 − |Γ| and 1 + |Γ|.",
+        "answer": "The minimum is 0.75, the maximum is 1.25, and their ratio is 5/3 ≈ 1.667."
+      }
+    ],
+    "relatedTools": []
+  },
+  "plane-wave": {
+    "problem": "how perpendicular electric and magnetic fields carry energy along a propagation direction.",
+    "explanation": [
+      "For a lossless uniform plane wave propagating along +x, one possible orientation is E along y and H along z. The fields are in phase and satisfy E/H = η = √(μ/ε), with η in ohms.",
+      "Instantaneous energy flux is S = E × H in W/m². Both fields reverse during half of the cycle, leaving their cross product directed along the same propagation direction.",
+      "For peak electric amplitude E₀, the time-average flux is E₀²/(2η). With RMS amplitude, the factor 1/2 is already contained in the amplitude conversion."
+    ],
+    "example": "A 10 V/m peak field in a medium with η = 377 Ω carries approximately 0.133 W/m² of average power flux.",
+    "questions": [
+      {
+        "prompt": "At the same impedance, what happens to magnetic amplitude and average power flux if electric amplitude doubles?",
+        "hint": "Use H₀ = E₀/η and ⟨S⟩ = E₀²/(2η).",
+        "answer": "Magnetic amplitude doubles, while average power flux quadruples."
+      }
+    ],
+    "relatedTools": []
+  },
+  "polarization": {
+    "problem": "how the electric-field trajectory affects coupling to a receiving antenna.",
+    "explanation": [
+      "At a fixed location, two orthogonal transverse components combine into a line, ellipse, or circle. Their relative amplitudes and phase difference determine the locus of the electric-field tip.",
+      "For normalized complex polarization vectors, coupling is |eᵣ†eₜ|². Two linear polarizations separated by angle ψ have a power coupling factor cos²ψ.",
+      "Equal orthogonal components in quadrature form circular polarization. An ideal linear receiving antenna extracts half of that wave's available power at every linear orientation, assuming the remaining antenna and link factors are matched."
+    ],
+    "example": "A 45° mismatch between linear polarizations gives cos²45° = 1/2, corresponding to a 3.01 dB polarization loss.",
+    "questions": [
+      {
+        "prompt": "Why does rotating an ideal linear receive antenna fail to recover all of an incident circularly polarized wave's power?",
+        "hint": "Resolve equal quadrature components onto any one fixed linear axis.",
+        "answer": "Every fixed linear axis receives one half of the circular wave's average power. Rotation changes the selected component's phase, while its average power fraction remains 1/2."
+      }
+    ],
+    "relatedTools": []
+  },
+  "phasor-interference": {
+    "problem": "why coherent fields must be added before their squared magnitude gives power.",
+    "explanation": [
+      "For equally polarized coherent waves in the same medium, complex field amplitudes add: Etotal = 1 + aeʲδ. Power is proportional to the squared magnitude of their sum.",
+      "Expanding gives |Etotal|² = 1 + a² + 2a cos δ. The cross term carries the phase-sensitive reinforcement or cancellation.",
+      "Equal in-phase fields produce four times one wave's local intensity. An absolute power argument must still account for source references and spatial redistribution. At exact cancellation, the zero resultant has no defined phase."
+    ],
+    "example": "For a = 1 and δ = 60°, relative power is 1 + 1 + 2 cos60° = 3, referenced to either field alone.",
+    "questions": [
+      {
+        "prompt": "Two fields have amplitudes 1 and 0.5 and are 180° apart. What relative power remains?",
+        "hint": "Add their signed field amplitudes first, then square.",
+        "answer": "The field magnitude is 1 − 0.5 = 0.5, so the relative power is 0.25. Unequal opposing phasors leave a residual field."
+      }
+    ],
+    "relatedTools": []
+  },
+  "double-curl": {
+    "problem": "how a second set of pinwheels measures circulation in the first curl’s vector field.",
+    "explanation": [
+      "The first curl creates a new vector field: its direction follows local circulation's axle, and its magnitude measures circulation per unit area. The second curl applies the same operation to that axle-vector field.",
+      "For F = (0, A sin kx, 0), the first curl is (0, 0, Ak cos kx), and the second is (0, Ak² sin kx, 0). Here k has units m⁻¹, so each curl adds one inverse length to the field's units.",
+      "The identity ∇×(∇×F) = ∇(∇·F) − ∇²F explains the result: this field has zero divergence. The wheels depict local derivative measurements, rather than a rigid object rotating successively about two axes."
+    ],
+    "example": "Keeping A fixed while doubling k doubles the first-curl peak and quadruples the double-curl peak. The original field's peak amplitude stays A.",
+    "questions": [
+      {
+        "prompt": "At x = 0, which of F, its first curl, and its second curl is nonzero for nonzero A and k?",
+        "hint": "Evaluate sin0 and cos0 separately.",
+        "answer": "F and the second curl are zero, while the first curl is Akẑ. A zero field value at a point can still have a nonzero spatial derivative there."
+      }
+    ],
+    "relatedTools": []
+  },
+  "displacement-current": {
+    "problem": "how magnetic circulation remains consistent across a charging capacitor gap.",
+    "explanation": [
+      "Ampère–Maxwell law includes conduction current and changing electric displacement: ∮H·dl = Icond + d/dt∫D·dA. The changing gap flux supplies the term that connects the two circuit sides.",
+      "For circular plates of radius R and uniform changing field, a concentric loop encloses Ienc = I min(1, r²/R²). Symmetry gives H = Ienc/(2πr), in A/m.",
+      "Inside the plate radius, enclosed current grows as r² and H grows as r. Outside, the enclosed current is constant and H falls as 1/r. The idealization neglects fringing and transient propagation details."
+    ],
+    "example": "A loop at r = R/2 encloses one quarter of the changing flux and displacement current. Its magnetic field magnitude is one half of H at r = R.",
+    "questions": [
+      {
+        "prompt": "Why does applying H = I/(2πr) with the full wire current fail for a loop smaller than the plate radius?",
+        "hint": "The smaller spanning surface encloses only part of the uniform changing electric flux.",
+        "answer": "Its enclosed displacement current is I(r/R)². Using the full current would overstate magnetic circulation; the correct field inside is Ir/(2πR²)."
+      }
+    ],
+    "relatedTools": []
+  },
+  "helmholtz-curvature": {
+    "problem": "the connection between a wave’s spatial curvature and its local field value.",
+    "explanation": [
+      "In a homogeneous source-free lossless region, a time-harmonic transverse field satisfies ∇²Ẽ + k²Ẽ = 0, with k = ω√(με). The Laplacian describes spatial curvature.",
+      "For Eᵧ = A cos(kx + φ), differentiating twice gives d²Eᵧ/dx² = −k²Eᵧ. A positive crest has negative curvature, while a zero crossing has zero second derivative.",
+      "If E is measured in V/m, its second spatial derivative is in V/m³. Plotting field and curvature therefore requires separate labeled scales, even when their shapes look similar."
+    ],
+    "example": "Halving wavelength doubles k = 2π/λ. With unchanged peak field, maximum curvature magnitude becomes four times larger.",
+    "questions": [
+      {
+        "prompt": "At a point where Eᵧ = A > 0, what is d²Eᵧ/dx²? Explain the sign using the field's shape.",
+        "hint": "Use the sinusoidal crest and the Helmholtz relation.",
+        "answer": "The curvature is −k²A. The positive crest bends downward, so the second derivative is negative."
+      }
+    ],
+    "relatedTools": []
+  },
+  "dipole-pattern": {
+    "problem": "why a straight dipole radiates strongly broadside and has an axial null.",
+    "explanation": [
+      "The observation angle θ is measured from the wire axis. For an electrically short dipole, normalized far-field amplitude is sin θ and normalized intensity is sin²θ.",
+      "A thin half-wave dipole has the different amplitude factor cos[(π/2)cos θ]/sin θ, with its axial limit evaluated explicitly. Both models retain an axial null and a broadside maximum.",
+      "A cut normalized to a peak of 1 describes relative shape. Absolute directivity requires a solid-angle integral of intensity, and gain additionally depends on radiation efficiency and its power reference."
+    ],
+    "example": "For the short-dipole model at θ = 30°, field is one half the broadside value. Relative intensity is one quarter, approximately −6.02 dB.",
+    "questions": [
+      {
+        "prompt": "A short dipole's normalized field is 0.5 in a direction. What normalized power belongs there, and why?",
+        "hint": "For the same wave impedance, intensity is proportional to squared field magnitude.",
+        "answer": "Normalized power is |0.5|² = 0.25. A field-amplitude plot and a power-pattern plot consequently have different radial shapes."
+      }
+    ],
+    "relatedTools": []
+  },
+  "aperture-phasors": {
+    "problem": "how the aperture field distribution determines an angular radiation pattern.",
+    "explanation": [
+      "Each illuminated aperture point contributes a field with a direction-dependent path phase. In this scalar one-dimensional model, F(θ) is proportional to ∫Eₐ(x) exp(jkx sin θ) dx.",
+      "Uniform illumination over width a produces a sinc-shaped field factor, with first null at sin θ = λ/a. Increasing electrical width makes contributions cancel at a smaller departure from boresight.",
+      "An edge amplitude taper can reduce sidelobes while broadening the main beam. Separately normalizing each curve hides absolute gain differences. In a discrete equal-amplitude exercise, amplitude tapering changes a constraint; phase choices and allowed element locations are separate design variables."
+    ],
+    "example": "For a uniform width a = 4λ, the first null is at asin(1/4) ≈ 14.5°. This is a field zero and therefore also a power zero.",
+    "questions": [
+      {
+        "prompt": "Why can a tapered pattern look better in sidelobes without establishing a larger absolute peak gain?",
+        "hint": "Ask which information is removed when every pattern is divided by its own peak.",
+        "answer": "Peak normalization preserves shape ratios but removes the peak scale. Absolute gain needs the complete intensity integral, radiated-power normalization, and applicable efficiency factors."
+      }
+    ],
+    "relatedTools": []
+  },
+  "circular-aperture": {
+    "problem": "how a circular aperture produces a central maximum and surrounding diffraction rings.",
+    "explanation": [
+      "A uniformly illuminated disk sums contributions over two dimensions. Its scalar disk field factor is Fₙ = 2J₁(u)/u, with u = π(D/λ)sin θ. The limit at u = 0 is 1.",
+      "Power is |Fₙ|². A negative field factor represents a phase reversal, while intensity remains nonnegative. The first positive zero of J₁ is approximately 3.831706, giving sin θnull ≈ 1.2197λ/D.",
+      "The class scalar option includes an additional cos θ obliquity factor. State which model is used when comparing half-power widths; HPBW is the full angle between the two half-power crossings."
+    ],
+    "example": "For D = 10λ, the disk-factor first null is approximately 7.0° from boresight. This one-sided null angle differs from full half-power beamwidth.",
+    "questions": [
+      {
+        "prompt": "Why should the expression 2J₁(u)/u be assigned the value 1 at boresight rather than treated as an infinite or missing field?",
+        "hint": "Use the small-u behavior J₁(u) ≈ u/2.",
+        "answer": "The numerator and denominator vanish together, and their ratio tends to 1. The apparent singularity is removable."
+      }
+    ],
+    "relatedTools": []
+  },
+  "dish-gain": {
+    "problem": "the connection between aperture size, gain, beamwidth and pointing tolerance.",
+    "explanation": [
+      "A circular dish has physical area πD²/4 and effective aperture Aₑ = ηₐπD²/4. With the stated aperture-efficiency convention, G = 4πAₑ/λ² = ηₐ(πD/λ)².",
+      "At fixed wavelength and efficiency, doubling diameter multiplies gain by four and approximately halves main-beam width. The supplied class width estimate is ΘHP ≈ √(33000/G) degrees, using linear gain.",
+      "The near-main-beam Gaussian pointing estimate is L ≈ 12(δ/ΘHP)² dB. A narrower beam makes a fixed angular pointing error more consequential. This approximation does not represent distant sidelobes or nulls."
+    ],
+    "example": "An offset δ = ΘHP/2 gives approximately 3 dB pointing loss in the Gaussian model, consistent with the half-power boundary.",
+    "questions": [
+      {
+        "prompt": "If dish diameter doubles while wavelength, efficiency, and a small pointing error stay fixed, how do ideal gain and modeled pointing loss change?",
+        "hint": "Gain scales as D²; the pointing-loss formula contains inverse beamwidth squared.",
+        "answer": "Ideal gain rises by a factor of four, about 6.02 dB. Beamwidth roughly halves, making the modeled pointing-loss value in dB four times as large, within the approximation's main-beam range."
+      }
+    ],
+    "relatedTools": []
+  },
+  "reflector-screens": {
+    "problem": "the separate electrical-size, surface-precision and range checks used for a reflector model.",
+    "explanation": [
+      "Electrical size compares the largest aperture dimension D with wavelength λ = c/f. A supplied class screening rule uses D of roughly five wavelengths or more for a large-aperture approximation.",
+      "Surface precision concerns residual error from the intended reflector shape. The illustrative λ/8 rule concerns that residual, while mesh openings represent another physical length. These screening rules are not exact efficiency formulas.",
+      "The chosen Fraunhofer screen rF = 2D²/λ grows with aperture size squared and frequency. It checks field-region assumptions separately from feed bandwidth, material losses, or pointing accuracy."
+    ],
+    "example": "For D = 2 m and λ = 0.03 m, the stated far-field screen is approximately 267 m. A 1 mm surface residual is smaller than λ/8 = 3.75 mm.",
+    "questions": [
+      {
+        "prompt": "At fixed physical aperture and surface error, what changes in the far-field distance and λ/8 tolerance when frequency doubles?",
+        "hint": "Doubling frequency halves wavelength.",
+        "answer": "The chosen far-field distance doubles, while the allowed λ/8 residual halves. Higher frequency makes both screens more demanding."
+      }
+    ],
+    "relatedTools": []
+  },
+  "array-multiplication": {
+    "problem": "how element pattern and element arrangement jointly determine radiation.",
+    "explanation": [
+      "For identical similarly oriented elements in the stated uncoupled model, the total field is Eelement times AF. A uniform linear array has AF = Σₙ exp[jn(kd cos θ + β)] for n = 0 to N − 1, where θ is measured from the array axis.",
+      "The array factor describes coherent addition of fields. A normalized power |AF/N|² describes relative angular shape; absolute directivity requires integration of the complete element-times-array intensity over solid angle.",
+      "General arrays may use complex weights with varied magnitudes. A prescribed equal-amplitude array keeps every installed feed magnitude the same and varies allowed phases or locations instead. Pattern multiplication here assumes mutual coupling is neglected."
+    ],
+    "example": "Two equal in-phase contributions give AF = 2 and squared magnitude 4 relative to one contribution. Dividing by N² makes that coherent peak 1 and removes its absolute scale.",
+    "questions": [
+      {
+        "prompt": "Can an array-factor maximum fill an exact common axial null of the identical element pattern in this model?",
+        "hint": "Use the product Etotal = Eelement AF.",
+        "answer": "The common element null remains zero because it multiplies the array factor. A direction that an element cannot radiate in this ideal model remains a null of the product."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gain-references": {
+    "problem": "how directivity, radiation efficiency and mismatch use different power references.",
+    "explanation": [
+      "Radiation intensity U(θ, φ) is in W/sr. Total radiated power is Pᵣₐd = ∫₀²π∫₀π U sin θ dθ dφ. Directivity is D = 4πU/Pᵣₐd; a forward-only model sets backward intensity to zero while retaining this definition.",
+      "For any peak-normalized power shape p, D(θ, φ) = 4πp/∫p dΩ. Integration angles are radians, with solid-angle measure sin θ dθ dφ; uniformly spaced angle samples are not equal-area samples. Squared field magnitude supplies intensity shape before this normalization.",
+      "Radiation efficiency ηᵣ relates radiated power to accepted power, so G = ηᵣD. With a real reference impedance, reflected power fraction is |Γ|² and realized gain is (1 − |Γ|²)ηᵣD. Polarization coupling is another factor applied at its appropriate link reference."
+    ],
+    "example": "With 100 W incident, |Γ|² = 0.10, and ηᵣ = 0.75, accepted power is 90 W and radiated power is 67.5 W. For D = 8, gain is 6 and realized gain is 5.4, both linear.",
+    "questions": [
+      {
+        "prompt": "A plotted pattern peaks at 1. What additional information is needed to turn it into absolute gain?",
+        "hint": "Separate angular normalization from conversion between incident, accepted, and radiated power.",
+        "answer": "Integrate the power pattern over the full radiating solid angle to obtain directivity, then apply radiation efficiency and the required mismatch reference. A unit relative peak alone supplies none of those absolute gain values."
+      }
+    ],
+    "relatedTools": []
+  },
+  "array-path-phase": {
+    "problem": "how path difference and feed phase combine to produce constructive or destructive interference.",
+    "explanation": [
+      "For two elements separated by d along the array axis, the relative observation phase is ψ = kd cos θ + β, where k = 2π/λ and β is the applied feed phase.",
+      "Their field sum is AF = 1 + eʲψ. The coherent-peak-normalized power is |AF/2|² = (1 + cos ψ)/2. Constructive addition occurs when ψ is a multiple of 2π, and cancellation occurs at an odd multiple of π.",
+      "Broadside means θ = 90°, where the projected path difference vanishes. Endfire means looking along the element axis; the spacing and phase must be considered together to distinguish its two directions."
+    ],
+    "example": "With d = λ/4 and β = −90°, the +axis has ψ = 0 and adds constructively. The opposite axis has ψ = −180° and cancels.",
+    "questions": [
+      {
+        "prompt": "For two isotropic elements with d = λ/2 and β = 180°, do the two axial directions behave differently?",
+        "hint": "Insert cos θ = +1 and −1 into ψ.",
+        "answer": "Both axes add: their phases are 2π and 0. These settings alone do not give a one-sided endfire pattern for the stated two-element isotropic model."
+      }
+    ],
+    "relatedTools": []
+  },
+  "planar-array": {
+    "problem": "how a plane of equal-amplitude elements steers in two directional coordinates.",
+    "explanation": [
+      "For an aperture normal to z, direction cosines are u = sin θ cos φ and v = sin θ sin φ. Physical directions on a hemisphere satisfy u² + v² ≤ 1.",
+      "On a λ/2 rectangular grid, a steering phase ramp φmn = −π(mu₀ + nv₀) cancels path phase in direction (u₀, v₀). The resulting uniform-grid array factor separates into x and y sums.",
+      "Increasing aperture extent in x narrows variation in u, while y extent controls v. The displayed coherent-peak normalization shows beam shape. Absolute intensity, spherical integration, element pattern, and efficiency are needed for an absolute gain or link claim."
+    ],
+    "example": "Steering to u₀ = 0.2 and v₀ = −0.1 requires phase steps of −36° per x element and +18° per y element for λ/2 spacing.",
+    "questions": [
+      {
+        "prompt": "For a large uniform grid near boresight, what happens to the u and v beamwidths if only the x extent approximately doubles?",
+        "hint": "Each separable factor is controlled mainly by its own aperture dimension.",
+        "answer": "The u beamwidth roughly halves, while the v beamwidth stays similar. The active-element count and absolute power normalization must be handled separately."
+      }
+    ],
+    "relatedTools": []
+  },
+  "array-footprint": {
+    "problem": "how an angular beam becomes a ground footprint through line-of-sight geometry.",
+    "explanation": [
+      "For a flat plane normal to boresight at distance r₀, a point (x, y) corresponds to u = x/√(r₀² + x² + y²) and v = y/√(r₀² + x² + y²). This maps ground coordinates into the array's angular pattern.",
+      "At small angles, footprint width is approximately range times angular width. A fixed relative angular contour therefore scales in area approximately as range squared.",
+      "An absolute coverage contour also depends on radiated power, gain normalization, receiving antenna gain, and slant-range loss. On Earth, geocentric geometry, visibility, and georeferenced cell areas replace the flat-plane approximation."
+    ],
+    "example": "A fixed 10 mrad angular width spans approximately 10 km at a distance of 1,000 km and 20 km at 2,000 km. A similarly scaled two-dimensional relative contour has four times the area.",
+    "questions": [
+      {
+        "prompt": "Why does a fourfold relative-footprint area increase after doubling distance fail to establish a fourfold absolute service area?",
+        "hint": "Track both the angular projection and received power at each ground point.",
+        "answer": "The angular contour expands geometrically, while free-space received power falls with range squared. An absolute receiver threshold can change which parts of that expanded pattern qualify for service."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gnss-orbits": {
+    "problem": "how inclined orbit planes provide navigation directions across the sky.",
+    "explanation": [
+      "The illustrative constellation uses inclined medium-Earth orbits with a period near half a sidereal day. Inclination carries satellites north and south of the equator while their orbital motion changes longitude relative to a rotating observer.",
+      "Visibility is a geometric line-of-sight condition. Positioning quality also depends on directional diversity: nearly redundant measurement directions can constrain some position components poorly.",
+      "The six-plane, four-satellite-per-plane arrangement is a teaching geometry. Its ideal horizon counts do not represent the current operational constellation or include terrain and practical elevation masks."
+    ],
+    "example": "Half of an approximately 86,164 s sidereal day is about 43,082 s, or 11.97 hours. This period accompanies motion across an Earth-fixed observer's sky.",
+    "questions": [
+      {
+        "prompt": "Why can four well-spread visible satellites give stronger position geometry than four satellites clustered close together?",
+        "hint": "Consider which directions of receiver displacement change the measured ranges distinctly.",
+        "answer": "Spread directions produce more independent range constraints. Clustered lines of sight can make some displacement and clock-error effects resemble each other, increasing uncertainty despite the same measurement count."
+      }
+    ],
+    "relatedTools": []
+  },
+  "doppler-pass": {
+    "problem": "how a pass’s range-rate history changes with distance from the ground track.",
+    "explanation": [
+      "In the straight constant-speed pass model, slant range is r(t) = √[h² + b² + (vt)²], with height h, cross-track distance b, and t = 0 at closest approach.",
+      "Range rate is v²t/r(t), so first-order Doppler is −(fc/c)v²t/r(t). The zero crossing occurs at closest approach, and its slope magnitude is fc v²/[c√(h² + b²)].",
+      "A more distant track gives a gentler zero-crossing slope. Because this model contains b², the two sides of the ground track produce the same ideal history; additional information resolves that ambiguity."
+    ],
+    "example": "Changing cross-track distance from b = 0 to b = h increases closest slant range by √2. The zero-crossing slope magnitude falls to 1/√2 of its original value.",
+    "questions": [
+      {
+        "prompt": "Can this ideal single-pass Doppler curve distinguish a beacon at cross-track distance +b from one at −b? Explain.",
+        "hint": "Inspect how b enters both range and range rate.",
+        "answer": "The curves are identical because b enters as b². A second pass, another measurement type, or additional position knowledge is needed to distinguish the two sides."
+      }
+    ],
+    "relatedTools": []
+  },
+  "pseudorange-clock": {
+    "problem": "how one receiver clock offset enters every satellite pseudorange measurement.",
+    "explanation": [
+      "A simplified pseudorange is ρᵢ = ‖r − rᵢ‖ + cb + error, where r is receiver position, rᵢ is known satellite position, and b is receiver clock bias in seconds.",
+      "The same receiver-clock bias adds a common distance term cb to every measurement. Subtracting a guessed correction changes all corresponding range-circle or range-sphere radii together.",
+      "A normal three-dimensional solution has four unknowns: three position coordinates and one clock bias. Four independent measurements supply the minimum count; satellite-clock and propagation corrections belong in a fuller observation model."
+    ],
+    "example": "A receiver clock bias of 1 μs contributes approximately 299.8 m to every pseudorange. That common term can greatly exceed the desired position precision.",
+    "questions": [
+      {
+        "prompt": "Why are three pseudoranges generally insufficient for a three-dimensional position when receiver time is also unknown?",
+        "hint": "Count scalar unknowns before counting equations.",
+        "answer": "There are four unknowns: x, y, z, and b. Three equations need an additional constraint or known quantity, such as a known height or independently known receiver time."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gnss-geometry": {
+    "problem": "how satellite directions map range noise into position uncertainty.",
+    "explanation": [
+      "Linearizing the planar example gives Hᵢ = (−cos αᵢ, −sin αᵢ, 1), with the clock parameter expressed as a distance. For equal independent range errors of standard deviation σ, covariance is σ²(HᵀH)⁻¹ when the geometry has full rank.",
+      "Similar source directions produce nearly redundant rows, enlarging uncertainty in weakly constrained combinations of position and clock. The plotted position ellipse comes from the position covariance submatrix with equal spatial scales.",
+      "In three-dimensional DOP terminology, PDOP² = HDOP² + VDOP² and GDOP² = PDOP² + TDOP². The planar ellipse here illustrates the mechanism rather than calculating a full three-dimensional GDOP."
+    ],
+    "example": "For fixed geometry, doubling σ doubles every uncertainty-ellipse axis and multiplies its area by four. Better range precision and better geometry address different factors in the covariance.",
+    "questions": [
+      {
+        "prompt": "With geometry unchanged, what happens to the 95% position ellipse if independent ranging standard deviation falls from 4 m to 2 m?",
+        "hint": "Covariance scales as σ², while ellipse lengths scale as σ.",
+        "answer": "Every ellipse axis halves and its area becomes one quarter. Its orientation and axis ratio remain unchanged."
+      }
+    ],
+    "relatedTools": []
+  },
+  "pn-correlation": {
+    "problem": "how a receiver searches for a delayed code within noise.",
+    "explanation": [
+      "A receiver tests alignments between the incoming samples rᵢ and a known local code cᵢ. A correlation such as R(d) = (1/N)Σrᵢcᵢ₋d is strongest when their code features align.",
+      "At chip rate Rchip, one chip represents a travel-distance interval c/Rchip. Correlation peak shape, signal-to-noise ratio, and integration affect how accurately a delay can be estimated within that interval.",
+      "A repeating code identifies delay modulo its period. Absolute timing, code-epoch information, and receiver clock estimation are still needed for an unambiguous navigation measurement. The displayed 15-chip sequence is a teaching code."
+    ],
+    "example": "At 1 Mchip/s, one chip lasts 1 μs and corresponds to about 300 m of travel distance. A two-chip delay is about 600 m modulo the repeated code period.",
+    "questions": [
+      {
+        "prompt": "For a repeating 15-chip code, why do delays of 2 and 17 chips produce the same cyclic alignment?",
+        "hint": "Compare the delays modulo the code length.",
+        "answer": "They differ by exactly one 15-chip period. Cyclic correlation alone identifies both as a two-chip shift; extra timing information is required to distinguish them."
+      }
+    ],
+    "relatedTools": []
+  },
+  "sampling-alias": {
+    "problem": "why different continuous-time frequencies can produce identical sampled data.",
+    "explanation": [
+      "Sampling observes a waveform only at t = n/fs. Adding an integer multiple of fs to a sinusoid's frequency adds integer multiples of 2π at those samples, leaving the sample sequence unchanged.",
+      "For a bandlimited baseband signal with highest frequency B, fs > 2B permits ideal reconstruction under the model's assumptions. An analog anti-alias filter must suppress unwanted energy before sampling.",
+      "Exactly at fs/2, a sinusoid's sampled appearance depends on phase and can be pathological. Aliasing is an ambiguity in the available samples, so filtering a recorded sequence cannot generally recover information already mixed together."
+    ],
+    "example": "A 900 Hz cosine sampled at 1,000 samples/s has the same real sample sequence as a 100 Hz cosine with the corresponding phase convention.",
+    "questions": [
+      {
+        "prompt": "What lower-frequency cosine aliases with a 700 Hz cosine when sampled at 1,000 samples/s?",
+        "hint": "Fold the frequency into the interval from 0 to fs/2.",
+        "answer": "300 Hz. At integer sample indices, cos(2π·0.7n) = cos(2π·0.3n)."
+      }
+    ],
+    "relatedTools": []
+  },
+  "quantization-pcm": {
+    "problem": "how sample rate and amplitude levels determine a raw digital representation.",
+    "explanation": [
+      "Sampling chooses observation times; quantization assigns each amplitude to one of L = 2ᵇ levels. Raw PCM bit rate is fsb before framing, compression, or channel coding.",
+      "State the quantizer convention. For L equally spaced reconstruction levels including both endpoints of a voltage range, adjacent-level spacing is Δ = (Vmax − Vmin)/(L − 1). An equal-width-bin convention has a different denominator.",
+      "The familiar SQNR estimate 6.02b + 1.76 dB assumes a high-resolution full-scale sinusoid and an approximately uniform quantization-error model. Clipping and a lower signal amplitude change the result."
+    ],
+    "example": "A four-bit endpoint-level quantizer spanning −1 to +1 V has 16 levels spaced by 2/15 ≈ 0.133 V. At 8,000 samples/s, its raw PCM rate is 32 kbit/s.",
+    "questions": [
+      {
+        "prompt": "At 48,000 samples/s and 12 bits per sample, what is the raw mono PCM bit rate? Which overheads have been omitted?",
+        "hint": "Multiply samples per second by bits per sample.",
+        "answer": "576,000 bit/s, or 576 kbit/s. Framing, metadata, channel coding, and any additional channels are outside this raw-rate calculation."
+      }
+    ],
+    "relatedTools": []
+  },
+  "source-compression": {
+    "problem": "the different roles of compression, error correction and modulation.",
+    "explanation": [
+      "Source entropy H = −Σpᵢlog₂pᵢ describes average information per source symbol for a stated probability model. A variable-length lossless code can use shorter codewords for more likely symbols.",
+      "Average code length is L̄ = Σpᵢlᵢ. Multiplying by source-symbol rate gives the compressed bit rate. A channel code of rate Rc then increases the transmitted coded-bit rate to Rcompressed/Rc.",
+      "Compression exploits source redundancy, while error-correcting coding adds structured redundancy for recovery over a channel. Modulation maps the resulting bits onto transmitted symbols. Lossy compression introduces another deliberate information trade."
+    ],
+    "example": "For probabilities 1/2, 1/4, 1/8, 1/8, code lengths 1, 2, 3, 3 average 1.75 bits per source symbol, compared with 2 for a fixed-length code.",
+    "questions": [
+      {
+        "prompt": "A compressed stream carries 1.75 Mbit/s. What coded rate follows a rate-1/2 channel encoder?",
+        "hint": "Code rate is information bits divided by coded bits.",
+        "answer": "The coded stream is 1.75/(1/2) = 3.5 Mbit/s. This added redundancy serves transmission reliability rather than source compression."
+      }
+    ],
+    "relatedTools": []
+  },
+  "nyquist-pulse": {
+    "problem": "how overlapping pulses can give interference-free samples at the intended decision times.",
+    "explanation": [
+      "A Nyquist combined pulse response has h(0) = 1 and h(nT) = 0 at nonzero integer symbol offsets. Neighboring pulses may overlap strongly between sampling instants while contributing zero at the ideal samples.",
+      "A raised-cosine response controls the trade between spectral rolloff and time-domain ringing. Its total passband occupied width is approximately (1 + α)Rs, with rolloff 0 ≤ α ≤ 1 and symbol rate Rs = 1/T.",
+      "The relevant response includes transmitter, channel, and receiver together. A root-raised-cosine transmitter and matched receiver can form a raised-cosine response; timing error or channel distortion can disrupt its zero-ISI sampling property."
+    ],
+    "example": "At Rs = 1 Mbaud and α = 0.5, the ideal raised-cosine total RF width is 1.5 MHz. This bandwidth statement uses the passband convention.",
+    "questions": [
+      {
+        "prompt": "Why can a zero-ISI pulse shape still show interference when the receiver samples halfway between the intended symbol instants?",
+        "hint": "The zero crossings are located at specific integer multiples of T.",
+        "answer": "The Nyquist zeros guarantee cancellation only at the intended sample times. A timing offset generally samples neighboring pulses away from their zeros, creating intersymbol interference."
+      }
+    ],
+    "relatedTools": []
+  },
+  "iq-constellation": {
+    "problem": "how constellation spacing connects spectral efficiency with noise-sensitive decisions.",
+    "explanation": [
+      "A passband symbol can be represented as s(t) = I cos ωct − Q sin ωct. Its I/Q point selects amplitude and phase, and an M-point alphabet carries log₂M coded bits per symbol.",
+      "At fixed average symbol energy, adding more points generally reduces their separation relative to noise. Under the displayed equal-noise model, a receiver chooses the nearest symbol point.",
+      "Symbol errors and bit errors depend on different information. A bit-error calculation also needs the bit labeling, while coding and a complete channel model further affect performance. A fixed displayed noise realization is an illustration rather than an error-rate forecast."
+    ],
+    "example": "QPSK carries 2 coded bits per symbol, 16-QAM carries 4, and 64-QAM carries 6. Their average-energy normalization must match before comparing spacing.",
+    "questions": [
+      {
+        "prompt": "Why can two different bit labelings of the same constellation have the same symbol-error count but different bit-error counts?",
+        "hint": "A wrong destination point can differ from the transmitted label in one or several bits.",
+        "answer": "Symbol decisions depend on point geometry, while bit errors depend on how labels differ between those points. The same wrong symbol can flip different numbers of bits under different labelings."
+      }
+    ],
+    "relatedTools": []
+  },
+  "rate-bandwidth": {
+    "problem": "how information rate, coding rate, symbol rate and occupied bandwidth fit together.",
+    "explanation": [
+      "Start with information rate Rinfo. A code of rate Rc produces Rcoded = Rinfo/Rc. Mapping log₂M coded bits per modulation symbol gives Rs = Rcoded/log₂M.",
+      "For a raised-cosine combined response, total occupied passband width is approximately BRF = (1 + α)Rs. The corresponding one-sided low-pass baseband width is half of that value.",
+      "Each rate belongs to a particular point in the transmitter chain. Framing, pilots, and other overhead need explicit additional factors when included; a larger constellation also needs adequate received quality."
+    ],
+    "example": "For Rinfo = 6 Mbit/s, Rc = 3/4, M = 16, and α = 0.25: Rcoded = 8 Mbit/s, Rs = 2 Mbaud, and BRF = 2.5 MHz.",
+    "questions": [
+      {
+        "prompt": "Keeping information rate, code rate, and rolloff fixed, what happens to symbol rate and RF width when modulation changes from QPSK to 16-QAM?",
+        "hint": "Coded bits per symbol increase from 2 to 4.",
+        "answer": "Both symbol rate and the modeled RF width halve. The information rate is unchanged, while the required signal quality generally changes with the constellation."
+      }
+    ],
+    "relatedTools": []
+  },
+  "adaptive-modcod": {
+    "problem": "how a transmitter trades data rate for robustness as the channel fades.",
+    "explanation": [
+      "Each modulation-and-coding mode combines an alphabet size M, code rate Rc, and required quality for a stated error target. At a fixed symbol rate, information rate is Rs log₂M Rc before additional overhead.",
+      "The demonstration selects the fastest supplied mode whose toy C/N threshold is met. As a fade deepens, it can move to fewer bits per symbol or a lower code rate to preserve the stated feasibility rule.",
+      "Real switching decisions also depend on measured error performance, estimator uncertainty, feedback delay, and hysteresis. The supplied threshold table illustrates the decision mechanism rather than specifying a communication standard."
+    ],
+    "example": "At 1 Mbaud, QPSK with Rc = 1/2 carries 1 Mbit/s, while 16-QAM with Rc = 3/4 carries 3 Mbit/s before overhead.",
+    "questions": [
+      {
+        "prompt": "Why might an adaptive link delay switching upward even when a noisy C/N estimate briefly crosses a mode's nominal threshold?",
+        "hint": "Consider prediction error, feedback delay, and rapid back-and-forth switching.",
+        "answer": "A switching margin and hysteresis can reduce outages and unstable mode changes. A brief threshold crossing may not persist long enough to support the faster mode at its required error target."
+      }
+    ],
+    "relatedTools": []
+  },
+  "amplifier-backoff": {
+    "problem": "how reducing amplifier drive trades distortion against output power.",
+    "explanation": [
+      "The toy amplifier limits complex amplitude radially: zout = zin/max(1, |zin|). It preserves phase while clipping points above unit amplitude. The input alphabet starts with average symbol energy 1.",
+      "Input power backoff IBO in dB scales amplitudes by 10^(−IBO/20) and powers by 10^(−IBO/10). Output backoff uses the resulting mean output power relative to the stated saturation power.",
+      "Constellation points reveal amplitude-dependent distortion at symbol instants. Pulse-shaped waveforms can have additional between-symbol peaks; real amplifiers can also introduce phase distortion and memory. Those effects need a waveform and hardware model."
+    ],
+    "example": "A point with input magnitude 1.2 is limited to magnitude 1. A 3 dB input power backoff multiplies every input amplitude by approximately 0.708 and approximately halves input power.",
+    "questions": [
+      {
+        "prompt": "Why does zero clipping of QPSK constellation points fail to establish zero distortion for a pulse-shaped QPSK waveform?",
+        "hint": "The plotted points sample symbol instants, while the amplifier sees the complete continuous waveform.",
+        "answer": "Filtering and pulse overlap can create peaks between symbol instants. Those peaks can exceed the amplifier limit even when the symbol-center points lie within it."
+      }
+    ],
+    "relatedTools": []
+  }
+}

@@ -1,0 +1,19 @@
+(() => {'use strict';
+const C={a:'var(--a)',b:'var(--b)',c:'var(--c)',d:'var(--d)',ink:'var(--ink)',muted:'var(--muted)',grid:'var(--line)'};
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=(x,d=2)=>!Number.isFinite(x)?'undefined':Math.abs(x)<1e-10?'0':Math.abs(x)>=1e6||Math.abs(x)<.001?x.toExponential(d):x.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:0});
+const text=(x,y,s,anchor='start',color=C.ink)=>`<text x="${x}" y="${y}" text-anchor="${anchor}" fill="${color}">${esc(s)}</text>`;
+const line=(x1,y1,x2,y2,color=C.grid,width=1,dash='')=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${color}" stroke-width="${width}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+const path=(pts,color=C.a,width=2,dash='')=>`<path d="${pts.filter(p=>p.every(Number.isFinite)).map((p,i)=>(i?'L':'M')+p.map(x=>x.toFixed(3)).join(',')).join(' ')}" fill="none" stroke="${color}" stroke-width="${width}" ${dash?`stroke-dasharray="${dash}"`:''}/>`;
+const circle=(x,y,r,fill='none',stroke=C.ink)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${fill}" stroke="${stroke}"/>`;
+const arrow=(x1,y1,x2,y2,color=C.a,label='')=>{const a=Math.atan2(y2-y1,x2-x1),l=7;return line(x1,y1,x2,y2,color,2)+`<path d="M${x2-l*Math.cos(a-.45)},${y2-l*Math.sin(a-.45)} L${x2},${y2} L${x2-l*Math.cos(a+.45)},${y2-l*Math.sin(a+.45)}" fill="none" stroke="${color}" stroke-width="2"/>`+(label?text(x2+8,y2-8,label,'start',C.ink):'')};
+const svg=(content,label,W=800,H=440)=>`<svg xmlns="http://www.w3.org/2000/svg" role="img" aria-label="${esc(label)}" viewBox="0 0 ${W} ${H}"><title>${esc(label)}</title>${content}</svg>`;
+const range=(n,fn)=>Array.from({length:n+1},(_,i)=>fn(i/n));
+const legend=items=>`<div class="legend">${items.map(q=>`<span><svg class="legend-key" viewBox="0 0 22 6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="${q.color||C.a}" stroke-width="3" stroke-dasharray="${q.dash?'5 3':'none'}"/></svg>${esc(q.name)}</span>`).join('')}</div>`;
+const wheel=(cx,cy,r,angle,color=C.a,tilt=1)=>{let s=`<g transform="translate(${cx},${cy}) scale(1,${tilt}) rotate(${angle*180/Math.PI})">`;s+=circle(0,0,r,'none',color);for(let j=0;j<4;j++){let a=j*Math.PI/2;s+=`<path d="M0,0 L${r*Math.cos(a)},${r*Math.sin(a)} L${.48*r*Math.cos(a+.7)},${.48*r*Math.sin(a+.7)} Z" fill="${color}" opacity=".65"/>`}return s+circle(0,0,2,color,color)+'</g>'};
+const plot=(series,o={})=>{const w=o.width||800,h=o.height||340,L=88,R=28,T=o.title?48:24,B=65;let xmin=o.xmin??Math.min(...series.flatMap(s=>s.points.map(p=>p[0]))),xmax=o.xmax??Math.max(...series.flatMap(s=>s.points.map(p=>p[0]))),ymin=o.ymin??Math.min(...series.flatMap(s=>s.points.map(p=>p[1]))),ymax=o.ymax??Math.max(...series.flatMap(s=>s.points.map(p=>p[1])));if(xmax===xmin)xmax=xmin+1;if(ymax===ymin)ymax=ymin+1;const X=x=>L+(x-xmin)/(xmax-xmin)*(w-L-R),Y=y=>h-B-(y-ymin)/(ymax-ymin)*(h-B-T);let z=o.title?text(L,23,o.title):'';for(let i=0;i<=4;i++){let x=xmin+(xmax-xmin)*i/4,y=ymin+(ymax-ymin)*i/4;z+=line(X(x),T,X(x),h-B,C.grid)+text(X(x),h-B+25,fmt(x,2),'middle',C.muted)+line(L,Y(y),w-R,Y(y),C.grid)+text(L-12,Y(y)+5,fmt(y,2),'end',C.muted)}z+=`<rect x="${L}" y="${T}" width="${w-L-R}" height="${h-B-T}" fill="none" stroke="${C.grid}"/>`;for(const s of series)z+=path(s.points.map(p=>[X(p[0]),Y(Math.max(ymin,Math.min(ymax,p[1])))]),s.color||C.a,2.4,s.dash||'');z+=text((L+w-R)/2,h-11,o.xlabel||'x','middle')+`<text class="axis-title" transform="translate(20,${(T+h-B)/2}) rotate(-90)" text-anchor="middle">${esc(o.ylabel||'y')}</text>`;return svg(z,o.title||`${o.ylabel} versus ${o.xlabel}`,w,h)+legend(series)};
+const U={W:800,H:440,C,rad:x=>x*Math.PI/180,deg:x=>x*180/Math.PI,clamp:(x,a,b)=>Math.max(a,Math.min(b,x)),fmt,esc,range,svg,line,arrow,circle,text,path,plot,legend,wheel};
+
+
+window.CourseFigureU=U;
+})();

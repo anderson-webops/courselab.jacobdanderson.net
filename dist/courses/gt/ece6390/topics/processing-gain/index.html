@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Spreading and processing gain: interactive figures, explanations, examples and practice.">
+<title>Spreading and processing gain | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/processing-gain/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="processing-gain">
+<p class="topic-breadcrumb"><a href="../#group-Navigation">Navigation</a></p>
+<h1 id="topic-title">Spreading and processing gain</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">A known fast code lets the receiver collect a slow data bit coherently</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows the rate and integration-time tradeoff that makes a spread waveform recognizable after correlation.</p><p>A data bit can multiply a faster known chip sequence. With N = Rc/Rb chips per bit, the matched local code makes the desired chips add coherently over the bit interval. Independent chip noise adds in variance.</p><p>In a simple white-noise model whose input bandwidth is approximately the chip rate Rc, processing gain is Gp = Rc/Rb. The dB value is 10 log₁₀Gp. Longer coherent integration is useful only while the local code, carrier phase and data-sign assumptions remain aligned.</p><p>Processing gain is a bookkeeping comparison across bandwidth and integration stages. It does not create energy. It also does not suppress every interferer equally; code cross-correlation, spectral placement, receiver saturation and synchronization all matter.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>For 100 chips per data bit, the ideal processing gain is 20 dB. An input SNR of −15 dB over the chosen chip-rate noise bandwidth would correspond to about +5 dB at the ideal data decision stage, subject to the model conventions.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="processing-gain-1"><h3>1. What is the ideal processing gain for 1000 chips per bit?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Use a power-ratio logarithm.</p><p id="answer-1" class="practice-answer" hidden>10 log₁₀(1000) = 30 dB.</p></article><article class="practice-question" data-practice="processing-gain-2"><h3>2. Why can a code-phase mismatch remove much of this benefit?</h3>
+<label for="attempt-2">Your reasoning</label><textarea id="attempt-2" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-2">Hint</button><button type="button" data-compare aria-controls="answer-2" disabled>Compare reasoning</button></div>
+<p id="hint-2" class="practice-hint" hidden>The local signs must line up before the sum.</p><p id="answer-2" class="practice-answer" hidden>Wrong local signs cause desired contributions to cancel rather than add coherently. The receiver must acquire and track the code phase and usually carrier Doppler as well.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../lfsr-code/">← Shift register and PN code</a><a rel="next" href="../gnss-error-budget/">Range-error budget →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

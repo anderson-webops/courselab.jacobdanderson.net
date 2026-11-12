@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Solid angle and power: interactive figures, explanations, examples and practice.">
+<title>Solid angle and power | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/solid-angle/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="solid-angle">
+<p class="topic-breadcrumb"><a href="../#group-Antennas">Antennas and arrays</a></p>
+<h1 id="topic-title">Solid angle and power</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Equal angular rectangles cover different areas on a sphere</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows why a polar-angle step and an azimuth step need an area weight before they can represent radiated power.</p><p>To find total radiated power, collect the power crossing every patch on a sphere around the antenna. A ring at polar angle θ has radius R sinθ, so an azimuth step dφ covers arc length R sinθ dφ. The perpendicular polar step has length R dθ.</p><p>The patch area is therefore dA = R² sinθ dθ dφ. Dividing by R² gives solid angle dΩ in steradians. Radiation intensity U in W/sr multiplied by dΩ gives watts in that patch. Near the pole, equal angular rectangles cover less area.</p><p>A complete sphere subtends 4π sr. An ideal forward-only element radiates over 2π sr, yet directivity still uses 4π times intensity divided by total radiated power. Omitting sinθ overweights polar samples and produces the wrong normalization.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>A uniform 2 W/sr source has total power 8π W over a full sphere. A patch with θ from 55° to 65° and φ width 30° has solid angle (π/6)(cos55° − cos65°), about 0.079 sr, so it carries about 0.158 W.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="solid-angle-1"><h3>1. Compare small equal-angle patches centered at θ = 30° and θ = 90°. Which has more solid angle, and by what factor?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>For sufficiently small patches, all factors except sinθ cancel.</p><p id="answer-1" class="practice-answer" hidden>The equatorial patch at 90° has twice the solid angle because sin90°/sin30° = 2.</p></article><article class="practice-question" data-practice="solid-angle-2"><h3>2. Why is integrating only the main lobe insufficient for absolute directivity?</h3>
+<label for="attempt-2">Your reasoning</label><textarea id="attempt-2" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-2">Hint</button><button type="button" data-compare aria-controls="answer-2" disabled>Compare reasoning</button></div>
+<p id="hint-2" class="practice-hint" hidden>The denominator represents all radiated power.</p><p id="answer-2" class="practice-answer" hidden>Sidelobes and grating lobes also carry power. Omitting them underestimates total power and overestimates directivity. A restricted integration is justified only after the excluded contribution is bounded.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../array-normalization/">← Pattern to absolute gain</a><a rel="next" href="../beamforming-frontends/">Analog and digital combining →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

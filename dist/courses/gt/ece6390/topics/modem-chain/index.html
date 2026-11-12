@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="The modem signal chain: interactive figures, explanations, examples and practice.">
+<title>The modem signal chain | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/modem-chain/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="modem-chain">
+<p class="topic-breadcrumb"><a href="../#group-Digital">Digital signals</a></p>
+<h1 id="topic-title">The modem signal chain</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Rates and waveform choices belong to specific stages of the modem</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how information rate, coding, modulation and pulse shape determine the transmitted waveform together.</p><p>Information bits enter a channel encoder. Code rate Rc is information bits per coded bit, so Rcoded = Rb/Rc. An M-point modulation alphabet maps log₂M coded bits into each symbol, giving Rs = Rb/(Rc log₂M).</p><p>A combined raised-cosine response with rolloff α has total occupied passband width approximately (1 + α)Rs. Its pulse shape satisfies the Nyquist zero-ISI condition at the intended symbol times. Suitable root-raised-cosine transmit and matched-receive filters can form that combined response.</p><p>Changing constellation order changes bit loading and normalized point spacing; changing rolloff changes spectrum and pulse shape. The rate chain alone does not predict bit errors or amplifier behavior. Source compression is already included in the input, and extra pilots, framing, and synchronization overhead are omitted.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>At 6 Mbit/s information rate, code rate 3/4, 16-QAM, and rolloff 0.25, the coded rate is 8 Mbit/s, symbol rate is 2 Mbaud, and total RF width is approximately 2.5 MHz.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="modem-chain-1"><h3>1. With information rate, constellation, and rolloff fixed, how do coded rate, symbol rate, and RF width change when code rate moves from 1 to 1/2?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>The encoder now sends two coded bits for each information bit.</p><p id="answer-1" class="practice-answer" hidden>All three double. The added coding redundancy requires a greater downstream rate if the information input stays unchanged.</p></article><article class="practice-question" data-practice="modem-chain-2"><h3>2. Why does halving symbol rate by increasing constellation order fail to establish unchanged link reliability?</h3>
+<label for="attempt-2">Your reasoning</label><textarea id="attempt-2" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-2">Hint</button><button type="button" data-compare aria-controls="answer-2" disabled>Compare reasoning</button></div>
+<p id="hint-2" class="practice-hint" hidden>Compare point separation at the same average symbol energy.</p><p id="answer-2" class="practice-answer" hidden>More points generally sit closer together relative to noise. A rate and bandwidth saving must be evaluated alongside the modulation&#x27;s required received quality, coding, and hardware constraints.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../ofdm-multipath/">← Multipath and OFDM</a><span></span></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

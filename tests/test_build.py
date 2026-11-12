@@ -6,6 +6,11 @@ import re
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+COURSE = ROOT / 'dist/courses/gt/ece6390'
+
+def built(filename):
+    return COURSE / ('orbit/index.html' if filename == 'index.html' else filename)
+
 spec = importlib.util.spec_from_file_location('build', ROOT / 'scripts/build.py')
 build = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(build)
@@ -28,7 +33,7 @@ class PageOutline(HTMLParser):
             self.ids.add(attrs['id'])
         if tag == 'a':
             self.links.append(attrs)
-        if tag in ['script', 'link']:
+        if tag in ['script', 'link'] and attrs.get('rel') != 'canonical':
             self.assets.append(attrs.get('src') or attrs.get('href', ''))
         if re.fullmatch(r'h[1-6]', tag):
             self.heading = [int(tag[1]), '']
@@ -94,7 +99,7 @@ class BuildTests(unittest.TestCase):
                       'Watch the orbit. Follow the code.'}
         for filename, title in titles.items():
             with self.subTest(page=filename):
-                page = (ROOT / 'dist' / filename).read_text()
+                page = built(filename).read_text()
                 outline = PageOutline()
                 outline.feed(page)
                 self.assertEqual([text for level, text in outline.headings if level == 1], [title])
@@ -112,7 +117,7 @@ class BuildTests(unittest.TestCase):
                            'ol-storage-values', 'flow-heading', 'ol-code-detail'}
         for filename, admin in [('index.html', False), ('admin/index.html', True)]:
             with self.subTest(page=filename):
-                page = (ROOT / 'dist' / filename).read_text()
+                page = built(filename).read_text()
                 outline = PageOutline()
                 outline.feed(page)
                 self.assertTrue(required_diagrams <= outline.ids)
@@ -124,18 +129,18 @@ class BuildTests(unittest.TestCase):
 
     def test_admin_navigation_and_assets_resolve_without_public_admin_links(self):
         from urllib.parse import urljoin, urlparse
-        for filename, pathname in [('index.html', '/'), ('solar/index.html', '/solar/'),
-                                   ('admin/index.html', '/admin/')]:
+        for filename, pathname in [('index.html', '/courses/gt/ece6390/orbit/'), ('solar/index.html', '/courses/gt/ece6390/solar/'),
+                                   ('admin/index.html', '/courses/gt/ece6390/admin/')]:
             with self.subTest(page=filename):
                 outline = PageOutline()
-                outline.feed((ROOT / 'dist' / filename).read_text())
+                outline.feed(built(filename).read_text())
                 location = 'https://example.test' + pathname
                 links = {link.get('data-site-view'): urlparse(urljoin(location, link.get('href', ''))).path
                          for link in outline.links if link.get('data-site-view')}
-                self.assertEqual(links['orbit'], '/admin/' if pathname == '/admin/' else '/')
-                self.assertEqual(links['solar'], '/solar/')
-                if pathname != '/admin/':
-                    self.assertFalse(any(urlparse(urljoin(location, link.get('href', ''))).path.startswith('/admin')
+                self.assertEqual(links['orbit'], '/courses/gt/ece6390/admin/' if pathname == '/courses/gt/ece6390/admin/' else '/courses/gt/ece6390/orbit/')
+                self.assertEqual(links['solar'], '/courses/gt/ece6390/solar/')
+                if pathname != '/courses/gt/ece6390/admin/':
+                    self.assertFalse(any(urlparse(urljoin(location, link.get('href', ''))).path.startswith('/courses/gt/ece6390/admin')
                                          for link in outline.links))
                 self.assertTrue(outline.assets)
                 for asset in outline.assets:
@@ -151,7 +156,7 @@ class BuildTests(unittest.TestCase):
                                 ('solar/index.html', False)]:
             with self.subTest(page=filename):
                 outline = PageOutline()
-                outline.feed((ROOT / 'dist' / filename).read_text())
+                outline.feed(built(filename).read_text())
                 self.assertEqual(sun_ids & outline.ids, sun_ids if orbit else set())
                 sun_assets = [asset for asset in outline.assets if asset.endswith('/sun-view.js')]
                 self.assertEqual(len(sun_assets), 1 if orbit else 0)
@@ -159,7 +164,7 @@ class BuildTests(unittest.TestCase):
     def test_sun_context_script_is_local_and_loaded_after_orbit_state(self):
         self.assertTrue((ROOT / 'dist/assets/sun-view.js').is_file())
         for filename in ['index.html', 'admin/index.html']:
-            page = (ROOT / 'dist' / filename).read_text()
+            page = built(filename).read_text()
             scripts = re.findall(r'<script\b[^>]*\bsrc="([^"]+)"[^>]*>', page)
             orbit = next(index for index, src in enumerate(scripts) if src.endswith('/orbit.js'))
             sun = next(index for index, src in enumerate(scripts) if src.endswith('/sun-view.js'))

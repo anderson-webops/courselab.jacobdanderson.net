@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Interactive orbital physics, solar acceleration components, look angles and RK4 code learning tools.">
+<meta name="referrer" content="no-referrer">
+
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<title>Orbit | Course Lab</title>
+<link rel="icon" href="../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../assets/orbit-runtime.css"><link rel="stylesheet" href="../../../../assets/orbit.css">
+<link rel="stylesheet" href="../../../../assets/site.css">
+<script src="../../../../assets/site.js" defer></script>
+<script src="../../../../assets/orbit.js" defer></script>
+<script src="../../../../assets/sun-view.js" defer></script>
+<link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/orbit/"><link rel="stylesheet" href="../../../../assets/catalog.css"><script src="../../../../assets/catalog.js" defer></script></head>
+<body>
+<a class="site-skip" href="#main">Skip to the visualization</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../">Courses</a><a href="../../../../search/">Search</a><a href="../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../">Choose a course</option><option value="../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../">ECE 6390 overview</a><a data-site-view="topics" href="../topics/">Topics</a><a data-site-view="orbit" href="./" aria-current="page">Orbit</a><a data-site-view="solar" href="../solar/">Solar components</a><a data-site-view="project" href="../project/">GeorgiaTenna</a><a data-site-view="lab" href="../lab/">All simulations</a></nav></header>
+<main id="main" class="site-main">
+<div class="site-intro"><h1>Orbit, forces &amp; look angles</h1><p>Change the orbit and follow the satellite’s forces and look angles.</p></div>
+
+<div id="orbit-learning-lab">
+
+  <section class="experiment-controls" aria-labelledby="controls-heading"><h2 id="controls-heading">Set up the orbit</h2>
+
+  <div class="viz-controls controls-gap">
+    <label class="form-label">Starting orbit
+      <select class="form-select" id="ol-orbit"><option value="ellipse">Teaching ellipse: initial e = 0.06</option><option value="circular">Circular GEO start</option></select>
+    </label>
+    <label class="form-label">Orbit-view reference frame
+      <select class="form-select" id="ol-frame"><option value="inertial">Space-fixed</option><option value="earth">Earth-fixed</option></select>
+    </label>
+    <label class="form-label">Areal density ρA [kg/m²]
+      <select class="form-select" id="ol-density"><option value="1">1</option><option value="2" selected>2</option><option value="5">5</option><option value="10">10</option></select>
+    </label>
+    <label class="form-label">Integration step dt [s]
+      <select class="form-select" id="ol-step"><option value="60">60</option><option value="300">300</option><option value="900">900</option></select>
+    </label>
+  </div>
+  <div class="viz-row">
+    <button class="btn btn-primary" id="ol-play" type="button">Play 48 hours</button>
+    <label class="form-check"><input class="form-check-input" id="ol-solar" type="checkbox" checked><span class="form-check-label">Solar pressure</span></label>
+
+  </div>
+  <div class="timeline-controls"><div class="controls-gap">
+    <label class="form-label" for="ol-time"><span class="label-pair"><span>Elapsed simulation time</span><output id="ol-time-value" class="tabular-nums">6.00 h</output></span></label>
+    <input class="form-range" id="ol-time" type="range" min="0" max="48" step="0.01" value="6">
+  </div>
+  <div class="controls-gap">
+    <label class="form-label" for="ol-phase"><span class="label-pair"><span>FORCE_PHASE: initial push direction</span><output id="ol-phase-value" class="tabular-nums">40°</output></span></label>
+    <input class="form-range" id="ol-phase" type="range" min="0" max="360" step="5" value="40">
+  </div>
+  </div>
+  <details class="model-notes"><summary>Model assumptions</summary><p>48 hours of equatorial motion around a spherical Earth; no eclipses or thrust. Reflectivity αr = 0.5. Earth rotates once per sidereal day; the solar push direction rotates once per 365 days.</p></details>
+  </section>
+<section id="sun-view" class="sun-context" aria-labelledby="sun-heading">
+  <h2 id="sun-heading">The bigger picture: Sun, Earth &amp; satellite</h2>
+  <p class="sun-intro">One moment, two scales. Use the time and initial solar direction controls above to follow the same angles in both views.</p>
+  <div class="sun-panels">
+    <figure>
+      <h3>Sun-centered overview</h3>
+      <svg id="ol-sun-system-svg" role="img" aria-label="Sun, Earth's schematic annual path, and an enlarged satellite orbit. Sunlight travels outward from the Sun."></svg>
+      <figcaption>φ is the push direction, from the Sun toward Earth. The purple trace is the same 48-hour satellite orbit, enlarged.</figcaption>
+    </figure>
+    <figure>
+      <h3>Earth neighborhood, enlarged</h3>
+      <svg id="ol-sun-local-svg" role="img" aria-label="Satellite position angle theta and solar push direction phi in space-fixed axes; their signed difference is the relative angle delta."></svg>
+      <figcaption>θ locates the satellite around Earth. δ compares its outward radial direction with the parallel solar push.</figcaption>
+    </figure>
+  </div>
+  <div class="sun-equation" aria-label="Relative angle equals initial push direction plus annual change minus satellite angle">
+    <span>relative = FORCE_PHASE</span><span>+ ΩSun · time</span><span>− θ</span>
+  </div>
+  <div class="sun-terms">
+    <div><span>Initial push direction</span><strong id="sun-phase"></strong><span>FORCE_PHASE</span></div>
+    <div><span>Annual change</span><strong id="sun-annual"></strong><span>+ ΩSun · time</span></div>
+    <div><span>Satellite angle</span><strong id="sun-theta"></strong><span>− θ</span></div>
+    <div><span>Relative angle, δ</span><strong id="sun-relative"></strong><span>Equivalent within ±180°</span></div>
+  </div>
+  <p id="sun-force-note" class="sun-force-note"></p>
+  <p class="sun-caption">Space-fixed axes in both views; the frame control changes Orbit &amp; observer below. Over 48 hours, the annual direction changes by only about 2°. Body sizes, distances and arrow lengths are not to scale. Earth’s path illustrates the prescribed solar direction, not an additional orbit simulation.</p>
+</section>
+
+  <div class="legend text-small" aria-label="Shared color legend">
+    <span><i class="orbit-inline-0"></i>Orbit / position</span>
+    <span><i class="orbit-inline-1"></i>Solar acceleration</span>
+    <span><i class="orbit-inline-2"></i>Velocity</span>
+    <span><i class="orbit-inline-3"></i>Station / line of sight</span>
+    <span><i class="orbit-inline-4"></i>Gravity</span>
+  </div>
+  <div class="panels">
+    <figure>
+      <h2>1 · Orbit &amp; observer</h2>
+      <svg class="scene" id="ol-orbit-svg" role="img" aria-label="Tilted three-dimensional orbit, Earth, Atlanta, satellite, radial vector, velocity, and line of sight"></svg>
+      <div class="readout text-small tabular-nums" id="ol-state-values"></div>
+    </figure>
+    <figure>
+      <h2>2 · Local accelerations</h2>
+      <svg class="scene" id="ol-force-svg" role="img" aria-label="Solar acceleration decomposed into radial and tangential parts; gravity points inward"></svg>
+      <div class="readout text-small tabular-nums" id="ol-force-values"></div>
+      <a class="site-action" id="inspect-solar" href="../solar/">Explore these solar components →</a>
+    </figure>
+    <figure>
+      <h2>3 · Elevation</h2>
+      <svg class="scene" id="ol-elevation-svg" role="img" aria-label="True-scale Earth, station, satellite, central angle gamma, local horizon, and signed elevation"></svg>
+      <div class="readout text-small tabular-nums" id="ol-elevation-values"></div>
+    </figure>
+    <figure>
+      <h2>4 · Azimuth</h2>
+      <svg class="scene" id="ol-azimuth-svg" role="img" aria-label="Horizontal projection of line of sight onto local north and east axes, with clockwise azimuth from north"></svg>
+      <div class="readout text-small tabular-nums" id="ol-azimuth-values"></div>
+    </figure>
+  </div>
+  <div id="ol-status" class="sr-only" aria-live="polite"></div>
+  <div id="ol-error" class="text-destructive" role="alert" hidden></div>
+
+</div>
+
+<noscript><p>Enable JavaScript to use the interactive controls.</p></noscript>
+</main>
+</body>
+</html>

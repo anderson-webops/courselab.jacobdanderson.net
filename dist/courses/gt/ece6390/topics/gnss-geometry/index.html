@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Geometry &amp; precision: interactive figures, explanations, examples and practice.">
+<title>Geometry &amp; precision | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gnss-geometry/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="gnss-geometry">
+<p class="topic-breadcrumb"><a href="../#group-Navigation">Navigation</a></p>
+<h1 id="topic-title">Geometry &amp; precision</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Similar range errors can produce very different position uncertainty</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how satellite directions map range noise into position uncertainty.</p><p>Linearizing the planar example gives Hᵢ = (−cos αᵢ, −sin αᵢ, 1), with the clock parameter expressed as a distance. For equal independent range errors of standard deviation σ, covariance is σ²(HᵀH)⁻¹ when the geometry has full rank.</p><p>Similar source directions produce nearly redundant rows, enlarging uncertainty in weakly constrained combinations of position and clock. The plotted position ellipse comes from the position covariance submatrix with equal spatial scales.</p><p>In three-dimensional DOP terminology, PDOP² = HDOP² + VDOP² and GDOP² = PDOP² + TDOP². The planar ellipse here illustrates the mechanism rather than calculating a full three-dimensional GDOP.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>For fixed geometry, doubling σ doubles every uncertainty-ellipse axis and multiplies its area by four. Better range precision and better geometry address different factors in the covariance.</p></section>
+<section class="topic-reading"><h2>Related tools</h2><ul><li><a href="https://adamdjellouli.com/tools/correlation_visualizer/" rel="noreferrer">Covariance and uncertainty ellipses</a> <span class="external-author">Adam Djellouli</span></li></ul></section>
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="gnss-geometry-1"><h3>1. With geometry unchanged, what happens to the 95% position ellipse if independent ranging standard deviation falls from 4 m to 2 m?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Covariance scales as σ², while ellipse lengths scale as σ.</p><p id="answer-1" class="practice-answer" hidden>Every ellipse axis halves and its area becomes one quarter. Its orientation and axis ratio remain unchanged.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../pseudorange-clock/">← Range &amp; clock</a><a rel="next" href="../pn-correlation/">Code correlation →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>

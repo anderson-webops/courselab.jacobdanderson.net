@@ -1,0 +1,20 @@
+.project-page { max-width:1100px; margin:30px auto; }
+.project-page h1 { font-size:clamp(1.8rem,4vw,2.5rem); line-height:1.2; max-width:28ch; }
+.project-page h2 { font-size:1.35rem; line-height:1.5; margin:0 0 20px; }
+.project-task { max-width:82ch; font-size:1.1rem; line-height:1.8; }
+.project-jumps { display:flex; flex-wrap:wrap; gap:12px 24px; margin:28px 0; }
+.project-page a { color:var(--a); }
+.project-page section { border-top:1px solid var(--line); margin-top:42px; padding-top:26px; }
+.project-page figure { margin:18px 0; }
+.project-page figcaption { max-width:90ch; line-height:1.7; color:var(--muted); margin:14px 0; }
+.project-page p { max-width:83ch; line-height:1.8; }
+.project-controls { display:flex; gap:18px 32px; flex-wrap:wrap; margin:18px 0; }
+.project-controls label { display:flex; flex-direction:column; gap:10px; min-width:220px; }
+.project-controls output { color:var(--a); }
+.project-page .workspace { display:grid; grid-template-columns:minmax(0,1fr) 245px; gap:22px; align-items:start; }
+.project-page .figure { border:1px solid var(--line); background:var(--surface); }
+.project-page .visual { min-width:0; }
+.project-caption-equation { overflow-wrap:anywhere; line-height:1.7; margin-top:20px; }
+.project-page .model-scope { color:var(--muted); font-size:.95rem; }
+@media(max-width:850px) { .project-page .workspace { grid-template-columns:1fr; } .project-page .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; } }
+@media(max-width:520px) { .project-page .controls { grid-template-columns:1fr; } .project-controls label { width:100%; min-width:0; } }

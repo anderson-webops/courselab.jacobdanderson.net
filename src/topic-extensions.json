@@ -1,0 +1,267 @@
+{
+  "array-normalization": {
+    "problem": "how equal feed voltages combine into a directional pattern, and how that pattern acquires an absolute gain reference.",
+    "explanation": [
+      "A satellite antenna must direct a finite amount of power toward its receivers. The complex array factor AF adds field contributions, including the geometric path phase k rₙ·r̂ and the feed phase ψₙ. Here k = 2π/λ, rₙ is element position in metres and r̂ is a unit observation direction. The exponent is dimensionless.",
+      "Fields add before power is calculated. The squared magnitude |AF|² contains the interference cross terms. Multiplying by an identical element power pattern Gₑₗ gives p(θ,φ), a relative intensity pattern. This product alone has no specified W/sr scale.",
+      "Integrate p over solid angle to obtain I = ∫p dΩ. Then U = Prad p/I has units W/sr and integrates to the specified radiated power Prad. Directivity D = 4πU/Prad = 4πp/I compares a chosen direction with the whole-sphere average. A zero rear hemisphere remains part of that whole-sphere reference.",
+      "Gain G = ηrad D uses power accepted by the antenna, with ηrad = Prad/Paccepted. Realized gain also includes port mismatch. Peak-normalizing a cut to 0 dB describes shape; it does not establish dBi. General synthesis can vary aₙ, but an equal-amplitude, on/off design changes active sites and phase instead."
+    ],
+    "example": "For one ideal element radiating uniformly into a hemisphere, p = 2 forward and zero rear. I = 4π, so D = 2 = 3.01 dBi forward. With ηrad = 0.8, G = 1.6 = 2.04 dBi. With 10 W accepted, 8 W is radiated and Uforward = 8/(2π) W/sr.",
+    "questions": [
+      {
+        "prompt": "If all complex feed amplitudes are multiplied by 3, how do p, I and D change?",
+        "hint": "Track the squared field magnitude in both numerator and denominator.",
+        "answer": "p and I each multiply by 9. Their ratio is unchanged, so directivity is unchanged. Absolute intensity depends on the separately specified total radiated power."
+      },
+      {
+        "prompt": "At fixed directivity, what happens to gain when radiation efficiency falls from 1 to 0.5?",
+        "hint": "Use G = ηrad D and convert a power ratio with 10 log₁₀.",
+        "answer": "Linear gain halves. Gain in dBi falls by 3.01 dB; the normalized pattern and directivity remain unchanged in this efficiency-only model."
+      }
+    ],
+    "relatedTools": []
+  },
+  "solid-angle": {
+    "problem": "why a polar-angle step and an azimuth step need an area weight before they can represent radiated power.",
+    "explanation": [
+      "To find total radiated power, collect the power crossing every patch on a sphere around the antenna. A ring at polar angle θ has radius R sinθ, so an azimuth step dφ covers arc length R sinθ dφ. The perpendicular polar step has length R dθ.",
+      "The patch area is therefore dA = R² sinθ dθ dφ. Dividing by R² gives solid angle dΩ in steradians. Radiation intensity U in W/sr multiplied by dΩ gives watts in that patch. Near the pole, equal angular rectangles cover less area.",
+      "A complete sphere subtends 4π sr. An ideal forward-only element radiates over 2π sr, yet directivity still uses 4π times intensity divided by total radiated power. Omitting sinθ overweights polar samples and produces the wrong normalization."
+    ],
+    "example": "A uniform 2 W/sr source has total power 8π W over a full sphere. A patch with θ from 55° to 65° and φ width 30° has solid angle (π/6)(cos55° − cos65°), about 0.079 sr, so it carries about 0.158 W.",
+    "questions": [
+      {
+        "prompt": "Compare small equal-angle patches centered at θ = 30° and θ = 90°. Which has more solid angle, and by what factor?",
+        "hint": "For sufficiently small patches, all factors except sinθ cancel.",
+        "answer": "The equatorial patch at 90° has twice the solid angle because sin90°/sin30° = 2."
+      },
+      {
+        "prompt": "Why is integrating only the main lobe insufficient for absolute directivity?",
+        "hint": "The denominator represents all radiated power.",
+        "answer": "Sidelobes and grating lobes also carry power. Omitting them underestimates total power and overestimates directivity. A restricted integration is justified only after the excluded contribution is bounded."
+      }
+    ],
+    "relatedTools": []
+  },
+  "free-space-flux": {
+    "problem": "the geometric reason a distant receiver captures less power even when the medium absorbs none.",
+    "explanation": [
+      "Power spreads across a growing spherical surface. In a chosen far-field direction, flux density is S = PtGt/(4πR²), where Pt is accepted transmit power in watts, Gt is dimensionless gain and R is range in metres. EIRP = PtGt is the isotropic power that would produce the same flux in that direction.",
+      "The receiver captures flux through its effective aperture Ae, giving Pr = S Ae. For a reciprocal antenna, Ae = Gr λ²/(4π), with wavelength λ in metres. Combining these expressions gives Friis transmission. Free-space path loss is the ratio (4πR/λ)², commonly expressed in dB.",
+      "Changing frequency at fixed receive gain changes effective aperture. Changing frequency at fixed physical aperture can change receive gain instead. State what is held fixed before interpreting the frequency dependence."
+    ],
+    "example": "Doubling range spreads the same radiated power over four times the area. Received power falls by a factor of four, or 6.02 dB, when gains and wavelength are fixed.",
+    "questions": [
+      {
+        "prompt": "If range increases by a factor of ten with all antenna gains fixed, how many dB does received power change?",
+        "hint": "Pr is proportional to R⁻².",
+        "answer": "Received power falls by 20 dB: 10 log₁₀(1/100) = −20 dB."
+      },
+      {
+        "prompt": "At fixed receive gain, why does a shorter wavelength reduce effective aperture?",
+        "hint": "Use Ae = Gr λ²/(4π).",
+        "answer": "Effective aperture scales as λ² at fixed dimensionless gain. A given flux therefore delivers less power. A fixed physical antenna need not maintain the same gain as frequency changes."
+      }
+    ],
+    "relatedTools": []
+  },
+  "rectangular-pulse-spectrum": {
+    "problem": "how making a pulse shorter in time expands its spectrum.",
+    "explanation": [
+      "A transmitter needs a pulse that fits its channel bandwidth. For a rectangular pulse with amplitude A and duration T, the Fourier transform is X(f) = AT sinc(fT). Here f is in cycles per second and sinc(x) = sin(πx)/(πx).",
+      "The first zeros occur at f = ±1/T. Abrupt time edges create sidelobes extending indefinitely in frequency, so an ideal rectangular pulse has no finite strict bandwidth. Practical filters smooth the edges and reshape the pulse, which can make adjacent pulses overlap.",
+      "The displayed spectrum retains its sign. Negative spectral amplitude represents a π phase reversal; spectral power is proportional to |X(f)|². Pulse energy also depends on amplitude and load, so V²·time should be converted through a specified resistance before calling it joules."
+    ],
+    "example": "A 1 ms pulse has its first spectral zeros at ±1 kHz. Reducing duration to 0.5 ms moves the first zeros to ±2 kHz. At fixed amplitude the pulse contains less energy and has a smaller DC Fourier amplitude AT.",
+    "questions": [
+      {
+        "prompt": "Halve pulse duration while keeping amplitude fixed. What happens to the first zero and to the pulse voltage-squared integral?",
+        "hint": "The zero scales as 1/T; the integral is A²T.",
+        "answer": "The first-zero frequency doubles. The voltage-squared integral halves."
+      },
+      {
+        "prompt": "Does the first spectral zero mean that no spectral energy exists beyond that frequency?",
+        "hint": "Look at the sidelobes after the first zero.",
+        "answer": "No. The sinc spectrum has further lobes. The first-zero bandwidth is a useful measure of the main lobe, not a strict spectral support boundary."
+      }
+    ],
+    "relatedTools": []
+  },
+  "matched-filter": {
+    "problem": "how an expected pulse shape becomes a receiver filter and a timing reference.",
+    "explanation": [
+      "The receiver knows the shape it is trying to detect. For a finite discrete pulse s[n], a matched filter has impulse response h[n] = s*[N−1−n], where the star denotes complex conjugation. Time reversal and conjugation make a convolution output proportional to correlation with the expected pulse.",
+      "At the correct alignment, every desired pulse sample contributes with the same sign or phase. Independent white-noise samples add in variance, so this operation maximizes output SNR at the chosen sampling instant for a known waveform in white noise.",
+      "The peak location estimates timing. Noise, multipath and a wrong local waveform can move or split the peak. Matched filtering supplies a good decision statistic; acquisition and tracking still need to choose and maintain the correct alignment."
+    ],
+    "example": "The noiseless pulse [0.2, 0.5, 1, 0.5, 0.2] has aligned correlation 0.04 + 0.25 + 1 + 0.25 + 0.04 = 1.58. Its one-sample-shift overlap is smaller. Increasing the noise control lets you inspect whether the largest peak still marks the true arrival.",
+    "questions": [
+      {
+        "prompt": "Why does the matched-filter definition reverse time and conjugate the pulse?",
+        "hint": "Write a convolution and compare it with an inner product against a shifted template.",
+        "answer": "Time reversal turns convolution into correlation. Conjugation cancels the expected complex phase, so aligned desired samples sum as |s[n]|²."
+      },
+      {
+        "prompt": "Would the matched filter for white noise remain optimal in strongly colored noise without modification?",
+        "hint": "Frequency components no longer have equal noise strength.",
+        "answer": "A colored-noise optimum generally weights the expected spectrum by inverse noise power, often described as whitening followed by matching. The simple reversed-conjugate pulse assumes white noise."
+      }
+    ],
+    "relatedTools": []
+  },
+  "lfsr-code": {
+    "problem": "how a small shift register generates a repeatable sequence with a strong timing signature.",
+    "explanation": [
+      "A receiver can search for a known pseudo-noise code in a weak signal. A linear feedback shift register updates binary state through XOR taps. With a primitive feedback polynomial and a nonzero five-bit seed, the maximal period is 2⁵−1 = 31 chips.",
+      "Correlation uses bipolar values, such as b[n] = 2c[n]−1. The ideal periodic autocorrelation of this m-sequence is 31 at zero shift and −1 at every nonzero cyclic shift. That distinction creates a recognizable code-phase peak.",
+      "This small sequence illustrates the mechanism. GPS C/A codes use two ten-stage registers combined into Gold-code sequences with a 1023-chip period; their cross-correlation and autocorrelation details differ from this five-stage example."
+    ],
+    "example": "The recurrence c[n+5] = c[n+2] XOR c[n] starts from 11111. After 31 chips it repeats the original state. A one-chip wrong cyclic alignment gives correlation −1 instead of 31 in the noiseless bipolar model.",
+    "questions": [
+      {
+        "prompt": "Why must a maximal-length XOR register use a nonzero seed?",
+        "hint": "Evaluate each XOR tap when all register bits are zero.",
+        "answer": "The all-zero state maps to itself forever, so it cannot enter the nonzero maximal cycle."
+      },
+      {
+        "prompt": "Why convert bits 0 and 1 into −1 and +1 before this correlation?",
+        "hint": "Think about how agreements and disagreements should contribute.",
+        "answer": "Matching chips contribute +1 and differing chips contribute −1. A raw 0/1 product would count coincident ones but would not give that symmetric agreement-minus-disagreement statistic."
+      }
+    ],
+    "relatedTools": []
+  },
+  "processing-gain": {
+    "problem": "the rate and integration-time tradeoff that makes a spread waveform recognizable after correlation.",
+    "explanation": [
+      "A data bit can multiply a faster known chip sequence. With N = Rc/Rb chips per bit, the matched local code makes the desired chips add coherently over the bit interval. Independent chip noise adds in variance.",
+      "In a simple white-noise model whose input bandwidth is approximately the chip rate Rc, processing gain is Gp = Rc/Rb. The dB value is 10 log₁₀Gp. Longer coherent integration is useful only while the local code, carrier phase and data-sign assumptions remain aligned.",
+      "Processing gain is a bookkeeping comparison across bandwidth and integration stages. It does not create energy. It also does not suppress every interferer equally; code cross-correlation, spectral placement, receiver saturation and synchronization all matter."
+    ],
+    "example": "For 100 chips per data bit, the ideal processing gain is 20 dB. An input SNR of −15 dB over the chosen chip-rate noise bandwidth would correspond to about +5 dB at the ideal data decision stage, subject to the model conventions.",
+    "questions": [
+      {
+        "prompt": "What is the ideal processing gain for 1000 chips per bit?",
+        "hint": "Use a power-ratio logarithm.",
+        "answer": "10 log₁₀(1000) = 30 dB."
+      },
+      {
+        "prompt": "Why can a code-phase mismatch remove much of this benefit?",
+        "hint": "The local signs must line up before the sum.",
+        "answer": "Wrong local signs cause desired contributions to cancel rather than add coherently. The receiver must acquire and track the code phase and usually carrier Doppler as well."
+      }
+    ],
+    "relatedTools": []
+  },
+  "gnss-error-budget": {
+    "problem": "how several residual measurement errors combine before satellite geometry affects the position solution.",
+    "explanation": [
+      "Clock, propagation and receiver errors perturb the measured pseudorange. If residual errors are independent and zero mean, their variances add: σrange² = Σσᵢ². Standard deviations therefore combine by root sum of squares, rather than ordinary addition.",
+      "Geometry maps range errors into coordinate errors. For equal independent range uncertainty, an appropriate dilution-of-precision factor gives a scalar relation such as position uncertainty ≈ DOP × σrange. HDOP, VDOP, PDOP and GDOP refer to different coordinate combinations.",
+      "Persistent biases and correlated errors require additional treatment. An RSS number can look small while a shared timing or atmospheric bias moves all measurements together. The underlying covariance and the chosen error metric determine whether the simple scalar approximation is appropriate."
+    ],
+    "example": "Independent 3 m and 4 m one-sigma range residuals combine to 5 m. If the matching DOP is 2, the associated approximate coordinate-error scale is 10 m under the equal-variance geometry model.",
+    "questions": [
+      {
+        "prompt": "Two independent zero-mean error sources each have σ = 2 m. What is the combined σ?",
+        "hint": "Add variances and then take the square root.",
+        "answer": "σ = √(2²+2²) = √8 ≈ 2.83 m."
+      },
+      {
+        "prompt": "Can a known 5 m constant bias be combined with zero-mean random errors as if it were another independent standard deviation?",
+        "hint": "A bias and a random spread describe different things.",
+        "answer": "A fixed bias should be modeled and corrected or reported separately. Treating it as independent zero-mean noise hides its systematic effect; correlated random residuals also need covariance terms."
+      }
+    ],
+    "relatedTools": []
+  },
+  "navigation-frames": {
+    "problem": "the coordinate transformation needed to compare an Earth station with a satellite position.",
+    "explanation": [
+      "An Earth-fixed coordinate system rotates with the planet. In a spherical approximation, geocentric latitude L, longitude λ and radius R+h give x = (R+h)cosL cosλ, y = (R+h)cosL sinλ, z = (R+h)sinL.",
+      "Rotating this vector about the polar axis by the Earth angle gives a simplified inertial representation. The point has the same physical position and radius, while its coordinate components depend on the reference frame.",
+      "For actual navigation, use a consistent terrestrial reference frame, ellipsoidal geodetic coordinates, satellite ephemeris epoch and signal transmission time. The Earth rotates while a signal travels; sufficiently precise ranging must account for that effect."
+    ],
+    "example": "At zero latitude, zero longitude and zero height, the spherical Earth-fixed coordinates are (R,0,0). After a +90° rotation about z, the inertial coordinates are (0,R,0). The radius is unchanged.",
+    "questions": [
+      {
+        "prompt": "Which Cartesian component changes sign when latitude changes from +30° to −30° at fixed longitude and radius?",
+        "hint": "Cosine is even; sine is odd.",
+        "answer": "z changes sign. x and y remain the same because cos(+30°) = cos(−30°)."
+      },
+      {
+        "prompt": "Why must station and satellite vectors share both a frame and an epoch before subtraction?",
+        "hint": "Subtraction assumes the same coordinate basis at the same instant.",
+        "answer": "Different frames or epochs mix rotation and motion into the coordinate difference. Transform both positions consistently before interpreting their difference as a physical line-of-sight vector."
+      }
+    ],
+    "relatedTools": []
+  },
+  "near-far": {
+    "problem": "why a weak code can remain obscured by a much stronger code despite small cross-correlation.",
+    "explanation": [
+      "A correlator matches the desired code and ideally reduces other codes by their cross-correlation. If the unwanted signal has voltage amplitude Ai and normalized cross-correlation magnitude |ρ|, its residual amplitude is Ai|ρ|.",
+      "Power is amplitude squared, so the output signal-to-interference ratio is Ps/(Pi|ρ|²). A tenfold interfering voltage means a hundredfold interfering power. Use 20 log₁₀ for amplitude ratios and 10 log₁₀ for power ratios.",
+      "Power control can reduce near–far imbalance in communication networks. Navigation receivers also need sufficient front-end dynamic range and interference resistance. A desired digital correlation cannot recover information lost through analog saturation."
+    ],
+    "example": "An interferer 20 dB stronger in power has ten times the desired voltage amplitude. With |ρ| = 0.1, its residual voltage equals the desired voltage, giving 0 dB output SIR in this one-interferer model.",
+    "questions": [
+      {
+        "prompt": "For an interferer 40 dB stronger in power and |ρ| = 0.01, what is the residual power relative to the desired signal?",
+        "hint": "Multiply 10⁴ by (0.01)².",
+        "answer": "The residual powers are equal, so output SIR is 0 dB."
+      },
+      {
+        "prompt": "Why do many interferers require more than inspecting a single cross-correlation number?",
+        "hint": "Each signal brings its own power, delay and code phase.",
+        "answer": "Their leakage contributions depend on received powers, cross-correlations, relative phases, timing and data transitions. Multiple-access interference and noise must be combined in the appropriate statistical model."
+      }
+    ],
+    "relatedTools": []
+  },
+  "ofdm-multipath": {
+    "problem": "how one echo creates frequency-dependent fading, and why a cyclic prefix can simplify a multicarrier receiver.",
+    "explanation": [
+      "A direct path plus a delayed echo has H(f) = 1 + a exp(−j2πfτ), where a is the echo voltage ratio and τ is delay. The paths reinforce at some frequencies and cancel at others. This is a frequency-selective channel.",
+      "OFDM divides the useful symbol into orthogonal subcarriers spaced Δf = 1/Tu. With a long enough cyclic prefix and correct timing, channel convolution over the useful interval becomes circular. Each subcarrier then sees a complex gain that a receiver can estimate and equalize.",
+      "The prefix costs transmission time. A longer useful interval reduces its fractional overhead but increases sensitivity to time variation and frequency offset. Deep spectral fades also remain difficult because equalization can amplify noise."
+    ],
+    "example": "For τ = 1 µs and equal path amplitudes, the first cancellation occurs at f = 0.5 MHz. Subcarrier spacing 100 kHz gives Tu = 10 µs. A 1.2 µs prefix exceeds this delay in the ideal two-path timing model and occupies about 10.7% of the total symbol interval.",
+    "questions": [
+      {
+        "prompt": "What useful-symbol duration corresponds to 50 kHz subcarrier spacing?",
+        "hint": "Use Tu = 1/Δf and keep seconds and hertz consistent.",
+        "answer": "Tu = 1/(50,000 Hz) = 20 µs."
+      },
+      {
+        "prompt": "Does a prefix longer than the echo delay eliminate a deep frequency-domain channel null?",
+        "hint": "Separate circular-convolution structure from the value of H(f).",
+        "answer": "It prevents adjacent useful-symbol interference under the ideal assumptions and enables one-tap subcarrier equalization. A channel null remains a weak or lost subcarrier and can severely amplify equalized noise."
+      }
+    ],
+    "relatedTools": []
+  },
+  "beamforming-frontends": {
+    "problem": "why the position of spatial combining matters to receiver dynamic range.",
+    "explanation": [
+      "An analog beamformer combines element voltages before some later receiver stages. A digital beamformer first samples individual channels and then applies complex weights, y = wᴴx. Hybrid systems distribute the combining between analog and digital stages.",
+      "Digital weights can form beams and nulls flexibly, but the front ends and ADCs first encounter the uncombined signals. A strong interferer can exceed their linear range before the digital null is formed. Analog suppression placed earlier can reduce that burden, at the cost of hardware and combining constraints.",
+      "Powers in dBm must be converted to linear milliwatts before adding. The linear-limit control here illustrates headroom only; it does not model compression, ADC bits, noise figure or a complete multi-element receiver."
+    ],
+    "example": "A −10 dBm interferer and a −70 dBm desired signal produce a total very close to −10 dBm. If the front-end limit is −20 dBm, the input exceeds it by about 10 dB. A later ideal 40 dB digital null cannot reconstruct samples that clipped earlier.",
+    "questions": [
+      {
+        "prompt": "Why is adding −30 dBm and −30 dBm as −60 dBm incorrect?",
+        "hint": "Convert each input to milliwatts before adding.",
+        "answer": "Each is 0.001 mW. Their sum is 0.002 mW, or approximately −26.99 dBm."
+      },
+      {
+        "prompt": "Where must an interference-reduction stage act if its purpose is to protect a particular amplifier from saturation?",
+        "hint": "Follow signal flow toward that amplifier.",
+        "answer": "It must reduce the unwanted power before that amplifier. Suppression after the amplifier can improve a later signal statistic but cannot undo the amplifier’s lost linear information."
+      }
+    ],
+    "relatedTools": []
+  }
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="referrer" content="no-referrer">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+<meta name="description" content="Adaptive MODCOD: interactive figures, explanations, examples and practice.">
+<title>Adaptive MODCOD | Course Lab</title>
+<link rel="icon" href="../../../../../assets/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="../../../../../assets/course-lab.css">
+<link rel="stylesheet" href="../../../../../assets/topics.css">
+<script src="../../../../../assets/figure-utils.js" defer></script>
+<script src="../../../../../assets/course-lab.js" defer></script>
+<script src="../../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/adaptive-modcod/"><link rel="stylesheet" href="../../../../../assets/catalog.css"><script src="../../../../../assets/catalog.js" defer></script></head><body class="topic-site">
+<a class="lab-skip" href="#course-lab">Skip to content</a>
+<header class="catalog-header"><div class="catalog-bar"><a class="catalog-brand" href="../../../../../">Course Lab</a><nav aria-label="Site"><a href="../../../../">Courses</a><a href="../../../../../search/">Search</a><a href="../../../../../progress/">Progress</a></nav><label class="course-switch-label">Course<select id="course-switcher"><option value="../../../../../">Choose a course</option><option value="../../" selected>ECE 6390 · Satellite Communications and Navigation Systems</option><option value="../../../ece6612/" >ECE 6612 · Computer Network Security</option><option value="../../../../byu/phscs587/" >PHSCS 587 · Physics of Semiconductor Devices</option></select></label></div><nav class="course-navigation" aria-label="Current course"><a data-site-view="overview" href="../../">ECE 6390 overview</a><a data-site-view="topics" href="../">Topics</a><a data-site-view="orbit" href="../../orbit/">Orbit</a><a data-site-view="solar" href="../../solar/">Solar components</a><a data-site-view="project" href="../../project/">GeorgiaTenna</a><a data-site-view="lab" href="../../lab/">All simulations</a></nav></header>
+<main id="course-lab" class="topic-page" data-topic="adaptive-modcod">
+<p class="topic-breadcrumb"><a href="../#group-Digital">Digital signals</a></p>
+<h1 id="topic-title">Adaptive MODCOD</h1>
+<div id="subjects" hidden></div><div id="concepts" hidden></div>
+<section id="panel" aria-labelledby="topic-title">
+<figure class="topic-demonstration"><div class="workspace"><div class="visual"><div id="figure" class="figure" role="region" aria-label="Interactive figure" tabindex="0"></div><div id="stats" class="stats" aria-live="polite"></div></div><div id="controls" class="controls"></div></div>
+<figcaption>Fig. 1. <span id="heading">Use a robust mode in a fade and a faster mode when margin returns</span>.</figcaption></figure>
+<div id="equation" class="equation"></div><p id="note" class="note"></p><p id="intro" hidden></p><p id="question" hidden></p>
+<section class="topic-reading"><h2>From the figure to the physics</h2><p>Fig. 1 shows how a transmitter trades data rate for robustness as the channel fades.</p><p>Each modulation-and-coding mode combines an alphabet size M, code rate Rc, and required quality for a stated error target. At a fixed symbol rate, information rate is Rs log₂M Rc before additional overhead.</p><p>The demonstration selects the fastest supplied mode whose toy C/N threshold is met. As a fade deepens, it can move to fewer bits per symbol or a lower code rate to preserve the stated feasibility rule.</p><p>Real switching decisions also depend on measured error performance, estimator uncertainty, feedback delay, and hysteresis. The supplied threshold table illustrates the decision mechanism rather than specifying a communication standard.</p></section>
+<section class="topic-reading"><h2>Example</h2><p>At 1 Mbaud, QPSK with Rc = 1/2 carries 1 Mbit/s, while 16-QAM with Rc = 3/4 carries 3 Mbit/s before overhead.</p></section>
+
+<details class="topic-sources"><summary>Model and course sources</summary><ul id="sources"></ul></details>
+<section class="topic-reading practice" aria-labelledby="practice-title"><h2 id="practice-title">Practice</h2><article class="practice-question" data-practice="adaptive-modcod-1"><h3>1. Why might an adaptive link delay switching upward even when a noisy C/N estimate briefly crosses a mode&#x27;s nominal threshold?</h3>
+<label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea>
+<div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div>
+<p id="hint-1" class="practice-hint" hidden>Consider prediction error, feedback delay, and rapid back-and-forth switching.</p><p id="answer-1" class="practice-answer" hidden>A switching margin and hysteresis can reduce outages and unstable mode changes. A brief threshold crossing may not persist long enough to support the faster mode at its required error target.</p></article></section>
+</section><footer id="footer" hidden></footer><nav class="topic-sequence" aria-label="More in this topic"><a rel="prev" href="../rate-bandwidth/">← Bits, baud &amp; bandwidth</a><a rel="next" href="../amplifier-backoff/">Amplifier &amp; backoff →</a></nav>
+<noscript><p>Enable JavaScript for the interactive figure and practice feedback.</p></noscript></main>
+</body></html>
