@@ -53,8 +53,11 @@ def check():
         assert len(page.ids) == len(set(page.ids)), f'Duplicate IDs in {file.name}'
         assert page.csp and "script-src 'self'" in page.csp and "style-src 'self'" in page.csp
         assert 'unsafe-inline' not in page.csp and 'unsafe-eval' not in page.csp
-        assert all(f'data-site-view="{name}"' in text for name in ('courses','search','simulations','topics'))
-        assert page.canonical == ['https://courselab.jacobdanderson.net/'+str(file.relative_to(dist)).removesuffix('index.html')]
+        assert all(f'data-site-view="{name}"' in text for name in ('courses','topics','search'))
+        assert 'data-site-view="simulations"' not in text
+        name=file.relative_to(dist).as_posix()
+        canonical='/topics/' if name=='simulations/index.html' else '/'+name.removesuffix('index.html')
+        assert page.canonical == ['https://courselab.jacobdanderson.net'+canonical]
         walkthrough = ['rk-heading', 'ol-rk-svg', 'ol-stages', 'flow-heading', 'ol-code-detail']
         if file == dist / course / 'admin/index.html':
             assert all(name in page.ids for name in walkthrough), 'Admin walkthrough is incomplete'

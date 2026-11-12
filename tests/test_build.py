@@ -138,7 +138,7 @@ class BuildTests(unittest.TestCase):
                 links = {link.get('data-site-view'): urlparse(urljoin(location, link.get('href', ''))).path
                          for link in outline.links if link.get('data-site-view')}
                 self.assertEqual(links['courses'], '/courses/')
-                self.assertEqual(links['simulations'], '/simulations/')
+                self.assertEqual(links['topics'], '/topics/')
                 if pathname != '/courses/gt/ece6390/admin/':
                     self.assertFalse(any(urlparse(urljoin(location, link.get('href', ''))).path.startswith('/courses/gt/ece6390/admin')
                                          for link in outline.links))

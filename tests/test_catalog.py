@@ -31,10 +31,11 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(page=str(file.relative_to(DIST))):
                 tags=Tags(file.read_text()).tags
                 expected='https://courselab.jacobdanderson.net/'+file.relative_to(DIST).as_posix().removesuffix('index.html')
+                if file==DIST/'simulations/index.html':expected='https://courselab.jacobdanderson.net/topics/'
                 self.assertEqual([a['href'] for t,a in tags if t=='link' and a.get('rel')=='canonical'],[expected])
                 header=__import__('re').search(r'<header class="catalog-header">(.*?)</header>',file.read_text(),__import__('re').S).group(1)
                 nav=[a.get('data-site-view') for t,a in Tags(header).tags if t=='a']
-                self.assertEqual(nav,['courses','search','simulations','topics'])
+                self.assertEqual(nav,['courses','topics','search'])
                 self.assertNotIn('<select',header)
                 for tag,a in tags:
                     for key in ['src','href']:
@@ -44,6 +45,12 @@ class CatalogTests(unittest.TestCase):
                         for host in ['courselab.jacobdanderson.net','learn.jacobdanderson.net']:
                             base='https://'+host+'/'+file.relative_to(DIST).as_posix()
                             self.assertEqual(urlsplit(urljoin(base,url)).hostname,host)
+
+    def test_simulations_alias_preserves_links_without_a_duplicate_index(self):
+        tags=Tags((DIST/'simulations/index.html').read_text()).tags
+        self.assertIn(('meta',{'http-equiv':'refresh','content':'0;url=../topics/'}),tags)
+        self.assertIn(('meta',{'name':'robots','content':'noindex'}),tags)
+        self.assertNotIn('https://courselab.jacobdanderson.net/simulations/',(DIST/'sitemap.xml').read_text())
 
     def test_ece6390_navigation_uses_the_same_topic_structure_as_other_courses(self):
         page=(DIST/'courses/gt/ece6390/index.html').read_text()

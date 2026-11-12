@@ -256,9 +256,9 @@ try {
     for (const pathname of ['/courses/gt/ece6390/orbit/', '/courses/gt/ece6390/solar/']) {
       const response = await page.goto(new URL(pathname, base).href, { waitUntil: 'load' });
       assert.ok(response?.ok());
-      const lab = page.locator('.catalog-header a[data-site-view="simulations"]');
+      const lab = page.locator('.catalog-header a[data-site-view="topics"]');
       assert.equal(await lab.count(), 1);
-      assert.equal(new URL(await lab.getAttribute('href'), page.url()).pathname, '/simulations/');
+      assert.equal(new URL(await lab.getAttribute('href'), page.url()).pathname, '/topics/');
       assert.equal(await page.locator('a[href*="admin"]').count(), 0);
     }
   });

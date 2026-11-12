@@ -86,7 +86,7 @@ class CourseLabTests(unittest.TestCase):
             links = [urlsplit(urljoin(ORIGIN + route, attrs['href'])).path
                      for tag, attrs in document(relative).tags
                      if tag == 'a' and attrs.get('href')]
-            self.assertIn('/simulations/', links, f'{route} must expose simulations')
+            self.assertIn('/topics/', links, f'{route} must expose the unified topic index')
         lab_links = [urlsplit(urljoin(location, attrs['href'])).path
                      for tag, attrs in page.tags if tag == 'a' and attrs.get('href')]
         self.assertIn('/courses/', lab_links)

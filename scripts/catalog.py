@@ -28,15 +28,15 @@ def relative(file, target):
 def header(file, courses, current=None):
     current_route=route(file)
     nav=[]
-    for ident,label,target in [('courses','Courses','/courses/'),('search','Search','/search/'),('simulations','Simulations','/simulations/'),('topics','Topics','/topics/')]:
-        active=' aria-current="page"' if current_route==target or (ident=='topics' and '/topics/' in current_route) or (ident=='simulations' and current_route.split('/')[-2] in ['orbit','solar','project','lab','admin']) else ''
+    for ident,label,target in [('courses','Courses','/courses/'),('topics','Topics','/topics/'),('search','Search','/search/')]:
+        active=' aria-current="page"' if current_route==target or (ident=='topics' and ('/topics/' in current_route or current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations'])) else ''
         nav.append(f'<a data-site-view="{ident}" href="{relative(file,target)}"{active}>{label}</a>')
-    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site">'+''.join(nav)+'</nav></header>'
+    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:2])+'</div>'+nav[2]+'</nav></header>'
 
 
-def page(file, title, body, csp, courses, current=None, extra='', noindex=False):
+def page(file, title, body, csp, courses, current=None, extra='', noindex=False, canonical=None):
     css = ''.join(f'<link rel="stylesheet" href="{relative(file,"/assets/"+x)}">' for x in ['course-lab.css','topics.css','catalog.css'])
-    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="{csp}"><title>{html.escape(title) + (' | Course Lab' if title != 'Course Lab' else '')}</title><link rel="canonical" href="{PRIMARY+route(file)}">{'<meta name="robots" content="noindex">' if noindex else ''}<link rel="icon" href="{relative(file,'/assets/favicon.svg')}" type="image/svg+xml">{css}{extra}</head><body class="topic-site"><a class="lab-skip" href="#main">Skip to content</a>{header(file,courses,current)}{body}</body></html>'''
+    return f'''<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="{csp}"><title>{html.escape(title) + (' | Course Lab' if title != 'Course Lab' else '')}</title><link rel="canonical" href="{PRIMARY+(canonical or route(file))}">{'<meta name="robots" content="noindex">' if noindex else ''}<link rel="icon" href="{relative(file,'/assets/favicon.svg')}" type="image/svg+xml">{css}{extra}</head><body class="topic-site"><a class="lab-skip" href="#main">Skip to content</a>{header(file,courses,current)}{body}</body></html>'''
 
 
 def practice(ident, questions):
@@ -168,19 +168,19 @@ def build_catalog(root, csp):
             topic_file=ECE+'/topics/index.html'
             topic_body='<main id="course-lab" class="topic-index"><p class="topic-breadcrumb"><a href="../">ECE 6390</a></p><h1>Course topics</h1>'+grouped_topics(topic_file,course_topics,groups.get(key,[]))+'<p><a data-site-view="lab" href="../lab/">Simulation library</a></p></main>'
             (dest/topic_file).write_text(page(topic_file,'Course topics',topic_body.replace('id="course-lab"','id="main"'),csp,courses,key))
-    interactive={('gt/ece6390', t['id']) for t in topics}
-    interactive.update((t['course'],t['id']) for t in extra_topics if t.get('simulation'))
-    for kind,title in [('topics','Topics'),('simulations','Simulations')]:
-        file=kind+'/index.html';sections=[]
-        for c in courses:
-            key=c['institution']+'/'+c['code']
-            chosen=[x for x in index if x['course']==key and (kind=='topics' or (key,x['route'].rstrip('/').split('/')[-1]) in interactive)]
-            course_title=c['displayCode']+' · '+c['title']
-            content=grouped_topics(file,chosen,groups.get(key,[])).replace('<h2>','<h3>').replace('</h2>','</h3>') if chosen else '<p>Interactive models in progress.</p>'
-            sections.append(f'<section><h2><a href="{relative(file,"/courses/"+key+"/")}">{html.escape(course_title)}</a></h2>'+content+'</section>')
-        body='<main id="main" class="catalog-page"><h1>'+title+'</h1>'+''.join(sections)+'</main>'
-        folder=dest/kind;folder.mkdir(exist_ok=True)
-        (folder/'index.html').write_text(page(file,title,body,csp,courses))
+    file='topics/index.html';sections=[]
+    for c in courses:
+        key=c['institution']+'/'+c['code']
+        chosen=[x for x in index if x['course']==key]
+        course_title=c['displayCode']+' · '+c['title']
+        content=grouped_topics(file,chosen,groups.get(key,[])).replace('<h2>','<h3>').replace('</h2>','</h3>')
+        sections.append(f'<section><h2><a href="{relative(file,"/courses/"+key+"/")}">{html.escape(course_title)}</a></h2>'+content+'</section>')
+    body='<main id="main" class="catalog-page"><h1>Topics</h1>'+''.join(sections)+'</main>'
+    (dest/'topics').mkdir(exist_ok=True)
+    (dest/file).write_text(page(file,'Topics',body,csp,courses))
+    (dest/'simulations').mkdir(exist_ok=True)
+    alias='<main id="main" class="catalog-page"><h1>Topics</h1><p><a href="../topics/">Topics</a></p></main>'
+    (dest/'simulations/index.html').write_text(page('simulations/index.html','Topics',alias,csp,courses,extra='<meta http-equiv="refresh" content="0;url=../topics/">',noindex=True,canonical='/topics/'))
     home='<main id="main" class="catalog-page"><h1>Course Lab</h1><p class="catalog-intro">Course notes, explanations and interactive experiments.</p><section id="courses"><h2>Courses</h2><ul class="course-cards">'+''.join(cards)+'</ul></section></main>'
     (dest/'index.html').write_text(page('index.html','Course Lab',home,csp,courses))
     (dest/'courses').mkdir(exist_ok=True)
@@ -206,6 +206,6 @@ def build_catalog(root, csp):
     (dest/'search/index.html').write_text(page('search/index.html','Search',search,csp,courses,extra='<script src="../assets/search-index.js" defer></script><script src="../assets/search.js" defer></script>',noindex=True))
     (dest/'progress').mkdir(exist_ok=True)
     (dest/'progress/index.html').write_text(page('progress/index.html','Progress and preferences',(root/'src/progress.html').read_text(),csp,courses,extra='<script src="../assets/progress.js" defer></script>',noindex=True))
-    urls=[PRIMARY+route(f.relative_to(dest)) for f in sorted(dest.rglob('*.html')) if '/admin/' not in str(f.relative_to(dest)) and f.parent.name not in ['search','progress']]
+    urls=[PRIMARY+route(f.relative_to(dest)) for f in sorted(dest.rglob('*.html')) if '/admin/' not in str(f.relative_to(dest)) and f.parent.name not in ['search','progress','simulations']]
     (dest/'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'+''.join('<url><loc>'+html.escape(u)+'</loc></url>\n' for u in urls)+'</urlset>\n')
     (dest/'robots.txt').write_text('User-agent: *\nDisallow: /'+ECE+'/admin/\nSitemap: '+PRIMARY+'/sitemap.xml\n')
