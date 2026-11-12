@@ -24,6 +24,7 @@
 .progress-actions { display:flex; gap:18px; flex-wrap:wrap; margin-top:22px; align-items:center; }
 .progress-actions button,.progress-actions label { min-height:44px; }
 @media(max-width:760px) { .catalog-header { margin-inline:16px; } .topic-site .catalog-header { margin-inline:0; } .course-cards { grid-template-columns:1fr; } .catalog-bar { column-gap:12px; } .catalog-primary { gap:16px; } }
+@media(max-width:380px) { .catalog-bar { row-gap:8px; } .catalog-primary { grid-column:1 / -1; grid-row:1; justify-self:center; } .catalog-bar > [data-site-view="search"] { grid-row:2; } }
 .additional-controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px 28px; max-width:850px; margin:22px 0; }
 .additional-controls .control { margin:0; }
 @media(max-width:600px) { .additional-controls { grid-template-columns:1fr; } }

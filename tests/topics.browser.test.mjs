@@ -20,7 +20,7 @@ try{
  await mkdir(output,{recursive:true});
  await check('Topic index reaches every independent page',async()=>{
   await page.goto(new URL('/courses/gt/ece6390/topics/',base).href);
-  assert.equal(await page.locator('.topic-grid a').count(),66);
+  assert.equal(await page.locator('.topic-grid a').count(),67);
   assert.equal(await page.locator('h1').count(),1);
   const links=await page.locator('.topic-grid a').evaluateAll(els=>els.map(e=>e.pathname));
   assert.deepEqual([...links].sort(),manifest.map(x=>x.route).sort());
@@ -29,7 +29,7 @@ try{
   for(const item of manifest){
    const response=await page.goto(new URL(item.route,base).href);
    assert.ok(response.ok(),item.id);
-   await page.waitForFunction(id=>window.CourseLab?.modules.length===66&&document.querySelector('#course-lab').dataset.topic===id&&document.querySelector('#figure svg'),item.id);
+   await page.waitForFunction(id=>window.CourseLab?.modules.length===67&&document.querySelector('#course-lab').dataset.topic===id&&document.querySelector('#figure svg'),item.id);
    assert.equal(await page.locator('h1').textContent(),item.title);
    assert.equal(await page.locator('#figure.error').count(),0,item.id);
    assert.equal(await page.locator('[data-practice]').count(),item.questions);
@@ -64,7 +64,7 @@ try{
   assert.equal(await page.locator('#input-delay').count(),1);
  });
  await check('New scientific graphics keep labels inside their SVG at default and endpoint states',async()=>{
-  await page.goto(new URL('/courses/gt/ece6390/lab/',base).href);await page.waitForFunction(()=>window.CourseLab?.modules.length===66);
+  await page.goto(new URL('/courses/gt/ece6390/lab/',base).href);await page.waitForFunction(()=>window.CourseLab?.modules.length===67);
   const newIds=manifest.slice(50).map(x=>x.id),failures=[];
   for(const id of newIds){
    await page.evaluate(id=>CourseLab.select(id),id);

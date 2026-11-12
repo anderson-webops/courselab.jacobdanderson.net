@@ -526,5 +526,13 @@
     "heading": "Six sky directions constrain east, north, up and receiver clock together",
     "route": "/courses/gt/ece6390/topics/gnss-dop-3d/",
     "questions": 2
+  },
+  {
+    "id": "orbit-types",
+    "group": "Orbits",
+    "title": "Orbit types",
+    "heading": "Orbit shape, tilt and period determine where a satellite travels",
+    "route": "/courses/gt/ece6390/topics/orbit-types/",
+    "questions": 2
   }
 ]

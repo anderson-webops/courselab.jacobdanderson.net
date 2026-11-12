@@ -1,6 +1,6 @@
 # Course Lab
 
-Shared course notes, explanations, figures, simulations and attempt-first practice. Courses and Topics are centered in the header; Search sits at its right edge. Topics includes the interactive lessons and related tools. The former `/simulations/` index forwards to `/topics/`. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
+Shared course notes, explanations, figures, simulations and attempt-first practice. Courses, Topics and Simulations are centered in the header; Search sits at its right edge. Topics lists the lessons; Simulations opens the ECE 6390 Simulation Library at `/courses/gt/ece6390/lab/`. The `/simulations/` alias forwards to that library. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
 
 Source: [anderson-webops/courselab.jacobdanderson.net](https://github.com/anderson-webops/courselab.jacobdanderson.net).
 
@@ -32,7 +32,7 @@ Each course has its own landing page. Topics use `/courses/<institution>/<course
 
 `src/courses.json` is the shared course registry. `scripts/catalog.py` generates the site home, course pages, navigation, breadcrumbs, search, canonical URLs and sitemap. `scripts/topics.py` builds the ECE 6390 lesson pages around the preserved model registry. All courses share figure utilities, control presentation, practice feedback and optional browser storage.
 
-ECE 6390 authoring sources are `src/course-lab.html`, `src/course-update.js`, `src/course-extensions.js` and `src/course-navigation.js`; lesson prose and practice are in the corresponding `topic-*.json` files. The supplied HTML originals retain their original bytes. Adaptations belong in the builder and shared assets.
+ECE 6390 authoring sources are `src/course-lab.html`, `src/course-update.js`, `src/course-extensions.js`, `src/course-navigation.js` and `src/orbit-types.js`; lesson prose and practice are in the corresponding `topic-*.json` files. The supplied HTML originals retain their original bytes. Adaptations belong in the builder and shared assets.
 
 Other courses use the topic-array schema demonstrated by `src/additional-course-topics.json` and the BYU topic parts. Each entry provides `course`, `id`, `title`, `heading`, a figure-led `problem`, original `figureSvg`, explanatory paragraphs, an example, 1–2 staged questions and source notes. Optional `simulation` selects a model from `window.CourseFigureRegistry`. `src/course-model-assets.json` lists each course’s model scripts; the shared renderer supplies controls, equations, model scope, URL state and reset behavior. Subject modules use the common `{id, controls, render, checks}` interface. Figures and equations must state their units, assumptions and model limits.
 
@@ -57,3 +57,5 @@ All internal links and assets are relative. Course Lab retains the opened hostna
 `deploy/` contains the reviewed static-host and domain configuration. DNS, valid TLS for both names, and both hostnames selecting the same exact `dist/` release are production prerequisites. HTTP may redirect to HTTPS on its **same hostname**. Preserve the existing IPv4 and IPv6 records and rollback release when activating a new artifact.
 
 Source publication is separate from protected deployment. Source agents commit, push and publish a verified immutable release through this repository. Production activation and server access remain with the protected server-side process. Consult the domain verification receipt for the exact observed state and remaining access/configuration requirements; a successful local build does not establish a public deployment.
+
+The Orbit types lesson uses `src/orbit-types.js` and `src/orbit-types-topic.json`; the same model appears in the Simulation Library and its standalone topic route. Its Kepler and rotating-Earth assumptions are documented alongside the controls.

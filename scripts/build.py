@@ -124,6 +124,7 @@ const groups=[""")
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-update.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-extensions.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-navigation.js').read_text() + '\nconst groups=[')
+    js = replace_once(js, "const groups=[", (ROOT / 'src/orbit-types.js').read_text() + '\nconst groups=[')
     order=[ident for group in json.loads((ROOT/'src/topic-groups.json').read_text())['gt/ece6390'] for ident in group['ids']]
     js = replace_once(js,'const groups=[','const courseTopicOrder='+json.dumps(order)+';\nmodules.sort((a,b)=>{const rank=id=>{const i=courseTopicOrder.indexOf(id);return i<0?999:i;};return rank(a.id)-rank(b.id);});\nconst groups=[')
     js = replace_once(js, "const root=document.getElementById('course-lab')", "if(document.querySelector('[data-project-overview]')) { window.CourseLab={modules,U,checks:()=>modules.flatMap(m=>(m.checks?.()||[]).map(x=>({module:m.id,...x})))}; return; }\nconst root=document.getElementById('course-lab')")

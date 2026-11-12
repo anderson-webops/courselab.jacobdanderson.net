@@ -46,6 +46,7 @@ def check():
     for name in required:
         assert (dist / name).is_file(), f'Missing required artifact: {name}'
     allowed_links = {link['url'] for links in json.loads((ROOT / 'src/related-tools.json').read_text()).values() for link in links}
+    allowed_links.update(json.loads((ROOT / 'src/provenance.json').read_text()).get('reference_links', []))
     for file in dist.rglob('*.html'):
         text = file.read_text()
         page = Page()
@@ -53,10 +54,9 @@ def check():
         assert len(page.ids) == len(set(page.ids)), f'Duplicate IDs in {file.name}'
         assert page.csp and "script-src 'self'" in page.csp and "style-src 'self'" in page.csp
         assert 'unsafe-inline' not in page.csp and 'unsafe-eval' not in page.csp
-        assert all(f'data-site-view="{name}"' in text for name in ('courses','topics','search'))
-        assert 'data-site-view="simulations"' not in text
+        assert all(f'data-site-view="{name}"' in text for name in ('courses','topics','simulations','search'))
         name=file.relative_to(dist).as_posix()
-        canonical='/topics/' if name=='simulations/index.html' else '/'+name.removesuffix('index.html')
+        canonical='/'+course+'lab/' if name=='simulations/index.html' else '/'+name.removesuffix('index.html')
         assert page.canonical == ['https://courselab.jacobdanderson.net'+canonical]
         walkthrough = ['rk-heading', 'ol-rk-svg', 'ol-stages', 'flow-heading', 'ol-code-detail']
         if file == dist / course / 'admin/index.html':

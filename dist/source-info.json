@@ -34,13 +34,15 @@
     "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
     "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import",
     "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree",
-    "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository"
+    "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository",
+    "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
+    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions"
   ],
   "source_sha256": {
     "additional-course-topics.json": "17b006b6a1b621787facb449f444f8d7fdd7ddf19b0991585e8a0644a0799cd9",
     "byu-topics-part-a.json": "a2879cf22ac06e60d94521b1eb09cdf9c571579560412991fe3b51348948aa83",
     "byu-topics-part-b.json": "3e7436b9c356e3d013587c7314d442139caf6da1e64ca46a82b545c0eae7fe67",
-    "catalog.css": "1e46bd78c4b8025774810dab1134283f254fc86ad03dac6d4bfd3e61274ec70b",
+    "catalog.css": "c98dccb07127503bfc5f4cfa5de1f2e4fa68284d880fd62d871ef033d7c230df",
     "course-extensions.js": "d8b43594df994f8e92ddfb297d35e477b09b35b4849dc88aa3913b9d7b110e83",
     "course-figures.js": "6e8c3687b4bd64349a70b8d3fe6bb89ef93b74289ce2d3d7fcb0abaa4f712ec9",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
@@ -55,12 +57,14 @@
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
     "orbit-runtime.css": "6dd52dbf5c67b5616c75cfbe576d6677d4cc94128dea92819195648f3eed2afa",
+    "orbit-types-topic.json": "245faf51230071f0cb8ebdd272239ae07f538872db0d7bd166ce30d5d51aa9dd",
+    "orbit-types.js": "4db50ecaacde412b1250108a27a1a064d12ea6ce397903cef7cd52c00b20a651",
     "orbit.html": "798f06231e9148daeb3e31c972de0932f368b6f662ee173b46cf9aad6857721d",
     "progress.html": "b3a269c87cd2275db596ae879643668f374398d418475e3e6c361cdcb85cd763",
     "progress.js": "0bff4a8f781755c8884d0acfb313aa45ae56253f72a64157140a4549d7ad4d11",
-    "project.css": "c8957fe94973c6b02b7890eccf70b67b4a7fad87484137cafdab3ab39a9e304e",
-    "project.html": "80250743280652b61b1cea430f9d5bdf984e44249c67da193196014d24851639",
-    "project.js": "7f612368ffe2e6e58fa5b437dcbf06c9318fbf784916d0f13c436ed8b5343836",
+    "project.css": "3114ca753fb53d5df0da29e84fa842014a12878a57d17582e1e8e60252d10427",
+    "project.html": "779a3b82d8f9c51795fa21d96f7cef23bbe3c8135fb651140bd5c585a6d15613",
+    "project.js": "34cd2610066dcfaa07477cab5b28f6f57876a429863ddb54032457d4a27ea2aa",
     "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
     "search.js": "2b48776e621e52b5dbdf8e86f0f0b640f8d3e8783ed4be906f0d9981e1d4f8e8",
     "security-models.js": "89d2f22c3aaab1b4160721c093ae7782f2610c2767eca58e29daf6a2980452fd",
@@ -72,7 +76,7 @@
     "sun-view.js": "70301ffa1b839e387ee0c4cfe787f4bdfceed2bffbe5cb7589beab5dc2a66de1",
     "topic-content.json": "2ca1b6e080d0b838860130536078da432ca58565879d155d1d94d4aec2145bee",
     "topic-extensions.json": "653d3ee8c32b92ff1af03609eb21d822a5c84755ab44ca4b70c49263e334db4c",
-    "topic-groups.json": "a91d7d870774c438b61ef92204e6ebec792b182b279e93a1c9b71a56aea4c612",
+    "topic-groups.json": "b0a1f509dae44c56140865d68f7d0fa143d10f0c07324701e56957ac24130cfd",
     "topic-navigation.json": "d92cc056c59e1b19f4ae4644d008f4391864b70b96a1c465b2f05170265b3c8a",
     "topic-practice.js": "0f730cf9322f1a558e200e91e224316f473e02db81d03a94049424b0a48bd56a",
     "topics.css": "d044454c10e953a71321b28a7cc276d58065e27af09a69a253dd8f165253905c"
@@ -80,5 +84,8 @@
   "aliases": [
     "learn.jacobdanderson.net"
   ],
-  "version": "1.1.0"
+  "reference_links": [
+    "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
+  ],
+  "version": "1.2.0"
 }

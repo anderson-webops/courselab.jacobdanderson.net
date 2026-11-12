@@ -4,7 +4,8 @@
   const {modules,U}=window.CourseLab, $=id=>document.getElementById(id);
   const dot=(a,b)=>a.reduce((s,x,i)=>s+x*b[i],0),sub=(a,b)=>a.map((x,i)=>x-b[i]);
   const unit=a=>{const n=Math.hypot(...a);return a.map(x=>x/n);};
-  const state={longitude:-90,normal:'target',phase:0,frequency:30,beamwidth:2,peak:-72};
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
+  const state={longitude:-90,normal:'target',rays:'both',axes:true,steer:true,phase:0,frequency:30,beamwidth:2,peak:-72};
   const scope='Illustrative model';
   for(const mount of document.querySelectorAll('[data-project-module]')){
     const module=modules.find(m=>m.id===mount.dataset.projectModule),values=Object.fromEntries(module.controls.map(c=>[c.id,c.value]));
@@ -35,26 +36,61 @@
   function geometry(){
     const R=6400,Rs=42400,L=U.rad(33),lon=U.rad(-84),slon=U.rad(state.longitude);
     const satellite=[Rs*Math.cos(slon),Rs*Math.sin(slon),0],station=[R*Math.cos(L)*Math.cos(lon),R*Math.cos(L)*Math.sin(lon),R*Math.sin(L)];
-    const fromSat=unit(sub(station,satellite)),nadir=unit(satellite.map(x=>-x)),normal=state.normal==='target'?fromSat:nadir;
-    const towardSat=unit(sub(satellite,station)),elevation=Math.asin(U.clamp(dot(towardSat,unit(station)),-1,1)),scan=state.normal==='target'?0:Math.acos(U.clamp(dot(fromSat,normal),-1,1));
-    const project=p=>[300+.006*(.8*p[0]-.6*p[1]),260+.006*(.36*p[0]+.48*p[1]-.8*p[2])],a=project(satellite),b=project(station),norm=project(satellite.map((x,i)=>x+normal[i]*9000));
-    const plane=unit([normal[1],-normal[0],0]),p1=project(satellite.map((x,i)=>x+plane[i]*3500)),p2=project(satellite.map((x,i)=>x-plane[i]*3500));
-    let s=U.circle(300,260,R*.006,'none',U.C.c)+`<ellipse cx="300" cy="260" rx="${R*.006}" ry="${R*.006*.6}" fill="none" stroke="${U.C.grid}"/>`;
-    s+=U.line(...a,300,260,U.C.c,1.5,'5 5')+U.arrow(...a,...b,U.C.a)+U.arrow(...a,...norm,U.C.b)+U.line(...p1,...p2,U.C.d,5)+U.circle(...b,4,U.C.a,U.C.a)+U.circle(...a,5,U.C.d,U.C.d);
-    s+=U.text(240,320,'Earth')+U.text(b[0]-15,b[1]+24,'Target','end')+U.text(a[0]+12,a[1]-15,'GEO satellite')+U.text(40,38,'Earth-fixed 3-D geometry, shown in an oblique projection');
-    s+=U.text(570,90,'Target: 33°N, 84°W')+U.text(570,130,'Slant range: '+U.fmt(Math.hypot(...sub(satellite,station)),0)+' km')+U.text(570,170,'Ground elevation: '+U.fmt(U.deg(elevation),1)+'°')+U.text(570,210,'Array scan: '+U.fmt(U.deg(scan),2)+'°');
-    s+=U.line(70,380,110,380,U.C.a,3)+U.text(125,386,'Target ray')+U.line(330,380,370,380,U.C.b,3)+U.text(385,386,'Array normal')+U.line(580,380,620,380,U.C.c,2,'5 5')+U.text(635,386,'Nadir')+U.text(65,432,'GEO and Earth radii use their physical ratio; the antenna symbol is enlarged.');
-    $('project-geometry').innerHTML=U.svg(s,'Satellite-to-target ray, array normal and nadir with ground elevation',800,470);
+    // Subtract in one Earth-fixed frame before projecting onto either local frame.
+    const transmitVector=sub(station,satellite),lookVector=sub(satellite,station),range=Math.hypot(...lookVector),fromSat=unit(transmitVector);
+    const nadir=unit(satellite.map(x=>-x)),normal=state.normal==='target'?fromSat:nadir;
+    const east=[-Math.sin(lon),Math.cos(lon),0],north=[-Math.sin(L)*Math.cos(lon),-Math.sin(L)*Math.sin(lon),Math.cos(L)],up=unit(station);
+    const stationComponents=[east,north,up].map(axis=>dot(lookVector,axis));
+    const elevation=Math.atan2(stationComponents[2],Math.hypot(...stationComponents.slice(0,2))),azimuth=(U.deg(Math.atan2(stationComponents[0],stationComponents[1]))+360)%360;
+    // xA lies in the equatorial plane; yA = zA cross xA keeps the aperture frame right-handed.
+    const xA=unit([normal[1],-normal[0],0]),yA=cross(normal,xA),arrayComponents=[xA,yA,normal].map(axis=>dot(fromSat,axis));
+    const scan=Math.acos(U.clamp(arrayComponents[2],-1,1)),beam=state.steer?fromSat:normal;
+    const beamScan=Math.acos(U.clamp(dot(beam,normal),-1,1)),beamError=Math.acos(U.clamp(dot(beam,fromSat),-1,1));
+    const project=p=>[250+.005*(.8*p[0]-.6*p[1]),235+.005*(.36*p[0]+.48*p[1]-.8*p[2])],a=project(satellite),b=project(station);
+    const offset=(p,v,length)=>p.map((x,i)=>x+v[i]*length),end=v=>project(offset(satellite,v,10000));
+    const p1=project(offset(satellite,xA,3500)),p2=project(offset(satellite,xA,-3500));
+    let s=U.text(40,30,'Same Earth-fixed XYZ frame: subtract first, then use the observer’s axes');
+    s+=U.circle(250,235,R*.005,'var(--earth)',U.C.c)+`<ellipse cx="250" cy="235" rx="${R*.005}" ry="${R*.005*.6}" fill="none" stroke="${U.C.grid}"/>`;
+    s+=U.line(...a,250,235,U.C.muted,1.5,'5 5')+U.line(...a,...b,U.C.grid,1.5);
+    if(state.rays!=='look')s+='<g data-ray="transmit">'+U.arrow(...a,...project(offset(satellite,fromSat,range*.58)),U.C.a)+'</g>';
+    if(state.rays!=='transmit')s+='<g data-ray="look">'+U.arrow(...b,...project(offset(station,unit(lookVector),range*.25)),U.C.c)+'</g>';
+    s+=U.arrow(...a,...end(normal),U.C.b)+U.line(...p1,...p2,U.C.d,5);
+    s+='<g data-beam="'+(state.steer?'target':'broadside')+'">'+U.arrow(...a,...project(offset(satellite,beam,14500)),U.C.a)+'</g>';
+    s+=U.circle(...b,4,U.C.a,U.C.a)+U.circle(...a,5,U.C.d,U.C.d)+U.text(210,292,'Earth')+U.text(b[0]-10,b[1]+23,'Station / target','end')+U.text(a[0]-10,a[1]-15,'Satellite','end');
+    s+=U.text(500,74,'Target: 33°N, 84°W')+U.text(500,108,'Slant range: '+U.fmt(range,0)+' km')+U.text(500,142,'Az '+U.fmt(azimuth,1)+'°   El '+U.fmt(U.deg(elevation),1)+'°');
+    s+=U.text(500,184,'Required target scan: '+U.fmt(U.deg(scan),2)+'°')+U.text(500,216,'Actual beam scan: '+U.fmt(U.deg(beamScan),2)+'°')+U.text(500,248,state.steer?'Beam commanded toward target':'Beam stays broadside to the array');
+    s+=U.text(500,282,'dTX = rTarget − rSat')+U.text(500,310,'dlook = rSat − rTarget = −dTX');
+    s+=U.line(55,340,85,340,U.C.a,3)+U.text(95,346,'Downlink / beam')+U.line(285,340,315,340,U.C.c,3)+U.text(325,346,'Look ray')+U.line(455,340,485,340,U.C.b,3)+U.text(495,346,'Normal zA')+U.line(645,340,675,340,U.C.muted,2,'5 5')+U.text(685,346,'Nadir');
+
+    // Enlarged local insets share the oblique projection, but their arrows show unit directions.
+    const local=(origin,v,len=70)=>[origin[0]+len*(.8*v[0]-.6*v[1]),origin[1]+len*(.36*v[0]+.48*v[1]-.8*v[2])];
+    const ground=[215,475],array=[600,475];
+    s+=U.text(55,390,'Station frame: project dlook onto E, N, U')+U.text(430,390,'Aperture frame: project the unit downlink');
+    s+=U.circle(...ground,4,U.C.c,U.C.c)+U.circle(...array,4,U.C.d,U.C.d);
+    if(state.axes){
+      s+='<g data-local-axes="station">';
+      for(const [v,label,dx,dy]of[[east,'E',8,6],[north,'N',-12,-7],[up,'U',8,-7]]){const p=local(ground,v);s+=U.arrow(...ground,...p,U.C.muted)+U.text(p[0]+dx,p[1]+dy,label);}
+      s+='</g><g data-local-axes="aperture">';
+      for(const [v,label,dx,dy]of[[xA,'xA',8,6],[yA,'yA',7,12],[normal,'zA',-30,-12]]){const p=local(array,v);s+=U.arrow(...array,...p,U.C.muted)+U.text(p[0]+dx,p[1]+dy,label);}
+      s+='</g>';
+    }
+    if(state.rays!=='transmit')s+=U.arrow(...ground,...local(ground,unit(lookVector),105),U.C.c);
+    s+=U.arrow(...array,...local(array,normal,90),U.C.b)+U.arrow(...array,...local(array,beam,110),U.C.a);
+    s+=U.text(55,568,'E = '+U.fmt(stationComponents[0],0)+'; N = '+U.fmt(stationComponents[1],0)+' km')+U.text(55,594,'U = '+U.fmt(stationComponents[2],0)+' km; El = '+U.fmt(U.deg(elevation),1)+'°');
+    s+=U.text(430,568,'u = '+U.fmt(arrayComponents[0],3)+'; v = '+U.fmt(arrayComponents[1],3)) +U.text(430,594,'w = '+U.fmt(arrayComponents[2],3)+'; target offset = '+U.deg(beamError).toFixed(2)+'°');
+    s+=U.text(55,635,'Local arrows and antenna symbols are enlarged. Earth and GEO radii share one scale.');
+    $('project-geometry').innerHTML=U.svg(s,'Forward and reverse rays, station ENU and aperture frames, physical normal and electronically steered beam',800,665);
     $('project-longitude-value').textContent=state.longitude+'°';
-    return{scan:U.deg(scan),elevation:U.deg(elevation),range:Math.hypot(...sub(satellite,station))};
+    return{scan:U.deg(scan),beamScan:U.deg(beamScan),beamError:U.deg(beamError),elevation:U.deg(elevation),azimuth,range,satellite,station,transmitVector,lookVector,arrayNormal:normal,arrayAxes:[xA,yA,normal],stationAxes:[east,north,up],arrayComponents,stationComponents,beamVector:beam};
   }
   function elements(){
     let s=U.text(60,35,'Local aperture coordinates: z is the outward normal'),totalRe=0,totalIm=0;
     for(let y=0;y<5;y++)for(let x=0;x<5;x++){
       const cx=110+x*62,cy=329-y*56,phase=x*U.rad(state.phase);totalRe+=Math.cos(phase);totalIm+=Math.sin(phase);
+      if(x===2&&y===2){totalRe-=Math.cos(phase);totalIm-=Math.sin(phase);s+=U.circle(cx,cy,6,'none',U.C.muted);continue;}
       s+=U.circle(cx,cy,6,U.C.a,U.C.a)+U.arrow(cx,cy,cx+22*Math.cos(phase),cy-22*Math.sin(phase),U.C.b);
     }
-    s+=U.arrow(100,370,390,370,U.C.muted)+U.text(400,375,'x')+U.arrow(70,350,70,80,U.C.muted)+U.text(57,65,'y')+U.text(480,90,'Position rₙ = (xₙ,yₙ,0)')+U.text(480,140,'Common |aₙ| = 1')+U.text(480,190,'Phase ψₙ = x-index × βx')+U.text(480,240,'Wavelength: '+U.fmt(299.792458/state.frequency,3)+' mm')+U.text(480,285,'λ/2 spacing: '+U.fmt(149.896229/state.frequency,3)+' mm')+U.text(480,340,'Broadside |Σ feed phasors|²:')+U.text(480,380,U.fmt(totalRe**2+totalIm**2,2)+' (relative field²)');
+    s+=U.arrow(100,370,390,370,U.C.muted)+U.text(400,375,'x')+U.arrow(70,350,70,80,U.C.muted)+U.text(57,65,'y')+U.text(480,80,'Position rₙ = (xₙ,yₙ,0)')+U.text(480,120,'24 feeds: common |aₙ| = 1')+U.text(480,160,'Hollow marker: one empty site')+U.text(480,200,'Phase ψₙ = x-index × βx')+U.text(480,245,'Wavelength: '+U.fmt(299.792458/state.frequency,3)+' mm')+U.text(480,285,'λ/2 spacing: '+U.fmt(149.896229/state.frequency,3)+' mm')+U.text(480,340,'Broadside |Σ feed phasors|²:')+U.text(480,380,U.fmt(totalRe**2+totalIm**2,2)+' (relative field²)');
     $('project-elements').innerHTML=U.svg(s,'Five by five equal-amplitude feed lattice with phase arrows');
     $('project-phase-value').textContent=state.phase+'°';$('project-frequency-value').textContent=state.frequency+' GHz';
   }
@@ -74,17 +110,20 @@
     for(let lon=-87;lon<=-80;lon++)s+=U.text(X(lon),420,lon,'middle');
     for(let lat=30;lat<=36;lat++)s+=U.text(55,Y(lat)+5,lat,'end');
     s+=U.text(280,455,'Longitude (degrees east)','middle')+U.text(530,65,'Latitude: degrees north')+U.text(530,115,'Threshold: −80 dBm')+U.text(530,180,'Inside covered: '+covered)+U.text(530,225,'Inside missed: '+miss)+U.text(530,270,'Outside at/above threshold: '+spill)+U.text(530,345,'Teal: inside and covered')+U.text(530,380,'Purple: inside and missed')+U.text(530,415,'Orange: outside spillover');
-    $('project-coverage').innerHTML=U.svg(s,'Schematic Georgia coverage classification for a Gaussian teaching footprint',800,485);
+    const area=lat=>6400**2*U.rad(7/nx)*(Math.sin(U.rad(lat+3/ny))-Math.sin(U.rad(lat-3/ny)));
+    s+=U.text(70,505,'Same angular cell: '+U.fmt(area(31),1)+' km² at 31°N; '+U.fmt(area(35),1)+' km² at 35°N.');
+    s+=U.text(70,534,'Counts use cells; this area example uses a spherical Earth of radius 6,400 km.');
+    $('project-coverage').innerHTML=U.svg(s,'Schematic Georgia coverage classification and latitude-dependent physical cell areas',800,555);
     $('project-beamwidth-value').textContent=U.fmt(state.beamwidth,1)+'° map scale';$('project-peak-value').textContent=state.peak+' dBm';return{miss,spill,covered};
   }
   function pipeline(){
-    const steps=[['Geometry','rES, rSAT, ray, range','Fig. 1'],['Feeds','rₙ, |aₙ|, ψₙ','Fig. 2'],['Complex field','Path + phase → AF','Figs. 3–4'],['Angular power','p = |AF|² Gₑₗ','Fig. 5'],['Absolute gain','Full-pattern ∫p dΩ','Fig. 5'],['Link budget','Pt, Gt, Gr, λ, R','Fig. 6'],['Map decisions','Threshold + target mask','Fig. 7'],['Design comparison','Coverage, Ninstalled','Complete evaluation']];let s='';
+    const steps=[['Geometry','Subtract → local axes','Fig. 1'],['Feeds','rₙ, |aₙ|, ψₙ','Fig. 2'],['Complex field','Path + phase → AF','Figs. 3–4'],['Angular power','p = |AF|² Gₑₗ','Fig. 5'],['Absolute gain','Full-pattern ∫p dΩ','Fig. 5'],['Link budget','Pt, Gt, Gr, λ, R','Fig. 6'],['Map decisions','Threshold + target mask','Fig. 7'],['Design comparison','Coverage, Ninstalled','Complete evaluation']];let s='';
     steps.forEach((step,i)=>{const row=i<4?0:1,col=i<4?i:7-i,x=30+col*192,y=45+row*220;
       s+=`<rect x="${x}" y="${y}" width="164" height="145" rx="6" fill="none" stroke="${U.C.grid}"/>`+U.text(x+82,y+35,step[0],'middle')+U.text(x+82,y+75,step[1],'middle')+U.text(x+82,y+115,step[2],'middle',U.C.muted);
       if(i<3)s+=U.arrow(x+166,y+72,x+188,y+72,U.C.a);if(i>=4&&i<7)s+=U.arrow(x-3,y+72,x-25,y+72,U.C.a);if(i===3)s+=U.arrow(x+82,y+148,x+82,y+212,U.C.a);
     });$('project-pipeline').innerHTML=U.svg(s,'Geometry to feeds, complex field, normalized gain, link, map and comparison',800,455);
   }
-  for(const key of ['longitude','normal','phase','frequency','beamwidth','peak'])$('project-'+key).addEventListener('input',e=>{state[key]=key==='normal'?e.target.value:Number(e.target.value);draw();});
+  for(const key of ['longitude','normal','rays','axes','steer','phase','frequency','beamwidth','peak'])$('project-'+key).addEventListener('input',e=>{state[key]=['normal','rays'].includes(key)?e.target.value:['axes','steer'].includes(key)?e.target.checked:Number(e.target.value);draw();});
   function draw(){geometry();elements();coverage();}
   draw();pipeline();window.ProjectFigures={state,draw,geometry,coverage};
 })();

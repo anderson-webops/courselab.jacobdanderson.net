@@ -4,6 +4,7 @@
       "title": "Orbits and look angles",
       "anchor": "Orbits",
       "ids": [
+        "orbit-types",
         "kepler-ellipse",
         "geo-frames",
         "look-triangle",

@@ -34,10 +34,15 @@
     "Four navigation/modem examples: dual-frequency ionospheric cancellation, code-delay/Doppler acquisition, the rate/pulse/constellation chain, and full ENU-plus-clock DOP with explicit rank loss",
     "Shared course registry and course-scoped routes, relative host-preserving navigation, courselab canonicals and sitemap, local search, preserved legacy state keys and optional progress export/import",
     "49 BYU device-physics lessons and 11 shared illustrative device models, with raw notebook material and personal answers retained outside the public tree",
-    "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository"
+    "Original ECE 6612 course-order lessons and security teaching models; private sources, completed assignments and endpoints retained outside the public repository",
+    "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
+    "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions"
   ],
   "source_sha256": {},
   "aliases": [
     "learn.jacobdanderson.net"
+  ],
+  "reference_links": [
+    "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ]
 }

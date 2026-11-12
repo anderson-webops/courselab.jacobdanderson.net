@@ -28,10 +28,10 @@ def relative(file, target):
 def header(file, courses, current=None):
     current_route=route(file)
     nav=[]
-    for ident,label,target in [('courses','Courses','/courses/'),('topics','Topics','/topics/'),('search','Search','/search/')]:
-        active=' aria-current="page"' if current_route==target or (ident=='topics' and ('/topics/' in current_route or current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations'])) else ''
+    for ident,label,target in [('courses','Courses','/courses/'),('topics','Topics','/topics/'),('simulations','Simulations','/'+ECE+'/lab/'),('search','Search','/search/')]:
+        active=' aria-current="page"' if current_route==target or (ident=='topics' and '/topics/' in current_route) or (ident=='simulations' and current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations']) else ''
         nav.append(f'<a data-site-view="{ident}" href="{relative(file,target)}"{active}>{label}</a>')
-    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:2])+'</div>'+nav[2]+'</nav></header>'
+    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:3])+'</div>'+nav[3]+'</nav></header>'
 
 
 def page(file, title, body, csp, courses, current=None, extra='', noindex=False, canonical=None):
@@ -161,12 +161,11 @@ def build_catalog(root, csp):
         if key=='gt/ece6390':
             tools='<p><a href="topics/">Browse the topic index</a></p>'
         unfinished=f'<p class="course-status">In progress</p><p>{html.escape(c.get("gap","Additional course topics and practice remain to be developed."))}</p>' if c['status']=='in-progress' else ''
-        library=f'<p><a data-site-view="lab" href="lab/">Simulation library</a></p>' if key=='gt/ece6390' else ''
-        body=f'<main id="main" class="catalog-page"><p class="course-institution">{INSTITUTIONS[c["institution"]]}</p><h1>{html.escape(title)}</h1><p>{html.escape(c["description"])}</p>{unfinished}{tools}<div id="topics">{links}</div>{library}</main>'
+        body=f'<main id="main" class="catalog-page"><p class="course-institution">{INSTITUTIONS[c["institution"]]}</p><h1>{html.escape(title)}</h1><p>{html.escape(c["description"])}</p>{unfinished}{tools}<div id="topics">{links}</div></main>'
         out=dest/file;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(page(file,title,body,csp,courses,key))
         if key=='gt/ece6390':
             topic_file=ECE+'/topics/index.html'
-            topic_body='<main id="course-lab" class="topic-index"><p class="topic-breadcrumb"><a href="../">ECE 6390</a></p><h1>Course topics</h1>'+grouped_topics(topic_file,course_topics,groups.get(key,[]))+'<p><a data-site-view="lab" href="../lab/">Simulation library</a></p></main>'
+            topic_body='<main id="course-lab" class="topic-index"><p class="topic-breadcrumb"><a href="../">ECE 6390</a></p><h1>Course topics</h1>'+grouped_topics(topic_file,course_topics,groups.get(key,[]))+'</main>'
             (dest/topic_file).write_text(page(topic_file,'Course topics',topic_body.replace('id="course-lab"','id="main"'),csp,courses,key))
     file='topics/index.html';sections=[]
     for c in courses:
@@ -179,8 +178,9 @@ def build_catalog(root, csp):
     (dest/'topics').mkdir(exist_ok=True)
     (dest/file).write_text(page(file,'Topics',body,csp,courses))
     (dest/'simulations').mkdir(exist_ok=True)
-    alias='<main id="main" class="catalog-page"><h1>Topics</h1><p><a href="../topics/">Topics</a></p></main>'
-    (dest/'simulations/index.html').write_text(page('simulations/index.html','Topics',alias,csp,courses,extra='<meta http-equiv="refresh" content="0;url=../topics/">',noindex=True,canonical='/topics/'))
+    library='/'+ECE+'/lab/'
+    alias='<main id="main" class="catalog-page"><h1>Simulation Library</h1><p><a href="'+relative('simulations/index.html',library)+'">Simulation Library</a></p></main>'
+    (dest/'simulations/index.html').write_text(page('simulations/index.html','Simulation Library',alias,csp,courses,extra='<meta http-equiv="refresh" content="0;url='+relative('simulations/index.html',library)+'">',noindex=True,canonical=library))
     home='<main id="main" class="catalog-page"><h1>Course Lab</h1><p class="catalog-intro">Course notes, explanations and interactive experiments.</p><section id="courses"><h2>Courses</h2><ul class="course-cards">'+''.join(cards)+'</ul></section></main>'
     (dest/'index.html').write_text(page('index.html','Course Lab',home,csp,courses))
     (dest/'courses').mkdir(exist_ok=True)

@@ -25,7 +25,7 @@ async function check(name, body) {
 }
 
 async function ready() {
-  await page.waitForFunction(() => window.CourseLab?.modules.length === 66);
+  await page.waitForFunction(() => window.CourseLab?.modules.length === 67);
   assert.equal(await page.locator('#figure.error').count(), 0);
 }
 
@@ -70,15 +70,16 @@ try {
     await noInlineStyles();
   });
 
-  await check('All 66 modules and 148 mathematical anchors pass', async () => {
+  await check('All 67 modules and their mathematical anchors pass', async () => {
     const result = await page.evaluate(() => ({
       modules: CourseLab.modules.length,
       ids: CourseLab.modules.map(module => module.id),
       checks: CourseLab.checks(),
     }));
-    assert.equal(result.modules, 66);
-    assert.equal(new Set(result.ids).size, 66);
-    assert.equal(result.checks.length, 148);
+    assert.equal(result.modules, 67);
+    assert.equal(new Set(result.ids).size, 67);
+    assert.equal(result.checks.length, 151);
+    assert.ok(result.checks.some(check => check.module === 'orbit-types'));
     assert.deepEqual(result.checks.filter(check => !check.pass), []);
     return { modules: result.modules, mathematicalChecks: result.checks.length };
   });
@@ -103,7 +104,7 @@ try {
       }
       return { states, failures };
     });
-    assert.equal(result.states, 553);
+    assert.equal(result.states, 570);
     assert.deepEqual(result.failures, []);
     return result;
   });
@@ -256,9 +257,9 @@ try {
     for (const pathname of ['/courses/gt/ece6390/orbit/', '/courses/gt/ece6390/solar/']) {
       const response = await page.goto(new URL(pathname, base).href, { waitUntil: 'load' });
       assert.ok(response?.ok());
-      const lab = page.locator('.catalog-header a[data-site-view="topics"]');
+      const lab = page.locator('.catalog-header a[data-site-view="simulations"]');
       assert.equal(await lab.count(), 1);
-      assert.equal(new URL(await lab.getAttribute('href'), page.url()).pathname, '/topics/');
+      assert.equal(new URL(await lab.getAttribute('href'), page.url()).pathname, '/courses/gt/ece6390/lab/');
       assert.equal(await page.locator('a[href*="admin"]').count(), 0);
     }
   });

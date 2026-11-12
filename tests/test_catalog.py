@@ -31,11 +31,11 @@ class CatalogTests(unittest.TestCase):
             with self.subTest(page=str(file.relative_to(DIST))):
                 tags=Tags(file.read_text()).tags
                 expected='https://courselab.jacobdanderson.net/'+file.relative_to(DIST).as_posix().removesuffix('index.html')
-                if file==DIST/'simulations/index.html':expected='https://courselab.jacobdanderson.net/topics/'
+                if file==DIST/'simulations/index.html':expected='https://courselab.jacobdanderson.net/courses/gt/ece6390/lab/'
                 self.assertEqual([a['href'] for t,a in tags if t=='link' and a.get('rel')=='canonical'],[expected])
                 header=__import__('re').search(r'<header class="catalog-header">(.*?)</header>',file.read_text(),__import__('re').S).group(1)
                 nav=[a.get('data-site-view') for t,a in Tags(header).tags if t=='a']
-                self.assertEqual(nav,['courses','topics','search'])
+                self.assertEqual(nav,['courses','topics','simulations','search'])
                 self.assertNotIn('<select',header)
                 for tag,a in tags:
                     for key in ['src','href']:
@@ -46,11 +46,14 @@ class CatalogTests(unittest.TestCase):
                             base='https://'+host+'/'+file.relative_to(DIST).as_posix()
                             self.assertEqual(urlsplit(urljoin(base,url)).hostname,host)
 
-    def test_simulations_alias_preserves_links_without_a_duplicate_index(self):
+    def test_simulations_opens_the_library_and_topics_have_no_duplicate_footer_link(self):
         tags=Tags((DIST/'simulations/index.html').read_text()).tags
-        self.assertIn(('meta',{'http-equiv':'refresh','content':'0;url=../topics/'}),tags)
+        self.assertIn(('meta',{'http-equiv':'refresh','content':'0;url=../courses/gt/ece6390/lab/'}),tags)
         self.assertIn(('meta',{'name':'robots','content':'noindex'}),tags)
         self.assertNotIn('https://courselab.jacobdanderson.net/simulations/',(DIST/'sitemap.xml').read_text())
+        for route in ['courses/gt/ece6390/index.html','courses/gt/ece6390/topics/index.html']:
+            tags=Tags((DIST/route).read_text()).tags
+            self.assertFalse(any(a.get('data-site-view')=='lab' for t,a in tags if t=='a'))
 
     def test_ece6390_navigation_uses_the_same_topic_structure_as_other_courses(self):
         page=(DIST/'courses/gt/ece6390/index.html').read_text()

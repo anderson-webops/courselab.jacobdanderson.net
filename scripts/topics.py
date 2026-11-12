@@ -11,7 +11,7 @@ GROUPS = [('Orbits', 'Orbits and look angles'), ('Systems', 'Spacecraft systems'
 
 def inventory(root):
     result = []
-    for name in ['course-lab.html', 'course-update.js', 'course-extensions.js', 'course-navigation.js']:
+    for name in ['course-lab.html', 'course-update.js', 'course-extensions.js', 'course-navigation.js', 'orbit-types.js']:
         source = (root / 'src' / name).read_text()
         starts = list(re.finditer(r"modules\.push\(\{\s*id:\s*'([a-z0-9-]+)'", source))
         for i, match in enumerate(starts):
@@ -59,6 +59,9 @@ def build_topics(root, csp):
     navigation = json.loads((root/'src/topic-navigation.json').read_text())
     assert not (content.keys() & navigation.keys()), 'Duplicate navigation content'
     content.update(navigation)
+    orbit_types = json.loads((root/'src/orbit-types-topic.json').read_text())
+    assert not (content.keys() & orbit_types.keys()), 'Duplicate orbit topic content'
+    content.update(orbit_types)
     related_tools = json.loads((root / 'src/related-tools.json').read_text())
     assert content.keys() == {item['id'] for item in topics}, 'Topic content and simulations differ'
     esc = html.escape

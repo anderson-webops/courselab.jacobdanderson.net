@@ -12,8 +12,8 @@ DIST = ROOT / 'dist'
 class TopicsTests(unittest.TestCase):
     def test_every_simulation_has_a_standalone_figure_first_topic(self):
         manifest = json.loads((DIST/'assets/topic-manifest.json').read_text())
-        self.assertEqual(len(manifest), 66)
-        self.assertEqual(len({x['id'] for x in manifest}), 66)
+        self.assertEqual(len(manifest), 67)
+        self.assertEqual(len({x['id'] for x in manifest}), 67)
         for item in manifest:
             with self.subTest(topic=item['id']):
                 page = (DIST/item['route'].strip('/')/'index.html').read_text()
