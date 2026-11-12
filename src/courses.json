@@ -19,7 +19,7 @@
     "status": "in-progress",
     "description": "Cryptography, secure network protocols, web and email trust, access control, availability, and malware.",
     "sourceNotes": [
-      "Course scope follows the reviewed syllabus, lecture slides 01–20, recorded lectures through November 10, 2026, and conceptual lab exercises.",
+      "Course scope follows the reviewed syllabus, lecture slides 01\u201320, recorded lectures through November 10, 2026, and conceptual lab exercises.",
       "All lessons, figures, numerical experiments and practice cases are original educational material."
     ],
     "gap": "Recorded coverage extends through SYN cookies on November 10. Later denial-of-service and malware topics follow the supplied slides; their lecture recording remains to be reviewed."
@@ -29,12 +29,11 @@
     "code": "phscs587",
     "displayCode": "PHSCS 587",
     "title": "Physics of Semiconductor Devices",
-    "status": "in-progress",
+    "status": "available",
     "description": "Bands and carrier statistics, transport, junctions and contacts, MOS devices, scaling, and multigate electrostatics.",
     "sourceNotes": [
       "Course title and scope: BYU Catalog: https://catalog.byu.edu/courses/10779-000",
-      "Introductory foundations are being expanded against the course-note topic inventory."
-    ],
-    "gap": "Topics follow the reviewed Fall 2024 notebook PDFs. Lecture recordings remain to be reviewed."
+      "Reviewed Fall 2024 notebook PDFs and 28 available lecture recordings, totaling about 13.5 hours."
+    ]
   }
 ]

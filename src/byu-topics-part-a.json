@@ -9,6 +9,8 @@
     "explanation": [
       "A positive nMOS gate overdrive Vov = VGS − Vth creates mobile inversion charge. Drain voltage drives that charge along the channel. Here β = μeff Cₒₓ W/L has units A/V², and Cₒₓ is oxide capacitance per gate area.",
       "In the long-channel regional approximation, ID = β[Vov VDS − m VDS²/2] until VDS,sat = Vov/m. The saturation branch is ID,sat = βVov²/(2m). The depletion coupling factor m ≈ 1 + Cdep/Cₒₓ is dimensionless. Setting m = 1 gives the familiar square-law model used in the adjustable figure.",
+      "For the m = 1 picture, let y run from the source to the drain and V(y) be the local channel voltage measured from the source. The local gate overdrive is Vov − V(y), giving an inversion-charge magnitude |Qinv(y)| ≈ Cₒₓ[Vov − V(y)]. Near the source V(y) is small; toward the drain it approaches VDS. Raising drain voltage strengthens the drive while reducing the inversion charge available near the drain. Integrating this varying charge along the channel produces the negative quadratic term and the approach to saturation.",
+      "A faucet is a useful picture for the low-VDS regime: the gate setting controls the conducting path, while a source-to-drain pressure difference represents the driving voltage. Drain saturation follows from the changing inversion-charge profile and the high-field drain region. The charge-sheet picture treats the thin inversion layer like a ribbon whose charge has been integrated through its depth into C/m²; its physical thickness remains finite.",
       "These equations assume strong inversion, gradual channel variation, constant effective mobility and negligible series resistance. Do not continue the parabola beyond its maximum: its falling branch is outside the approximation. Current continues through the high-field drain region after saturation. A pMOS has reversed voltage and current polarities."
     ],
     "example": "For β = 100 μA/V², Vov = 0.60 V and m = 1.2, VDS,sat = 0.50 V and ID,sat = 15 μA. At VDS = 0.10 V, the regional model gives 5.4 μA.",
@@ -25,7 +27,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: Last week reading, section 5.1.3"
+      "PHSCS 587 reading: Last week reading, section 5.1.3",
+      "PHSCS 587, Last week reading recordings 1–2: symbol definitions, small-VDS expansion and drain-end inversion-charge reduction."
     ],
     "simulation": "mosfet"
   },
@@ -50,7 +53,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: Last week reading, section 5.1.3.3"
+      "PHSCS 587 reading: Last week reading, section 5.1.3.3",
+      "PHSCS 587, 6.3–6.3.3.1 recording 2: exponential weak inversion, thermal voltage and depletion coupling."
     ]
   },
   {
@@ -93,7 +97,8 @@
     "explanation": [
       "Effective channel mobility is a carrier-weighted average: μeff = ∫μ(x)n(x)dx / ∫n(x)dx across the inversion layer. It converts a nonuniform carrier distribution and local response into a useful transport parameter.",
       "Phonons, charged impurities and interface roughness compete. A stronger normal field pulls inversion charge toward the interface, often increasing roughness scattering. For the empirical electron model, Eeff = (|Qd| + |Qi|/2)/εsi; the corresponding hole data use a one-third inversion-charge weighting. These weightings describe particular empirical mobility relationships.",
-      "The reading reports approximate high-temperature phonon-limited μeff ∝ T⁻³ᐟ². That is not a universal curve across all fields and temperatures. A Matthiessen model, 1/μeff ≈ Σᵢ1/μᵢ, is a useful independent-scattering approximation, rather than an exact rule for every channel."
+      "The reading reports approximate high-temperature phonon-limited μeff ∝ T⁻³ᐟ². That is not a universal curve across all fields and temperatures. A Matthiessen model, 1/μeff ≈ Σᵢ1/μᵢ, is a useful independent-scattering approximation, rather than an exact rule for every channel.",
+      "Keep the two field directions visible in the device picture. The field normal to the gate controls confinement and the inversion layer’s exposure to the interface. The longitudinal source-to-drain field drives transport along the channel. Increasing gate bias and increasing drain bias therefore change different parts of the scattering and charge problem."
     ],
     "example": "If two illustrative independent mechanisms would each limit mobility to 600 cm²/(V·s), the inverse-mobility approximation gives μeff ≈ 300 cm²/(V·s), or 0.030 m²/(V·s).",
     "questions": [
@@ -104,7 +109,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 5.2, empirical universal mobility"
+      "PHSCS 587 reading: 5.2, empirical universal mobility",
+      "PHSCS 587, 5.2 recording 1: effective normal field, strain, roughness and longitudinal-field effects."
     ],
     "simulation": "mobility-scattering"
   },
@@ -129,7 +135,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 5.2, strain effect on mobility"
+      "PHSCS 587 reading: 5.2, strain effect on mobility",
+      "PHSCS 587, 5.2 recording 1: lattice strain, valley occupation and transport mass."
     ]
   },
   {
@@ -153,7 +160,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 5.3–5.4, substrate-bias effect"
+      "PHSCS 587 reading: 5.3–5.4, substrate-bias effect",
+      "PHSCS 587, 5.3–5.4 recording 1: reverse body bias, threshold and source–body injection limits."
     ]
   },
   {
@@ -166,7 +174,8 @@
     "explanation": [
       "Thermal voltage UT = kT/q increases with temperature. Intrinsic carrier concentration nᵢ(T) changes strongly as well. The body potential φF = UT ln[NA/nᵢ(T)] therefore cannot be evaluated by changing UT while holding every other temperature-dependent term fixed.",
       "A local compact approximation is Vth(T) ≈ Vth(T₀) + αT(T − T₀), where αT has units V/K. Silicon MOS thresholds often fall with temperature over an ordinary operating range, but the coefficient depends on doping, flat-band voltage and the threshold definition.",
-      "Current does not follow threshold alone. Mobility, leakage, series resistance and the chosen operating region also change with temperature. A lower threshold and lower mobility can push current in opposite directions."
+      "Current does not follow threshold alone. Mobility, leakage, series resistance and the chosen operating region also change with temperature. A lower threshold and lower mobility can push current in opposite directions.",
+      "A hot-leakage specification poses a separate design question: how large must the nominal threshold be to keep Ioff below its limit at the highest operating temperature? That required design target can rise even while the actual threshold of a particular device falls as it warms. Evaluate the measured Vth(T), thermal voltage and leakage model together when testing the specification."
     ],
     "example": "For an explicitly assumed αT = −1.0 mV/K, warming from 300 K to 330 K shifts threshold by −30 mV. This is a local estimate using the supplied coefficient, not a value to apply to every MOSFET.",
     "questions": [
@@ -177,7 +186,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 5.3–5.4, temperature dependence of threshold"
+      "PHSCS 587 reading: 5.3–5.4, temperature dependence of threshold",
+      "PHSCS 587, 6.3–6.3.3.1 recording 2: temperature, off-current specifications and threshold tradeoffs."
     ]
   },
   {
@@ -202,7 +212,8 @@
     ],
     "sourceNotes": [
       "PHSCS 587 reading: 5.3–5.4, quantum effect on threshold",
-      "PHSCS 587 reading: Presentation, confinement limits"
+      "PHSCS 587 reading: Presentation, confinement limits",
+      "PHSCS 587, 5.3–5.4 recording 1: transverse standing waves, subbands and the inversion-charge centroid."
     ]
   },
   {
@@ -238,6 +249,7 @@
     "figureSvg": "<svg xmlns='http://www.w3.org/2000/svg' role='img' aria-labelledby='short-channel-effects-title' viewBox='0 0 900 470'><title id='short-channel-effects-title'>Schematic short-channel source and drain electrostatic penetration</title><defs><marker id='short-channel-effects-arrow' markerWidth='8' markerHeight='8' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 Z' fill='#17343d'/></marker></defs><g font-family='system-ui, sans-serif' font-size='18' fill='#17343d'><text x='450' y='35' font-size='22' text-anchor='middle' fill='#17343d'>Source and drain fields compete with gate control</text><rect x='170' y='103' width='560' height='35' fill='#fff0d6' stroke='#17343d' stroke-width='2'/><text x='450' y='127' font-size='19' text-anchor='middle' fill='#17343d'>gate</text><rect x='170' y='160' width='560' height='140' fill='#e5f2ef' stroke='#17343d' stroke-width='2'/><rect x='170' y='160' width='85' height='140' fill='#cbdfe4' stroke='#17343d' stroke-width='2'/><rect x='645' y='160' width='85' height='140' fill='#cbdfe4' stroke='#17343d' stroke-width='2'/><text x='210' y='225' font-size='17' text-anchor='middle' fill='#17343d'>source</text><text x='688' y='225' font-size='17' text-anchor='middle' fill='#17343d'>drain</text><line x1='260' y1='180' x2='365' y2='180' stroke='#176a70' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><line x1='640' y1='180' x2='535' y2='180' stroke='#a56e12' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><line x1='260' y1='225' x2='365' y2='225' stroke='#176a70' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><line x1='640' y1='225' x2='535' y2='225' stroke='#a56e12' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><line x1='260' y1='270' x2='365' y2='270' stroke='#176a70' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><line x1='640' y1='270' x2='535' y2='270' stroke='#a56e12' stroke-width='2' marker-end='url(#short-channel-effects-arrow)'/><text x='450' y='336' font-size='19' text-anchor='middle' fill='#17343d'>Shorter L → stronger contact influence in the channel interior</text><text x='450' y='383' font-size='20' text-anchor='middle' fill='#17343d'>Rolloff: vary L.     DIBL: vary VDS at a fixed L.</text><text x='450' y='450' font-size='15' text-anchor='middle' fill='#17343d'>Field arrows are schematic; this is not a computed two-dimensional field solution.</text></g></svg>",
     "explanation": [
       "A long channel has an interior region controlled mainly by the gate. As channel length shrinks, source and drain boundary conditions influence more of that region. The potential is then inherently two-dimensional.",
+      "Each equipotential contour joins positions with the same electrostatic potential at one chosen operating bias. Closely spaced contours indicate a stronger local field, directed perpendicular to the contours toward lower potential. Changing drain bias produces a new contour map; comparing those maps reveals how the drain reshapes the source injection barrier.",
       "Threshold rolloff describes a decrease in extracted threshold as channel length decreases at specified biases. Drain-induced barrier lowering, DIBL, describes the drain-bias-dependent lowering of the source injection barrier at fixed channel length. The two effects share electrostatic origins but are measured by different changes.",
       "A common positive DIBL metric is −ΔVth/ΔVDS, stated with the threshold extraction method. Short-channel degradation can also worsen subthreshold swing. A simple barrier sketch alone does not predict a quantitative threshold or current."
     ],
@@ -250,7 +262,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 6.1–6.1.2.2, short-channel effect"
+      "PHSCS 587 reading: 6.1–6.1.2.2, short-channel effect",
+      "PHSCS 587, 6.1–6.1.2.2 recording 2: equipotential maps, field directions and drain-induced barrier lowering."
     ],
     "simulation": "short-channel"
   },
@@ -276,7 +289,8 @@
     ],
     "sourceNotes": [
       "PHSCS 587 reading: 6.1–6.1.2.2, two-dimensional Poisson solution",
-      "PHSCS 587 reading: Presentation, double-gate eigenvalue equation"
+      "PHSCS 587 reading: Presentation, double-gate eigenvalue equation",
+      "PHSCS 587, 6.1–6.1.2.2 recordings 2–3: depleted-channel Poisson model, built-in/contact potentials and terminal-bias boundary conditions."
     ]
   },
   {
@@ -300,7 +314,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 6.3–6.3.3.1, threshold definitions and design"
+      "PHSCS 587 reading: 6.3–6.3.3.1, threshold definitions and design",
+      "PHSCS 587, 6.3–6.3.3.1 recording 2: drive current, leakage, switching delay and threshold extraction."
     ]
   },
   {
@@ -324,7 +339,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 6.3–6.3.3.1, nonuniform doping profiles"
+      "PHSCS 587 reading: 6.3–6.3.3.1, nonuniform doping profiles",
+      "PHSCS 587, 6.3–6.3.3.1 recording 2: surface/deep channel doping and the gate-control tradeoff."
     ]
   },
   {
@@ -337,6 +353,7 @@
     "explanation": [
       "For a scale factor κ > 1, ideal constant-field scaling divides device dimensions and voltages by κ while multiplying doping by κ. With unchanged permittivity and mobility, electric field and carrier velocity remain unchanged.",
       "Gate capacitance C scales as area/thickness, hence 1/κ. Current scales as 1/κ, and delay CV/I as 1/κ. Switching energy proportional to CV² scales as 1/κ³. At proportionally faster operation, per-device dynamic power scales as 1/κ² while ideal device density rises as κ², leaving power per area unchanged.",
+      "A capacitor at voltage V stores energy CV²/2. Charging it from a fixed ideal supply through resistance draws CV² from that supply: half becomes stored energy and half is dissipated during charging. A later discharge dissipates the stored half. A complete charge–discharge cycle therefore dissipates CV² in this usual switching model. State which event is being counted when comparing switching energy with the energy currently stored on a gate.",
       "These are linked ideal assumptions, not a promise from shrinking lithography alone. Thermal voltage, bandgap and built-in potentials do not follow geometric scaling. Leakage, oxide tunneling, contact resistance and finite doping constrain the extrapolation."
     ],
     "example": "At κ = 2, the ideal model gives half the capacitance, current and delay, one eighth the switching energy and four times the device density. At twice the switching rate and unchanged activity, per-device dynamic power becomes one quarter.",
@@ -348,7 +365,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 8.1–8.2.1.2, constant-field scaling"
+      "PHSCS 587 reading: 8.1–8.2.1.2, constant-field scaling",
+      "PHSCS 587, 8.1–8.2.1.2 recording 1: constant-field scaling, capacitor energy and the fixed thermal/bandgap scales."
     ],
     "simulation": "constant-field-scaling"
   },
@@ -361,6 +379,8 @@
     "figureSvg": "<svg xmlns='http://www.w3.org/2000/svg' role='img' aria-labelledby='cmos-inverter-title' viewBox='0 0 900 470'><title id='cmos-inverter-title'>Original CMOS inverter topology and schematic transfer curve</title><defs><marker id='cmos-inverter-arrow' markerWidth='8' markerHeight='8' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 Z' fill='#17343d'/></marker></defs><g font-family='system-ui, sans-serif' font-size='18' fill='#17343d'><text x='450' y='35' font-size='22' text-anchor='middle' fill='#17343d'>Complementary transistors restore a digital level</text><text x='210' y='85' font-size='20' text-anchor='middle' fill='#17343d'>CMOS topology</text><text x='210' y='120' font-size='18' text-anchor='middle' fill='#17343d'>VDD</text><line x1='210' y1='132' x2='210' y2='165' stroke='#17343d' stroke-width='2'/><rect x='160' y='165' width='100' height='65' fill='#fff0d6' stroke='#17343d' stroke-width='2'/><text x='210' y='205' font-size='17' text-anchor='middle' fill='#17343d'>pMOS</text><line x1='210' y1='230' x2='210' y2='280' stroke='#17343d' stroke-width='2'/><rect x='160' y='280' width='100' height='65' fill='#e5f2ef' stroke='#17343d' stroke-width='2'/><text x='210' y='320' font-size='17' text-anchor='middle' fill='#17343d'>nMOS</text><line x1='210' y1='345' x2='210' y2='375' stroke='#17343d' stroke-width='2'/><text x='210' y='399' font-size='17' text-anchor='middle' fill='#17343d'>ground</text><line x1='90' y1='194' x2='160' y2='194' stroke='#17343d' stroke-width='2'/><line x1='90' y1='194' x2='90' y2='313' stroke='#17343d' stroke-width='2'/><line x1='90' y1='313' x2='160' y2='313' stroke='#17343d' stroke-width='2'/><text x='45' y='260' font-size='18' text-anchor='start' fill='#17343d'>Vin</text><line x1='210' y1='255' x2='330' y2='255' stroke='#17343d' stroke-width='2' marker-end='url(#cmos-inverter-arrow)'/><text x='335' y='260' font-size='18' text-anchor='start' fill='#17343d'>Vout</text><line x1='465' y1='355' x2='810' y2='355' stroke='#17343d' stroke-width='2' marker-end='url(#cmos-inverter-arrow)'/><line x1='465' y1='355' x2='465' y2='100' stroke='#17343d' stroke-width='2' marker-end='url(#cmos-inverter-arrow)'/><text x='640' y='393' font-size='18' text-anchor='middle' fill='#17343d'>Vin</text><text x='465' y='84' font-size='18' text-anchor='start' fill='#17343d'>Vout</text><polyline points='465.00,110.22 467.75,110.25 470.50,110.28 473.25,110.31 476.00,110.35 478.75,110.39 481.50,110.44 484.25,110.49 487.00,110.56 489.75,110.62 492.50,110.70 495.25,110.79 498.00,110.88 500.75,110.99 503.50,111.12 506.25,111.25 509.00,111.41 511.75,111.58 514.50,111.77 517.25,111.99 520.00,112.24 522.75,112.51 525.50,112.82 528.25,113.16 531.00,113.55 533.75,113.98 536.50,114.46 539.25,115.00 542.00,115.61 544.75,116.28 547.50,117.03 550.25,117.88 553.00,118.82 555.75,119.86 558.50,121.03 561.25,122.32 564.00,123.76 566.75,125.35 569.50,127.12 572.25,129.07 575.00,131.22 577.75,133.58 580.50,136.18 583.25,139.03 586.00,142.14 588.75,145.53 591.50,149.21 594.25,153.19 597.00,157.48 599.75,162.08 602.50,166.99 605.25,172.21 608.00,177.74 610.75,183.55 613.50,189.63 616.25,195.96 619.00,202.50 621.75,209.21 624.50,216.06 627.25,223.01 630.00,230.00 632.75,236.99 635.50,243.94 638.25,250.79 641.00,257.50 643.75,264.04 646.50,270.37 649.25,276.45 652.00,282.26 654.75,287.79 657.50,293.01 660.25,297.92 663.00,302.52 665.75,306.81 668.50,310.79 671.25,314.47 674.00,317.86 676.75,320.97 679.50,323.82 682.25,326.42 685.00,328.78 687.75,330.93 690.50,332.88 693.25,334.65 696.00,336.24 698.75,337.68 701.50,338.97 704.25,340.14 707.00,341.18 709.75,342.12 712.50,342.97 715.25,343.72 718.00,344.39 720.75,345.00 723.50,345.54 726.25,346.02 729.00,346.45 731.75,346.84 734.50,347.18 737.25,347.49 740.00,347.76 742.75,348.01 745.50,348.23 748.25,348.42 751.00,348.59 753.75,348.75 756.50,348.88 759.25,349.01 762.00,349.12 764.75,349.21 767.50,349.30 770.25,349.38 773.00,349.44 775.75,349.51 778.50,349.56 781.25,349.61 784.00,349.65 786.75,349.69 789.50,349.72 792.25,349.75 795.00,349.78' fill='none' stroke='#176a70' stroke-width='4'/><text x='640' y='420' font-size='16' text-anchor='middle' fill='#17343d'>Transfer curve is schematic</text><text x='450' y='450' font-size='15' text-anchor='middle' fill='#17343d'>Ideal rail behavior neglects leakage; the curve is not a transistor-level circuit solution.</text></g></svg>",
     "explanation": [
       "A CMOS inverter connects a pMOS pull-up and nMOS pull-down to a shared output. At a low input the pMOS conducts and the nMOS is off, driving the output high. A high input reverses those roles. During a transition, both can conduct.",
+      "Choose one input voltage Vin and use it for both transistors. With the nMOS source at ground, VGS,n = Vin and VDS,n = Vout. With the pMOS source at VDD, VSG,p = VDD − Vin and VSD,p = VDD − Vout. The settled output is the intersection where the pull-up and pull-down current magnitudes are equal, assuming negligible load current. This common output voltage ties the two current curves together.",
+      "During a transition, an output capacitance Cload stores charge. Its voltage follows Cload dVout/dt = |Ip| − In, where |Ip| is the current supplied by the pull-up and In is the current removed by the pull-down. A representative drive current Idrive gives a delay scale CloadVDD/Idrive. Lower load capacitance or stronger available drive makes the output change more quickly under this approximation.",
       "The voltage transfer curve Vout(Vin) determines logic restoration. The trip point VM satisfies Vout = Vin; it differs from the usual VIL and VIH points defined by slope dVout/dVin = −1. Static noise margins are NML = VIL − VOL and NMH = VOH − VIH.",
       "Matched switching does not usually mean equal transistor widths because electron and hole drive differ. Ideal zero static rail current assumes no leakage. Real standby current, dynamic charging and brief overlap conduction all contribute to power."
     ],
@@ -373,7 +393,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 8.1–8.2.1.2, CMOS inverter and noise margin"
+      "PHSCS 587 reading: 8.1–8.2.1.2, CMOS inverter and noise margin",
+      "PHSCS 587, 8.1–8.2.1.2 recording 1: CMOS polarity, shared-input current-curve intersections and output charging. Noise-margin definitions follow the notebook reading."
     ],
     "simulation": "cmos-inverter"
   },
@@ -446,7 +467,8 @@
       }
     ],
     "sourceNotes": [
-      "PHSCS 587 reading: 6.3–6.3.3.1, preceding ballistic/backscattering discussion"
+      "PHSCS 587 reading: 6.3–6.3.3.1, preceding ballistic/backscattering discussion",
+      "PHSCS 587, 6.1–6.1.2.2 recording 3: discrete dopants, short channels and injection/scattering limits."
     ]
   }
 ]

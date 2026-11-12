@@ -1,7 +1,8 @@
 {
   "byu/phscs587": [
     "semiconductor-models.js",
-    "device-models.js"
+    "device-models.js",
+    "fermi-model.js"
   ],
   "gt/ece6612": [
     "security-models.js"

@@ -14,10 +14,21 @@
     ],
     "example": "Using the illustrative values nᵢ = 10¹⁰ cm⁻³ and ND = 2 × 10¹⁵ cm⁻³, the approximation gives n ≈ 2 × 10¹⁵ cm⁻³ and p ≈ 5 × 10⁴ cm⁻³. Concentrations are numbers per volume, not net charge densities.",
     "questions": [
-      {"prompt": "At fixed temperature within this approximation, what happens to majority and minority concentrations if ND increases tenfold?", "hint": "Use n ≈ ND and p = nᵢ²/n.", "answer": "Electron concentration rises approximately tenfold, while hole concentration falls to one tenth. Their equilibrium product stays nᵢ²."},
-      {"prompt": "Why does donor doping fail to imply a negatively charged bulk material?", "hint": "Count fixed ionized dopants as well as mobile carriers.", "answer": "Donors leave positive ionized dopant charge while supplying mobile electrons. Bulk charge neutrality balances all fixed and mobile contributions; electron concentration alone does not give net charge."}
+      {
+        "prompt": "At fixed temperature within this approximation, what happens to majority and minority concentrations if ND increases tenfold?",
+        "hint": "Use n ≈ ND and p = nᵢ²/n.",
+        "answer": "Electron concentration rises approximately tenfold, while hole concentration falls to one tenth. Their equilibrium product stays nᵢ²."
+      },
+      {
+        "prompt": "Why does donor doping fail to imply a negatively charged bulk material?",
+        "hint": "Count fixed ionized dopants as well as mobile carriers.",
+        "answer": "Donors leave positive ionized dopant charge while supplying mobile electrons. Bulk charge neutrality balances all fixed and mobile contributions; electron concentration alone does not give net charge."
+      }
     ],
-    "sourceNotes": ["MIT 6.012: Introduction to Semiconductors, Fall 2009", "MIT 6.012: Thermal equilibrium and doping, Spring 2009"]
+    "sourceNotes": [
+      "MIT 6.012: Introduction to Semiconductors, Fall 2009",
+      "MIT 6.012: Thermal equilibrium and doping, Spring 2009"
+    ]
   },
   {
     "course": "byu/phscs587",
@@ -30,13 +41,27 @@
     "explanation": [
       "A MOS structure places an insulating oxide between a gate and semiconductor. For a p-type body, increasing positive gate bias first repels holes and exposes negative ionized acceptors. Sufficient surface band bending attracts an electron inversion layer.",
       "The oxide capacitance per unit area is C′ox = εox/tox. With surface potential ψs measured relative to the bulk, the ideal voltage split is Vg − VFB = ψs + Vox. Gate sheet charge is Q′g = C′oxVox, in C/m², and balances the semiconductor sheet charge when additional oxide charges are absent.",
-      "Oxide capacitance and measured MOS capacitance are different quantities. In depletion, semiconductor charge changes contribute an additional series capacitance. Inversion response also depends on measurement frequency and carrier supply. Specify regime and frequency before interpreting a C–V curve."
+      "Oxide capacitance and measured MOS capacitance are different quantities. In depletion, semiconductor charge changes contribute an additional series capacitance. Inversion response also depends on measurement frequency and carrier supply. Specify regime and frequency before interpreting a C–V curve.",
+      "A band-bending sketch sometimes draws a silicon-equivalent oxide width teq,Si = (εsi/εox)tox. For SiO₂ next to silicon, the permittivity ratio is about three, producing the label 3tox. This stretches the drawing coordinate so the same displacement and voltage drop can be represented using silicon’s permittivity. The physical oxide thickness remains tox, and the actual interface obeys the displacement-field boundary condition."
     ],
     "example": "For εox = 3.9ε₀ and tox = 10 nm, C′ox ≈ 3.45 × 10⁻³ F/m². An area of 100 μm² therefore has an oxide capacitance of approximately 0.345 pF. This calculation gives the oxide component rather than a complete bias-dependent MOS measurement.",
     "questions": [
-      {"prompt": "At fixed oxide material and gate area, what happens to the oxide capacitance if thickness doubles?", "hint": "Use C′ox = εox/tox, then multiply by area.", "answer": "Both capacitance per area and total oxide capacitance halve. The full MOS small-signal capacitance still depends on the semiconductor response and bias regime."},
-      {"prompt": "Why can positive gate voltage change carrier population even when the ideal oxide carries no DC current?", "hint": "Separate electrostatic field coupling from conduction across the insulator.", "answer": "Gate and semiconductor charges establish an electric field through the oxide. Charge redistributes within the semiconductor, changing surface potential and carrier population without requiring DC carrier flow through the oxide."}
+      {
+        "prompt": "At fixed oxide material and gate area, what happens to the oxide capacitance if thickness doubles?",
+        "hint": "Use C′ox = εox/tox, then multiply by area.",
+        "answer": "Both capacitance per area and total oxide capacitance halve. The full MOS small-signal capacitance still depends on the semiconductor response and bias regime."
+      },
+      {
+        "prompt": "Why can positive gate voltage change carrier population even when the ideal oxide carries no DC current?",
+        "hint": "Separate electrostatic field coupling from conduction across the insulator.",
+        "answer": "Gate and semiconductor charges establish an electric field through the oxide. Charge redistributes within the semiconductor, changing surface potential and carrier population without requiring DC carrier flow through the oxide."
+      }
     ],
-    "sourceNotes": ["MIT 6.012: MOS Capacitors I, Fall 2009", "MIT 6.012 Recitation 8: MOS Electrostatics under Bias, Spring 2009"]
+    "sourceNotes": [
+      "MIT 6.012: MOS Capacitors I, Fall 2009",
+      "MIT 6.012 Recitation 8: MOS Electrostatics under Bias, Spring 2009",
+      "PHSCS 587, Last week reading recording 2: the 3tox construction and interface fields.",
+      "PHSCS 587, Note Oct 24, 2024 recording 1: gate work function, flat-band voltage and the distinction between gate bias and surface potential."
+    ]
   }
 ]

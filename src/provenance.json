@@ -9,7 +9,7 @@
     "ECE 6390 Interactive Course Lab, validated 2026-10-29",
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
-    "Fall 2024 PHSCS 587 notebook topic review; original device-physics explanations, figures and staged practice",
+    "Fall 2024 PHSCS 587 notebooks and all 28 available lecture recordings; original device-physics explanations, figures and staged practice",
     "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
@@ -38,7 +38,9 @@
     "Original orbit-family comparison with Kepler motion, rotating-Earth geographic coordinates, orbit characteristics and staged practice; actual test-curve mappings are excluded",
     "Project geometry distinguishes transmit/look rays, station ENU and aperture axes, physical normal and ideal electronic beam steering, with concise local definitions",
     "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs.",
-    "Reference figures preserve authored text colors and font sizes on a consistent chart surface, with an accessible natural-size vector viewer for zooming and panning."
+    "Reference figures preserve authored text colors and font sizes on a consistent chart surface, with an accessible natural-size vector viewer for zooming and panning.",
+    "Lecture-informed explanations connect carrier statistics, transport, contacts, MOS charge control, confinement and switching, including organ-pipe and faucet analogies.",
+    "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states."
   ],
   "source_sha256": {},
   "aliases": [
