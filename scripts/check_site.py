@@ -53,8 +53,7 @@ def check():
         assert len(page.ids) == len(set(page.ids)), f'Duplicate IDs in {file.name}'
         assert page.csp and "script-src 'self'" in page.csp and "style-src 'self'" in page.csp
         assert 'unsafe-inline' not in page.csp and 'unsafe-eval' not in page.csp
-        assert all(f'data-site-view="{name}"' in text for name in ('courses','topics','search'))
-        assert 'data-site-view="simulations"' not in text
+        assert all(f'data-site-view="{name}"' in text for name in ('courses','simulations','topics','search'))
         name=file.relative_to(dist).as_posix()
         canonical='/topics/' if name=='simulations/index.html' else '/'+name.removesuffix('index.html')
         assert page.canonical == ['https://courselab.jacobdanderson.net'+canonical]

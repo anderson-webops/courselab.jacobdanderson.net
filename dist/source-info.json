@@ -40,7 +40,7 @@
     "additional-course-topics.json": "17b006b6a1b621787facb449f444f8d7fdd7ddf19b0991585e8a0644a0799cd9",
     "byu-topics-part-a.json": "a2879cf22ac06e60d94521b1eb09cdf9c571579560412991fe3b51348948aa83",
     "byu-topics-part-b.json": "3e7436b9c356e3d013587c7314d442139caf6da1e64ca46a82b545c0eae7fe67",
-    "catalog.css": "1e46bd78c4b8025774810dab1134283f254fc86ad03dac6d4bfd3e61274ec70b",
+    "catalog.css": "13a7c9558a044b71427debcb0ca2b2c0bc751289156b306df87c2a8d48d9d2dd",
     "course-extensions.js": "d8b43594df994f8e92ddfb297d35e477b09b35b4849dc88aa3913b9d7b110e83",
     "course-figures.js": "6e8c3687b4bd64349a70b8d3fe6bb89ef93b74289ce2d3d7fcb0abaa4f712ec9",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
@@ -80,5 +80,5 @@
   "aliases": [
     "learn.jacobdanderson.net"
   ],
-  "version": "1.0.1"
+  "version": "1.1.0"
 }

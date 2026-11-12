@@ -28,10 +28,10 @@ def relative(file, target):
 def header(file, courses, current=None):
     current_route=route(file)
     nav=[]
-    for ident,label,target in [('courses','Courses','/courses/'),('topics','Topics','/topics/'),('search','Search','/search/')]:
+    for ident,label,target in [('courses','Courses','/courses/'),('simulations','Simulations','/simulations/'),('topics','Topics','/topics/'),('search','Search','/search/')]:
         active=' aria-current="page"' if current_route==target or (ident=='topics' and ('/topics/' in current_route or current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations'])) else ''
         nav.append(f'<a data-site-view="{ident}" href="{relative(file,target)}"{active}>{label}</a>')
-    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:2])+'</div>'+nav[2]+'</nav></header>'
+    return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:3])+'</div>'+nav[3]+'</nav></header>'
 
 
 def page(file, title, body, csp, courses, current=None, extra='', noindex=False, canonical=None):

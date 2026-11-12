@@ -1,6 +1,6 @@
 # Course Lab
 
-Shared course notes, explanations, figures, simulations and attempt-first practice. Courses and Topics are centered in the header; Search sits at its right edge. Topics includes the interactive lessons and related tools. The former `/simulations/` index forwards to `/topics/`. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
+Shared course notes, explanations, figures, simulations and attempt-first practice. Courses, Simulations and Topics are centered in the header; Search sits at its right edge. Topics includes the interactive lessons and related tools. The former `/simulations/` index forwards to `/topics/`. Primary public name: **courselab.jacobdanderson.net**. **learn.jacobdanderson.net** serves the same application without changing the visitor’s hostname.
 
 Source: [anderson-webops/courselab.jacobdanderson.net](https://github.com/anderson-webops/courselab.jacobdanderson.net).
 
