@@ -48,4 +48,5 @@ Shared Sites policy (`../AGENTS.md` when available) applies. These essentials al
 - Jacob explicitly authorized the Optimal GeorgiaTenna preset on 2026-11-12: its selected element positions, feed phases and simulation settings may be public. Keep the source assignment files, reports, MAT data, optimizer history and other private coursework outside this tree.
 - Run `npm run validate` and the browser suite against the built site. Node 26.13.1 is the development baseline; no runtime packages are needed for the site itself.
 - Preserve `script-src 'self'`; ship all scripts, styles and assets locally. Inline style attributes are extracted during build.
+- Use 3D or implied 3D for spatial simulation concepts when it improves understanding. Retain useful 2D cuts, maps, graphs and abstract-coordinate views, preserve model assumptions, and distinguish camera settings from physical parameters.
 - Use local-only `.ai-work/` for browser evidence. It is excluded through `.git/info/exclude`.

@@ -44,22 +44,23 @@
     "Contextual control help opens in accessible hover, focus and click popovers, including phase gradients, coherent field addition and link/scoring meanings.",
     "A user-authorized saved best-found GeorgiaTenna preset preserves 175 individual element positions/phases and its simulation settings; the regional teaching score retains its coarse-grid scope.",
     "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry.",
-    "ECE 6612 final-lecture reconciliation: original reflection/telescope and malware-control diagrams and examples; final recorded course coverage verified through malware, with source audio and ASR retained privately"
+    "ECE 6612 final-lecture reconciliation: original reflection/telescope and malware-control diagrams and examples; final recorded course coverage verified through malware, with source audio and ASR retained privately",
+    "Camera-controlled spatial geometry for look angles, waves, antenna radiation, solar collection, spherical spreading and navigation preserves the original equations and quantitative companions. Project apertures use their physical orientation while complex phasors and geographic maps retain their own coordinate views."
   ],
   "source_sha256": {
     "additional-course-topics.json": "c5b63044c854e081416598ad3a2c69ac16275cc82df792163354d1f04a1b52ca",
     "byu-topics-part-a.json": "74cac3c2fabc485337116536ddcee8034e9f9a3aefa8bfcdaf858b980d05e9cb",
     "byu-topics-part-b.json": "88210379e1f0cce754032356d5bbc6659d68603318b7934b7181bf294915c4ab",
     "catalog.css": "347c9eba3125a6e0729754919c38094d201655396298c8bf46b6f9fd715a23e9",
-    "course-extensions.js": "d8b43594df994f8e92ddfb297d35e477b09b35b4849dc88aa3913b9d7b110e83",
+    "course-extensions.js": "70bde2df9603d750a7125404a8cf1437e6320ff85c805f32de6263f46e378f0b",
     "course-figures.js": "6e8c3687b4bd64349a70b8d3fe6bb89ef93b74289ce2d3d7fcb0abaa4f712ec9",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
-    "course-model-assets.json": "a86b6d6b93b4bd429f90d2c50d8a12442f6272af6a64e12f36b2fdf01aa52146",
+    "course-model-assets.json": "dcc15dd88661490b8f2c627d0de6df8790e3168e8cb92ac19df5c3e6a390557f",
     "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
     "course-topics/ece6612-applications.json": "fd01ad7d4a40252cd1aa53f4c0b90df23fc65118c92c3bb3260b28e3ef253c66",
     "course-topics/ece6612-foundations.json": "a276dbf4f2cdcf3521ff2fa6f7037872173138f5a1c242fc865fdbf5a5abae8a",
     "course-topics/ece6612-protocols.json": "c287406f1d35c1f19b03707d74733fa21ff4e158f59349d6eba68c62fc56901e",
-    "course-update.js": "2ea4272433d578b207b9a3e6ce0cfba0fa53772e4cdbf1b9073db4ff618e1722",
+    "course-update.js": "68f89886dc0551177e989dd78b8ffe58dbd084f332e015ec5095e39cacc6400d",
     "courses.json": "c77f9459308492b1531a359cdbcb25676979e490e0cf76f59694b33a8567480b",
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
@@ -70,7 +71,7 @@
     "georgia-help.js": "7bbb649b328cdc33d3eb966feae1bc0e028db3ba7aeb629dadc0ac34d95826d5",
     "georgia-optimal.js": "92d3a30391c894daf252836fee9fdc95bda27956fb6707426de420a49a581912",
     "georgia-system-model.js": "33670b05355c49b7b5f7434e010e2c04b58402f7975cfe5e4b0d112a9c772b79",
-    "georgia-system.js": "6846cd20494abd54d707e28549db2444ebc6e0a46b95fc009c7d52cf9611e1de",
+    "georgia-system.js": "3e657162d7e4adf6d0dcd775b65e7fb479e331e0c5e1933eb53d436ddcbdb18f",
     "orbit-runtime.css": "6dd52dbf5c67b5616c75cfbe576d6677d4cc94128dea92819195648f3eed2afa",
     "orbit-types-topic.json": "245faf51230071f0cb8ebdd272239ae07f538872db0d7bd166ce30d5d51aa9dd",
     "orbit-types.js": "4db50ecaacde412b1250108a27a1a064d12ea6ce397903cef7cd52c00b20a651",
@@ -81,7 +82,7 @@
     "project-help.js": "f84313c369bfc03448d7ebf9e2bfa23b283cea14a652e01bcc305bae3d518e59",
     "project.css": "38778695d8f3ad90064f7cb221b35b1f7571b0c6043c1a1b609c267593eacbe7",
     "project.html": "c62e8a5d8d30a3c73d5d20f2801a4ad526f2f7908e0eb2a921b021f95459b117",
-    "project.js": "34cd2610066dcfaa07477cab5b28f6f57876a429863ddb54032457d4a27ea2aa",
+    "project.js": "0636badbfcf2c279c68b6e5175f0b8896451882b483061b0492da272ad41c0c9",
     "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
     "search.js": "2b48776e621e52b5dbdf8e86f0f0b640f8d3e8783ed4be906f0d9981e1d4f8e8",
     "security-models.js": "89d2f22c3aaab1b4160721c093ae7782f2610c2767eca58e29daf6a2980452fd",
@@ -89,6 +90,11 @@
     "site.css": "17ff97b31254daaa8b34eb0bf6b37419e37b32553b6aa55b6558639da98d0430",
     "site.js": "54e3d11c5eca82748f3a574a5526fe35b3160e20b9b1afb4d8d3e832a86cd427",
     "solar-acceleration-visualizer.html": "8f2b49f1315fde5973ff1bb87cadf40900ed27e94f9ea2326c11ff8764ce5cea",
+    "spatial-devices.js": "79b3fdab7f92c67422a98a3b588d0052d1e4734e41845c4ba0ae0685190b4f9c",
+    "spatial-figures.js": "1722ae4cc20b95c61dd45aafe6c6f02f24827b4a736eacaef1832c0f7f96a3e7",
+    "spatial-navigation.js": "fd4104aada2663abff4788897d469ae969a854205bec3336301c722ccfbfb845",
+    "spatial-systems.js": "06f1ee429195367b065224f2f9e7c730a6e8e71cf43fe02e2982bd2e7cc7637f",
+    "spatial-waves.js": "fbc4294d273816f69c9a650aa3bc5081f210d680e84b3dd116c81f38077af1be",
     "status-slots.css": "3d53bd84b90777ee60596cf3480984a0ffd2e2dc72e21d742f9105f99ad5ccf8",
     "status-slots.js": "d889c8ced102b137876bc4bd63dfa51ffdea5b60c2e6852bd3596885cc4bc2eb",
     "sun-view.html": "621291cfebba79f65e737c85ec6d2109c742a1d82011802dc1c36a2ab0dfa1e6",
@@ -106,5 +112,5 @@
   "reference_links": [
     "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ],
-  "version": "1.6.1"
+  "version": "1.7.0"
 }

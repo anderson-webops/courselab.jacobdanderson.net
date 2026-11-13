@@ -121,10 +121,21 @@ def course_lab(source):
   return 'Supplied course notes and guided reading';
 }
 const groups=[""")
+    # Spatial surfaces sample the same canonical antenna fields as their 2D cuts.
+    js = replace_once(js, '\n})();\n\nfunction sourceLabel(source) {', '''
+modules.find(m=>m.id==='dipole-pattern').spatialField=(theta,v)=>dipole(theta,v.kind);
+modules.find(m=>m.id==='circular-aperture').spatialField=(theta,v)=>diskField(theta,v.diameter,v.model);
+modules.find(m=>m.id==='array-multiplication').spatialPower=(theta,v)=>arrayField(theta,v.n,v.spacing,rad(v.phase)).p*(v.element?dipole(theta,1)**2:1);
+})();
+
+function sourceLabel(source) {''')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-update.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-extensions.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/course-navigation.js').read_text() + '\nconst groups=[')
     js = replace_once(js, "const groups=[", (ROOT / 'src/orbit-types.js').read_text() + '\nconst groups=[')
+    js = replace_once(js, "const groups=[", 'const Spatial=U.spatial;\nconst groups=[')
+    for name in ['spatial-waves.js', 'spatial-navigation.js', 'spatial-systems.js']:
+        js = replace_once(js, "const groups=[", (ROOT / 'src' / name).read_text() + '\nconst groups=[')
     order=[ident for group in json.loads((ROOT/'src/topic-groups.json').read_text())['gt/ece6390'] for ident in group['ids']]
     js = replace_once(js,'const groups=[','const courseTopicOrder='+json.dumps(order)+';\nmodules.sort((a,b)=>{const rank=id=>{const i=courseTopicOrder.indexOf(id);return i<0?999:i;};return rank(a.id)-rank(b.id);});\nconst groups=[')
     js = replace_once(js, "const root=document.getElementById('course-lab')", "if(document.querySelector('[data-project-overview]')) { window.CourseLab={modules,U,checks:()=>modules.flatMap(m=>(m.checks?.()||[]).map(x=>({module:m.id,...x})))}; return; }\nconst root=document.getElementById('course-lab')")
@@ -312,7 +323,7 @@ def build():
         lab_css = lab_css.replace(selector, selector.replace('.figure', '.figure:not(.course-static)', 1))
     start = lab_js.index('const C=')
     end = lab_js.index('const Orb =', start)
-    helpers = lab_js[start:end]
+    helpers = lab_js[start:end] + (ROOT/'src/spatial-figures.js').read_text()
     write_generated(assets/'figure-utils.js', "(() => {'use strict';\n"+helpers+'\nwindow.CourseFigureU=U;\n})();')
     lab_js = lab_js[:start]+'const U=window.CourseFigureU;\nconst {C,esc,fmt,text,line,path,circle,arrow,svg,range,legend,wheel,plot}=U;\n'+lab_js[end:]
     lab = lab.replace('<script src="../assets/course-lab.js"', '<script src="../assets/figure-utils.js" defer></script>\n<script src="../assets/course-lab.js"')

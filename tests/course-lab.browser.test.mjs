@@ -78,7 +78,7 @@ try {
     }));
     assert.equal(result.modules, 67);
     assert.equal(new Set(result.ids).size, 67);
-    assert.equal(result.checks.length, 151);
+    assert.equal(result.checks.length, 161);
     assert.ok(result.checks.some(check => check.module === 'orbit-types'));
     assert.deepEqual(result.checks.filter(check => !check.pass), []);
     return { modules: result.modules, mathematicalChecks: result.checks.length };
@@ -104,7 +104,7 @@ try {
       }
       return { states, failures };
     });
-    assert.equal(result.states, 570);
+    assert.equal(result.states, 638);
     assert.deepEqual(result.failures, []);
     return result;
   });

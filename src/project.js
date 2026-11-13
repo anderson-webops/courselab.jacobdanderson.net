@@ -84,14 +84,31 @@
     return{scan:U.deg(scan),beamScan:U.deg(beamScan),beamError:U.deg(beamError),elevation:U.deg(elevation),azimuth,range,satellite,station,transmitVector,lookVector,arrayNormal:normal,arrayAxes:[xA,yA,normal],stationAxes:[east,north,up],arrayComponents,stationComponents,beamVector:beam};
   }
   function elements(){
-    let s=U.text(60,35,'Local aperture coordinates: z is the outward normal'),totalRe=0,totalIm=0;
-    for(let y=0;y<5;y++)for(let x=0;x<5;x++){
-      const cx=110+x*62,cy=329-y*56,phase=x*U.rad(state.phase);totalRe+=Math.cos(phase);totalIm+=Math.sin(phase);
-      if(x===2&&y===2){totalRe-=Math.cos(phase);totalIm-=Math.sin(phase);s+=U.circle(cx,cy,6,'none',U.C.muted);continue;}
-      s+=U.circle(cx,cy,6,U.C.a,U.C.a)+U.arrow(cx,cy,cx+22*Math.cos(phase),cy-22*Math.sin(phase),U.C.b);
+    const yaw=U.rad(35),elevation=U.rad(27),scale=48;
+    const project=([x,y,z])=>[230+scale*(Math.cos(yaw)*x-Math.sin(yaw)*y),235+scale*(Math.sin(elevation)*(Math.sin(yaw)*x+Math.cos(yaw)*y)-Math.cos(elevation)*z)];
+    const corners=[[-2.55,-2.55,0],[2.55,-2.55,0],[2.55,2.55,0],[-2.55,2.55,0]];
+    const polygon=(points,color,opacity)=>`<polygon points="${points.map(p=>project(p).join(',')).join(' ')}" fill="${color}" fill-opacity="${opacity}" stroke="${U.C.grid}"/>`;
+    let s=U.text(60,35,'Physical aperture: xA–yA plane, with outward normal zA'),totalRe=0,totalIm=0;
+    s+='<g data-aperture-plane="oblique-3d">'+polygon(corners.map(([x,y])=>[x,y,-.18]),U.C.muted,.1);
+    for(let i=0;i<4;i++){const a=corners[i],b=corners[(i+1)%4];s+=polygon([a,b,[b[0],b[1],-.18],[a[0],a[1],-.18]],U.C.muted,.12);}
+    s+=polygon(corners,U.C.c,.09);
+    for(let i=-2;i<=2;i++)s+=U.line(...project([i,-2.45,0]),...project([i,2.45,0]),U.C.grid)+U.line(...project([-2.45,i,0]),...project([2.45,i,0]),U.C.grid);
+    s+='</g>';
+    const axisOrigin=project([-2.8,-2.8,0]);
+    for(const [vector,label,dx,dy]of[[[3,-2.8,0],'xA',9,6],[[-2.8,3,0],'yA',-20,6]]){const p=project(vector);s+='<g data-spatial-axis="'+label+'">'+U.arrow(...axisOrigin,...p,U.C.muted)+U.text(p[0]+dx,p[1]+dy,label)+'</g>';}
+    const normal=project([0,0,2.45]);s+='<g data-spatial-axis="zA">'+U.arrow(...project([0,0,0]),...normal,U.C.d)+U.text(normal[0]+10,normal[1]-6,'zA / normal')+'</g>';
+    const sites=[];for(let y=0;y<5;y++)for(let x=0;x<5;x++)sites.push({x,y,depth:(x-2)*Math.sin(yaw)+(y-2)*Math.cos(yaw)});
+    for(const {x,y}of sites.sort((a,b)=>a.depth-b.depth)){
+      const base=project([x-2,y-2,0]),tip=project([x-2,y-2,.24]),phase=x*U.rad(state.phase),installed=x!==2||y!==2;
+      s+='<g data-feed-site="'+x+','+y+'" data-installed="'+installed+'">';
+      if(!installed){s+=U.circle(...base,6,'none',U.C.muted)+'</g>';continue;}
+      totalRe+=Math.cos(phase);totalIm+=Math.sin(phase);
+      s+=U.line(...base,...tip,U.C.muted,2)+U.circle(...base,3,U.C.a,U.C.a);
+      // Phase is a complex-plane glyph, independent of the physical aperture axes.
+      s+='<g data-phase-glyph="complex-plane">'+U.circle(...tip,8,'var(--surface)',U.C.a)+U.arrow(...tip,tip[0]+14*Math.cos(phase),tip[1]-14*Math.sin(phase),U.C.b)+'</g></g>';
     }
-    s+=U.arrow(100,370,390,370,U.C.muted)+U.text(400,375,'x')+U.arrow(70,350,70,80,U.C.muted)+U.text(57,65,'y')+U.text(480,80,'Position rₙ = (xₙ,yₙ,0)')+U.text(480,120,'24 feeds: common |aₙ| = 1')+U.text(480,160,'Hollow marker: one empty site')+U.text(480,200,'Phase ψₙ = x-index × βx')+U.text(480,245,'Wavelength: '+U.fmt(299.792458/state.frequency,3)+' mm')+U.text(480,285,'λ/2 spacing: '+U.fmt(149.896229/state.frequency,3)+' mm')+U.text(480,340,'Broadside |Σ feed phasors|²:')+U.text(480,380,U.fmt(totalRe**2+totalIm**2,2)+' (relative field²)');
-    $('project-elements').innerHTML=U.svg(s,'Five by five equal-amplitude feed lattice with phase arrows');
+    s+=U.text(60,397,'Oblique view; component heights are enlarged')+U.text(480,80,'Position rₙ = (xₙ,yₙ,0)')+U.text(480,120,'24 feeds: common |aₙ| = 1')+U.text(480,160,'Hollow marker: one empty site')+U.text(480,200,'Phase ψₙ = x-index × βx')+U.text(480,245,'Wavelength: '+U.fmt(299.792458/state.frequency,3)+' mm')+U.text(480,285,'λ/2 spacing: '+U.fmt(149.896229/state.frequency,3)+' mm')+U.text(480,325,'Screen-facing arrows: feed phase')+U.text(480,360,'Broadside |Σ feed phasors|²:')+U.text(480,397,U.fmt(totalRe**2+totalIm**2,2)+' (relative field²)');
+    $('project-elements').innerHTML=U.svg(s,'Oblique five by five physical aperture, outward normal and screen-facing complex feed-phase glyphs');
     $('project-phase-value').textContent=state.phase+'°';$('project-frequency-value').textContent=state.frequency+' GHz';
   }
   // Coarse author-drawn boundary for categorical teaching, independent of the course MAT.

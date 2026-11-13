@@ -12,6 +12,7 @@
   const unit=a=>{const m=Math.hypot(...a)||1;return a.map(x=>x/m);};
   const add=(a,b)=>a.map((x,i)=>x+b[i]);
   const mult=(a,k)=>a.map(x=>x*k);
+  const cross=(a,b)=>[a[1]*b[2]-a[2]*b[1],a[2]*b[0]-a[0]*b[2],a[0]*b[1]-a[1]*b[0]];
   const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
   const fmt=(n,d=1)=>Number.isFinite(n)?n.toLocaleString(undefined,{maximumFractionDigits:d}):'—';
   const wrap=x=>((x+180)%360+360)%360-180;
@@ -29,6 +30,12 @@
     stride:v=>String(v)+' × λ/2',powerDBW:v=>fmt(v,1)+' dBW',normal:v=>v==='target'?'Toward Georgia':'Toward Earth’s center'
   };
   const colors={bg:'#081722',panel:'#102735',line:'#395362',text:'#edf7fb',muted:'#a6c2cf',teal:'#63dfc4',orange:'#ffb477',purple:'#c2a0ef',blue:'#7bb9ff'};
+  // A fixed oblique camera makes physical tilt and roll visible in the aperture inset.
+  const referenceSatellite=Model.spherical(0,Model.DEFAULT_STATE.longitude,Model.GEO_RADIUS_M);
+  const referenceTarget=Model.spherical(Model.GA_CENTER.lat,Model.GA_CENTER.lon);
+  const referenceFrame=Model.buildFrame(unit(referenceTarget.map((v,i)=>v-referenceSatellite[i])));
+  const arrayCameraZ=unit(add(mult(referenceFrame.normal,2.5),add(mult(referenceFrame.x,.7),mult(referenceFrame.y,-1.1))));
+  const arrayCameraX=unit(cross(referenceFrame.y,arrayCameraZ)),arrayCameraY=unit(cross(arrayCameraZ,arrayCameraX));
 
   function syncControls(){
     $('[data-gs-preset]').value=presetName;
@@ -173,31 +180,64 @@
   function drawArray(box,detailed=false){
     const {x,y,w,h}=box;roundRect(x,y,w,h,12,'#0d2130','#4a6476');
     text(w<220?'Array':'Array · enlarged',x+15,y+20,colors.text,w<220?11:13);if(w>=250)text('Feed phase',x+w-14,y+20,colors.muted,10,'right');
-    const padding=detailed?53:33,availableH=Math.max(10,h-(detailed?112:75)),availableW=Math.max(10,w-2*padding);
+    const compact=detailed&&w<350,availableH=Math.max(10,h-(detailed?(compact?100:126):84)),availableW=Math.max(10,w-48);
     const sites=result.elements.length?result.elements:[{x:0,y:0}];
     const xmin=Math.min(...sites.map(e=>e.x)),xmax=Math.max(...sites.map(e=>e.x)),ymin=Math.min(...sites.map(e=>e.y)),ymax=Math.max(...sites.map(e=>e.y));
-    const scale=Math.min(availableW/Math.max(xmax-xmin,result.wavelengthM/2),availableH/Math.max(ymax-ymin,result.wavelengthM/2));
-    const gridW=(xmax-xmin)*scale,gridH=(ymax-ymin)*scale,sx=x+w/2-gridW/2,sy=y+42+(availableH-gridH)/2;
-    const cell=state.aperture==='explicit'?Math.min(availableW,availableH)/Math.max(1,Math.sqrt(result.elements.length)):result.spacingM*scale;
+    const extX=xmax-xmin,extY=ymax-ymin,size=Math.max(extX,extY,result.spacingM);
+    const halfX=Math.max(extX/2,size*.12)+size*.06,halfY=Math.max(extY/2,size*.12)+size*.06;
+    const middleX=(xmin+xmax)/2,middleY=(ymin+ymax)/2,thickness=size*.035,postHeight=size*.035;
+    const world=(px,py,pz=0)=>add(add(mult(result.basis.x,px),mult(result.basis.y,py)),mult(result.basis.normal,pz));
+    const projectRaw=p=>[dot(p,arrayCameraX),-dot(p,arrayCameraY),dot(p,arrayCameraZ)];
+    const corners=[world(-halfX,-halfY),world(halfX,-halfY),world(halfX,halfY),world(-halfX,halfY)];
+    const bottom=corners.map(p=>add(p,mult(result.basis.normal,-thickness)));
+    const normalEnd=mult(result.basis.normal,size*.48),targetDirection=state.autoSteer?result.steering.direction:result.targetResult.direction,targetEnd=mult(targetDirection,size*.72);
+    const axisOrigin=world(-halfX,-halfY),axisX=world(halfX+size*.1,-halfY),axisY=world(-halfX,halfY+size*.1);
+    const limits=[...corners,...bottom,normalEnd,targetEnd,axisX,axisY].map(projectRaw);
+    const low=[0,1].map(i=>Math.min(...limits.map(p=>p[i]))),high=[0,1].map(i=>Math.max(...limits.map(p=>p[i])));
+    const scale=Math.min(availableW/Math.max(high[0]-low[0],size*.1),availableH/Math.max(high[1]-low[1],size*.1));
+    const origin=[x+w/2-scale*(low[0]+high[0])/2,y+39+availableH/2-scale*(low[1]+high[1])/2];
+    const project=p=>{const q=projectRaw(p);return[origin[0]+q[0]*scale,origin[1]+q[1]*scale];};
+    path(bottom.map(project),'#365767',.8,'#0b2634');
+    for(let i=0;i<4;i++)path([project(corners[i]),project(corners[(i+1)%4]),project(bottom[(i+1)%4]),project(bottom[i])],'#365767',.7,'#163c4c');
+    path(corners.map(project),'#5f8997',1,'#143443');
+    if(state.aperture==='regular'&&result.elements.length<=256){
+      for(let col=0;col<state.columns;col++){const px=(col-(state.columns-1)/2)*result.spacingM;line(project(world(px,-halfY)),project(world(px,halfY)),'#416372',.45,.7);}
+      for(let row=0;row<state.rows;row++){const py=(row-(state.rows-1)/2)*result.spacingM;line(project(world(-halfX,py)),project(world(halfX,py)),'#416372',.45,.7);}
+    }
+    const xStep=Math.hypot(dot(result.basis.x,arrayCameraX),dot(result.basis.x,arrayCameraY)),yStep=Math.hypot(dot(result.basis.y,arrayCameraX),dot(result.basis.y,arrayCameraY));
+    const cell=state.aperture==='explicit'?Math.min(availableW,availableH)/Math.max(1,Math.sqrt(result.elements.length)):result.spacingM*scale*Math.min(xStep,yStep);
     elementHits=[];
-    for(const e of result.elements){const px=sx+(e.x-xmin)*scale,py=sy+(ymax-e.y)*scale;const selectedNow=e.id===selected;const radius=clamp(cell*.20,2.1,detailed?9:5.5);
+    const elements=result.elements.map(e=>{const base=world(e.x-middleX,e.y-middleY),top=add(base,mult(result.basis.normal,postHeight));return{e,base,top,depth:projectRaw(top)[2]};}).sort((a,b)=>a.depth-b.depth);
+    for(const {e,base,top,depth}of elements){const [px,py]=project(top),selectedNow=e.id===selected,radius=clamp(cell*.20,2.1,detailed?7:4.5);
       if(e.installed){
-        const phase=e.phase??rad(e.phaseDeg||0),color=hue(e.phaseDeg||0);circle(px,py,radius,color);
-        if(cell>9)arrow([px,py],[px+cell*.32*Math.cos(phase),py-cell*.32*Math.sin(phase)],color,.9);
+        const phase=e.phase??rad(e.phaseDeg||0),color=hue(e.phaseDeg||0);line(project(base),[px,py],'#a3c3ce',Math.max(1,radius*.45));circle(px,py,radius,color,'#0b2634',.7);
+        // Screen-facing phase glyphs remain in the complex plane, separate from the physical axes.
+        if(cell>12)arrow([px,py],[px+Math.min(13,cell*.27)*Math.cos(phase),py-Math.min(13,cell*.27)*Math.sin(phase)],color,.9);
         if(playing&&selectedNow){ctx.strokeStyle=color;ctx.globalAlpha=.5;ctx.lineWidth=1;ctx.beginPath();ctx.arc(px,py,radius+3+((time*8)%Math.max(6,cell*.7)),0,2*Math.PI);ctx.stroke();ctx.globalAlpha=1;}
       }else{line([px-radius,py-radius],[px+radius,py+radius],colors.line,1);line([px-radius,py+radius],[px+radius,py-radius],colors.line,1);}
       if(selectedNow){ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.strokeRect(px-radius-3,py-radius-3,2*radius+6,2*radius+6);}
-      elementHits.push({id:e.id,x:px,y:py,r:Math.max(8,cell*.48)});
+      elementHits.push({id:e.id,x:px,y:py,r:Math.max(8,cell*.38),depth});
     }
-    const extX=xmax-xmin,extY=ymax-ymin;
+    const label=(label,p,color,align='auto')=>{
+      const fontSize=w<250?8:10;ctx.font=`${fontSize}px ui-sans-serif,system-ui,sans-serif`;
+      const width=ctx.measureText(label).width,anchor=align==='auto'?(p[0]>x+w*.65?'right':'left'):align;
+      const px=clamp(p[0],x+12+(anchor==='right'?width:0),x+w-12-(anchor==='left'?width:0)),py=clamp(p[1],y+40,y+h-64);
+      ctx.fillStyle='#0d2130';ctx.globalAlpha=.94;ctx.fillRect(px-(anchor==='right'?width:0)-2,py-fontSize*.65,width+4,fontSize*1.3);ctx.globalAlpha=1;
+      text(label,px,py,color,fontSize,anchor);
+    };
+    if(detailed){
+      arrow(project(axisOrigin),project(axisX),colors.muted,1);arrow(project(axisOrigin),project(axisY),colors.muted,1);
+      label('xA',add(project(axisX),[4,2]),colors.muted);label('yA',add(project(axisY),[4,2]),colors.muted);
+    }
+    arrow(project([0,0,0]),project(targetEnd),colors.teal,1.4);arrow(project([0,0,0]),project(normalEnd),colors.orange,1.6);
+    if(detailed){label(state.autoSteer?'Commanded target':'Georgia ray',add(project(targetEnd),[8,-6]),colors.teal);label('Normal',add(project(normalEnd),[-8,8]),colors.orange,'right');}
     text(`${fmt(extX*1000,1)} × ${fmt(extY*1000,1)} mm`,x+14,y+h-18,colors.muted,w<250?8:10);
     if(w>=290){const legendX=x+w-135,legendY=y+h-20;
     for(let i=0;i<90;i++){ctx.fillStyle=hue(-180+4*i);ctx.fillRect(legendX+i*1.2,legendY-5,1.3,7);}
     text('−180°',legendX,legendY+10,colors.muted,8);text('0°',legendX+54,legendY+10,colors.muted,8,'center');text('+180°',legendX+108,legendY+10,colors.muted,8,'right');
     }
     if(detailed){
-      text('x',sx+gridW+17,sy+gridH,colors.muted,12);text('y',sx-16,sy-7,colors.muted,12);
-      text('Equal-amplitude installed feeds',x+w/2,y+h-57,colors.muted,w<300?9:11,'center');
+      text('Phase glyphs: complex plane',x+w/2,y+h-(compact?40:57),colors.muted,w<300?9:11,'center');
     }
     return elementHits.find(e=>e.id===selected)||{x:x+w/2,y:y+h/2};
   }
@@ -251,13 +291,13 @@
     elementHits=[];mapHits=[];
     if(view==='system')drawSystem(w,h);
     else if(view==='array'){
-      const mobile=w<570,box={x:14,y:14,w:w-(mobile?28:190),h:h-(mobile?120:35)};drawArray(box,true);
-      if(mobile)drawPhasors(w/2,h-64,28);else drawPhasors(w-88,h/2,42);
+      const mobile=w<570,box={x:14,y:14,w:w-(mobile?28:190),h:h-(mobile?102:35)};drawArray(box,true);
+      if(mobile)drawPhasors(w/2,h-45,22);else drawPhasors(w-88,h/2,42);
     }else drawMap({x:14,y:14,w:w-28,h:h-28},true);
   }
   canvas.addEventListener('pointerdown',e=>{
     const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-    const hit=elementHits.reduce((best,p)=>Math.hypot(p.x-x,p.y-y)<p.r&&(!best||Math.hypot(p.x-x,p.y-y)<Math.hypot(best.x-x,best.y-y))?p:best,null);
+    const hit=elementHits.reduce((best,p)=>Math.hypot(p.x-x,p.y-y)<p.r&&(!best||Math.hypot(p.x-x,p.y-y)<Math.hypot(best.x-x,best.y-y)-.01||(Math.abs(Math.hypot(p.x-x,p.y-y)-Math.hypot(best.x-x,best.y-y))<.01&&p.depth>best.depth))?p:best,null);
     if(hit){selected=hit.id;syncControls();draw();return;}
     const cell=mapHits.find(p=>x>=p.x&&x<p.x+p.w&&y>=p.y&&y<p.y+p.h);if(cell){selectedCell=cell.cell;draw();}
   });

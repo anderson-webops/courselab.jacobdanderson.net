@@ -262,6 +262,9 @@ modules.push({id:'helmholtz-curvature',group:'Waves',title:'Helmholtz curvature'
       s+=U.text(70,345,'D compares directionality with radiated power.')+U.text(70,374,'G includes radiation efficiency; realized G also includes mismatch.')+U.text(70,403,'A relative pattern adds 10 log₁₀(pₙ) to the chosen peak reference.');
       return{svg:U.svg(s,'Power accounting through impedance reflection and radiation efficiency'),stats:[['Absolute gain',U.fmt(10*Math.log10(g),2)+' dBi'],['Realized peak gain',U.fmt(10*Math.log10(real),2)+' dBi'],['Directional realized gain',U.fmt(10*Math.log10(real*v.pattern),2)+' dBi']],equation:'|Γ|² = |(Z<sub>A</sub> − 50)/(Z<sub>A</sub> + 50)|²; &nbsp; G = η<sub>r</sub>D; &nbsp; G<sub>realized</sub> = (1 − |Γ|²)η<sub>r</sub>D',note:'The 100 W input is an illustrative reference, and the line impedance is real 50 Ω. Mismatch, radiation efficiency, directivity, and polarization are separate effects; this power accounting does not add a polarization loss. Applying a loss already included in quoted gain would count it twice.',question:'Could an antenna accept nearly all the incident power while radiating only a small fraction of it?',};},sources:[sourceEarlier,sourceGuide],checks:()=>[{name:'Matched50ohm port haszero reflection',pass:((50-50)**2)/(100**2)===0},{name:'Purely reactive impedance has unit reflection',pass:((0-50)**2+75**2)/((0+50)**2+75**2)===1},{name:'Halving normalized power subtracts3.0103dB',pass:Math.abs(10*Math.log10(.5)+3.0102999566)<1e-9}]
   });
+modules.find(m=>m.id==='dipole-pattern').spatialField=(theta,v)=>dipole(theta,v.kind);
+modules.find(m=>m.id==='circular-aperture').spatialField=(theta,v)=>diskField(theta,v.diameter,v.model);
+modules.find(m=>m.id==='array-multiplication').spatialPower=(theta,v)=>arrayField(theta,v.n,v.spacing,rad(v.phase)).p*(v.element?dipole(theta,1)**2:1);
 })();
 
 function sourceLabel(source) {
@@ -336,6 +339,8 @@ modules.push({id:'adaptive-modcod',group:'Digital',title:'Adaptive MODCOD',headi
 function apsk16(){const ratio=2.8,inner=1/Math.sqrt((4+12*ratio**2)/16),out=[];for(let j=0;j<4;j++){const a=Math.PI/4+j*tau/4;out.push([inner*Math.cos(a),inner*Math.sin(a)]);}for(let j=0;j<12;j++){const a=Math.PI/12+j*tau/12;out.push([inner*ratio*Math.cos(a),inner*ratio*Math.sin(a)]);}return out;}
 function amplifier(kind,ibo){const alphabet=kind===0?constellation(4):kind===1?constellation(16):apsk16(),gain=10**(-ibo/20),input=alphabet.map(p=>p.map(x=>x*gain)),output=input.map(p=>{const r=Math.hypot(...p);return p.map(x=>x/Math.max(1,r));}),pin=input.reduce((s,p)=>s+p[0]**2+p[1]**2,0)/input.length,pout=output.reduce((s,p)=>s+p[0]**2+p[1]**2,0)/output.length,error=input.reduce((s,p,i)=>s+(p[0]-output[i][0])**2+(p[1]-output[i][1])**2,0)/input.length;return{input,output,pin,pout,obo:-10*Math.log10(pout),rms:100*Math.sqrt(error/pin),clipped:input.filter(p=>Math.hypot(...p)>1+1e-12).length};}
 modules.push({id:'amplifier-backoff',group:'Digital',title:'Amplifier & backoff',heading:'Constellation geometry changes what a nonlinear amplifier distorts',intro:'Apply a toy radial amplitude limiter to equally normalized QPSK, square 16-QAM and a two-ring 16-APSK alphabet.',sources:src('VID06: APSK rings, nonlinear amplification and power backoff'),controls:[pick('kind','Constellation',1,[[0,'QPSK'],[1,'16-QAM'],[2,'Toy 16-APSK: ring ratio 2.8']]),ctl('ibo','Input power backoff',0,10,.5,0,'dB')],render(v,U){const a=amplifier(v.kind,v.ibo),cx=310,cy=225,scale=125;let z=U.line(120,cy,500,cy,U.C.grid)+U.line(cx,40,cx,410,U.C.grid)+U.circle(cx,cy,scale,'none',U.C.muted)+U.text(512,cy+5,'I')+U.text(cx+10,42,'Q');a.input.forEach((p,i)=>{const q=a.output[i],clipped=Math.hypot(...p)>1+1e-12;z+=U.line(cx+scale*p[0],cy-scale*p[1],cx+scale*q[0],cy-scale*q[1],U.C.d,2)+U.circle(cx+scale*p[0],cy-scale*p[1],5,'none',U.C.a)+U.circle(cx+scale*q[0],cy-scale*q[1],2.5,clipped?U.C.d:U.C.b,clipped?U.C.d:U.C.b);});z+=U.text(535,85,'Unit circle: saturation amplitude')+U.text(535,130,'Hollow rings: linear input points')+U.text(535,175,'Small dots: limited output points')+U.text(535,220,a.clipped+' of '+a.input.length+' symbol points clipped')+U.text(535,285,'Equal I/Q spatial scales')+U.text(535,330,'Symbol instants only; no pulse filter');const series=[0,1,2].map((kind,i)=>({name:['QPSK','16-QAM','Toy 16-APSK'][i],color:[U.C.a,U.C.b,U.C.c][i],points:U.range(100,q=>[q*10,amplifier(kind,q*10).rms])}));series.push({name:'Selected input backoff',color:U.C.d,dash:'4 4',points:[[v.ibo,0],[v.ibo,20]]});return{svg:U.svg(z,'Toy hard amplitude limiting of normalized constellation points')+U.plot(series,{xmin:0,xmax:10,ymin:0,ymax:20,xlabel:'Input power backoff (dB)',ylabel:'RMS point error (%)',title:'Error relative to an ideal linear output at the same input level',height:320}),stats:[['Output power / saturation power',U.fmt(a.pout,3)],['Output power backoff',U.fmt(a.obo,2)+' dB'],['RMS point error',U.fmt(a.rms,2)+'%']],equation:'z<sub>in</sub>=10<sup>−IBO/20</sup>z; &nbsp; z<sub>out</sub>=z<sub>in</sub>/max(1,|z<sub>in</sub>|); &nbsp; OBO=−10log₁₀⟨|z<sub>out</sub>|²⟩',note:'This memoryless hard AM limiter preserves phase and clips only amplitudes above 1; saturation power is 1. Each alphabet starts with average symbol energy 1, so IBO is 10log₁₀(Psat/Pin). The 16-APSK ring ratio 2.8 is illustrative and is not a DVB requirement. Lower peak radius can reduce symbol-point clipping, but clipped-point count alone does not measure error severity. Real pulse-shaped waveforms have between-symbol peaks, AM/PM distortion and amplifier memory; this plot does not predict BER, DC efficiency or a required hardware backoff. QPSK having zero point error at 0 dB does not imply a filtered QPSK waveform has no peaks.',question:'Why can backing off reduce distortion while also reducing output power, and why does a constellation-only picture miss between-symbol peaks?'};},checks:()=>{const q=amplifier(0,0),a=amplifier(1,0),b=amplifier(1,3),p=apsk16();return[{name:'Toy16APSK has unit average symbol energy',pass:Math.abs(p.reduce((s,p)=>s+p[0]**2+p[1]**2,0)/16-1)<1e-12},{name:'Hard limiter bounds every output amplitude by1',pass:a.output.every(p=>Math.hypot(...p)<=1+1e-12)},{name:'Unit-radius QPSK at0dB has zero symbol-point distortion',pass:q.rms<1e-10},{name:'16QAM at3dB input backoff has no clipped symbol points',pass:b.clipped===0&&b.rms<1e-10},{name:'Passive radial limiter never increases mean signal power',pass:a.pout<=a.pin&&b.pout<=b.pin}]}});
+modules.find(m=>m.id==='planar-array').spatialPower=(u,w,v)=>af(v.nx,Math.PI*(u-v.u0))*af(v.ny,Math.PI*(w-v.v0));
+modules.find(m=>m.id==='array-footprint').spatialPower=(x,y,v)=>{const r=Math.hypot(v.range,x,y);return af(v.nx,Math.PI*x/r)*af(v.ny,Math.PI*y/r);};
 })();
 
 /* November topics. All examples are generic and independent of submitted designs. */
@@ -424,6 +429,7 @@ modules.push({id:'amplifier-backoff',group:'Digital',title:'Amplifier & backoff'
     render(v,U){const dbsum=(a,b)=>10*Math.log10(10**(a/10)+10**(b/10)),raw=dbsum(v.wanted,v.jammer),after=dbsum(v.wanted,v.jammer-v.null),clip=raw>v.limit;let s=U.text(55,35,'Same spatial suppression, different place in the receiver chain');
       const box=(x,y,w,label,color)=>`<rect x="${x}" y="${y}" width="${w}" height="55" rx="6" fill="none" stroke="${color}"/>`+U.text(x+w/2,y+33,label,'middle');
       s+=U.text(55,90,'Analog combining')+box(55,115,180,'Spatial combiner',U.C.a)+U.arrow(240,143,290,143)+box(300,115,180,'Front end',U.C.b)+U.arrow(485,143,535,143)+box(545,115,180,'ADC',U.C.c)+U.text(55,225,'Digital combining')+box(55,250,180,'Front ends',U.C.b)+U.arrow(240,278,290,278)+box(300,250,180,'ADCs',U.C.c)+U.arrow(485,278,535,278)+box(545,250,180,'Digital weights',U.C.a)+U.text(55,360,'Before digital weights: '+U.fmt(raw,1)+' dBm; linear limit '+v.limit+' dBm')+U.text(55,400,clip?'Front-end limit exceeded: downstream null cannot recover clipped samples.':'Front-end power stays within this simplified linear limit.');return{svg:U.svg(s,'Analog suppression before the front end versus digital suppression after ADCs'),stats:[['Raw total input',U.fmt(raw,2)+' dBm'],['After ideal null',U.fmt(after,2)+' dBm'],['Front-end margin',U.fmt(v.limit-raw,2)+' dB']],equation:'y = wᴴx; &nbsp; Ptotal,dBm = 10 log₁₀(Σ 10<sup>Pi,dBm/10</sup>)',note:'Illustrative power-headroom model; no real ADC quantization, per-element phase solve, noise figure or automatic gain control is simulated. Analog combining and hybrid architectures have their own losses and flexibility tradeoffs.'};},checks:()=>[{name:'Two 0 dBm inputs sum to 3.0103 dBm',pass:close(10*Math.log10(2),3.01029995664,1e-9)}]});
+modules.find(m=>m.id==='array-normalization').spatialPower=(theta,phi,v)=>arrayPattern(theta,phi,v.n,v.spacing,v.phase*Math.PI/180)/(2*v.n*v.n);
 })();
 
 /* Generic navigation and modem examples; no assignment solution data. */
@@ -805,6 +811,549 @@ modules.push({id:'amplifier-backoff',group:'Digital',title:'Amplifier & backoff'
       {name:'GEO ground longitude is fixed for a full sidereal day',pass:Math.abs(wrap(state({...presets[0],node:-85},DAY*.73).longitude+85))<1e-8},
       {name:'Molniya period is half a sidereal day',pass:Math.abs(TAU*Math.sqrt(presets[9].a**3/MU)-DAY/2)<1e-7},
     ],
+  });
+})();
+
+const Spatial=U.spatial;
+/* Spatial companions share the existing wave and antenna models and quantitative cuts. */
+(() => {
+  'use strict';
+  const tau=2*Math.PI,rad=degrees=>degrees*Math.PI/180;
+  const sequence=(count,fn)=>Array.from({length:count+1},(_,i)=>fn(i/count));
+  const ray=theta=>[Math.sin(theta),0,Math.cos(theta)];
+  const scaled=(p,k)=>p.map(x=>x*k);
+  const at=(moduleId,scope,draw,{replace=false,defaults={azimuth:35,elevation:25},note=''}={})=>{
+    const module=modules.find(item=>item.id===moduleId);if(!module)return;
+    const original=module.render;
+    Spatial.controls(module,defaults);module.spatial=scope;
+    module.render=(v,U)=>{
+      const result=original(v,U),spatial=draw(v,U,module);
+      return{...result,svg:replace?spatial:spatial+result.svg,note:result.note+(note?' '+note:'')};
+    };
+  };
+
+  at('plane-wave','Transverse electric and magnetic vectors along the propagation axis',(v,U)=>{
+    const phase=rad(v.phase),lambda=299792458/(v.frequency*1e9*Math.sqrt(v.eps));
+    const field=u=>Math.cos(phase-2*tau*u),position=u=>2*u-1;
+    return Spatial.figure(U,v,{height:440,center:[400,235],scale:135,
+      title:'Electric and magnetic fields along +x',label:'Spatial plane wave with perpendicular E and H vectors and forward energy flow'},scene=>{
+      const origin=[-1.2,0,0];
+      let s=scene.arrow(origin,[1.25,0,0],U.C.ink)+scene.label([1.25,0,0],'+x propagation',U.C.ink,28,25);
+      s+=scene.arrow(origin,[-1.2,.85,0],U.C.a)+scene.label([-1.2,.85,0],'E · +y',U.C.a,-16,20);
+      s+=scene.arrow(origin,[-1.2,0,.85],U.C.b)+scene.label([-1.2,0,.85],'H · +z',U.C.b,0,-16);
+      for(let i=0;i<=12;i++){
+        const u=i/12,x=position(u),amplitude=.55*field(u);
+        s+=scene.arrow([x,0,0],[x,amplitude,0],U.C.a)+scene.arrow([x,0,0],[x,0,amplitude],U.C.b);
+      }
+      s+=scene.path(sequence(144,u=>[position(u),.55*field(u),0]),U.C.a,3);
+      s+=scene.path(sequence(144,u=>[position(u),0,.55*field(u)]),U.C.b,3,'6 3');
+      for(const u of[0,.5,1])s+=scene.point([position(u),0,0],U.C.ink,2);
+      return s+U.text(400,385,'Energy flow E × H: +x · drawn field length = 2λ · λ = '+U.fmt(lambda,3)+' m.','middle')+U.text(400,420,'E/E₀ and H/H₀ use separate normalized transverse scales.','middle');
+    })+U.legend([{name:'Electric field E (y)',color:U.C.a},{name:'Magnetic field H (z)',color:U.C.b,dash:true}]);
+  },{replace:true,defaults:{azimuth:32,elevation:23}});
+
+  at('polarization','Spatial wave-tip curve and its transverse polarization ellipse',(v,U)=>{
+    const phase=rad(v.phase),delta=rad(v.delta),receive=rad(v.receiver);
+    const point=u=>[2*u-1,.45*Math.cos(phase-2*tau*u),.45*v.ratio*Math.cos(phase-2*tau*u+delta)];
+    return Spatial.figure(U,v,{height:460,center:[400,245],scale:115,
+      title:'One instant of the polarized wave along +x',label:'Spatial polarized electric field and a fixed transverse receiving plane'},scene=>{
+      let s=scene.arrow([-1.2,0,0],[1.25,0,0],U.C.ink)+scene.label([1.25,0,0],'+x propagation',U.C.ink,25,28);
+      s+=scene.arrow([-1,0,0],[-1,.75,0],U.C.ink)+scene.label([-1,.75,0],'+y',U.C.ink,-14,20);
+      s+=scene.arrow([-1,0,0],[-1,0,.95],U.C.ink)+scene.label([-1,0,.95],'+z',U.C.ink,0,-14);
+      const plane=[[-1,-.65,-.95],[-1,.65,-.95],[-1,.65,.95],[-1,-.65,.95]];
+      s+=scene.polygon(plane,U.C.grid,.08,U.C.grid);
+      s+=scene.path(sequence(180,u=>[-1,.45*Math.cos(tau*u),.45*v.ratio*Math.cos(tau*u+delta)]),U.C.c,2);
+      s+=scene.line([-1,-.9*Math.cos(receive),-.9*Math.sin(receive)],[-1,.9*Math.cos(receive),.9*Math.sin(receive)],U.C.b,2,'6 4');
+      s+=scene.path(sequence(180,point),U.C.a,3);
+      for(let i=0;i<=16;i++){const u=i/16,p=point(u);s+=scene.arrow([p[0],0,0],p,U.C.a);}
+      s+=scene.point(point(0),U.C.b,5);
+      return s+U.text(400,440,'The transverse ellipse below shows this same field at one fixed location.','middle');
+    });
+  },{note:'The spatial curve joins electric-vector tips at one instant. Every electric vector lies transverse to +x; the lower y–z view retains the receive-axis and power-coupling calculation.'});
+
+  at('dipole-pattern','Full axisymmetric dipole radiation surface beside its quantitative polar cut',(v,U,module)=>{
+    const theta=rad(v.theta),field=angle=>Math.abs(module.spatialField(angle,v));
+    const radius=angle=>v.quantity?field(angle)**2:field(angle);
+    return Spatial.figure(U,v,{height:460,center:[400,235],scale:135,
+      title:'The polar cut rotated around the wire',label:'Three dimensional normalized dipole radiation with a wire-axis null'},scene=>{
+      let s=scene.surface(radius,{thetaSteps:36,phiSteps:40,color:U.C.a});
+      s+=scene.axes([0,0,0],1.15,['x','y','wire +z']);
+      s+=scene.line([0,0,-1.18],[0,0,1.18],U.C.ink,3);
+      s+=scene.arrow([0,0,0],scaled(ray(theta),1.18),U.C.b)+scene.label(scaled(ray(theta),1.18),'θ = '+v.theta+'°',U.C.b,8,24);
+      s+=scene.point(scaled(ray(theta),radius(theta)),U.C.b,5);
+      return s+U.text(400,440,v.quantity?'Surface radius = peak-normalized power |F|².':'Surface radius = peak-normalized field magnitude |F|.','middle');
+    });
+  },{note:'Azimuthal symmetry turns the same polar cut into this 3D surface; the wire axis passes through both radiation nulls.'});
+
+  at('circular-aperture','Forward circular-aperture field surface and aperture-normal geometry',(v,U,module)=>{
+    const cache=new Map(),field=theta=>{
+      const key=theta.toPrecision(14);if(!cache.has(key))cache.set(key,Math.abs(module.spatialField(theta,v)));
+      return cache.get(key);
+    };
+    const theta=rad(v.theta),thetas=sequence(72,u=>Math.PI/2*u*u);
+    return Spatial.figure(U,v,{height:460,center:[400,250],scale:140,
+      title:'Circular opening and forward radiation',label:'Circular aperture plane, boresight and forward normalized radiation surface'},scene=>{
+      let s=scene.polygon(sequence(64,u=>[.52*Math.cos(tau*u),.52*Math.sin(tau*u),0]),U.C.grid,.12,U.C.ink);
+      for(const r of [.18,.35,.52])s+=scene.path(sequence(64,u=>[r*Math.cos(tau*u),r*Math.sin(tau*u),0]),U.C.grid,1);
+      s+=scene.surface(field,{thetaSamples:thetas,phiSteps:32,color:U.C.a});
+      s+=scene.axes([0,0,0],1.12,['aperture x','aperture y','boresight +z']);
+      s+=scene.arrow([0,0,0],scaled(ray(theta),1.13),U.C.b)+scene.label(scaled(ray(theta),1.13),'Probe θ',U.C.b,8,24);
+      s+=scene.point(scaled(ray(theta),field(theta)),U.C.b,5);
+      return s+U.text(400,440,'Forward hemisphere · radius = |F| · aperture sketch enlarged.','middle');
+    });
+  },{note:'The 3D surface uses the same scalar field as the angular cut, including the selected obliquity factor. It shows the modeled forward hemisphere and the aperture normal.'});
+
+  at('dish-gain','Reflector, collecting aperture and pointing geometry',(v,U)=>{
+    const radius=.9,focus=.62,rim=radius*radius/(4*focus),error=rad(10*v.error);
+    const surface=(r,phi)=>[r*Math.cos(phi),r*Math.sin(phi),r*r/(4*focus)];
+    return Spatial.figure(U,v,{height:450,center:[400,270],scale:135,
+      title:'Reflector, feed and boresight',label:'Spatial parabolic reflector with collecting aperture, feed and offset source direction'},scene=>{
+      const faces=[];
+      for(let j=0;j<12;j++)for(let i=0;i<32;i++){
+        const a=radius*j/12,b=radius*(j+1)/12,p=tau*i/32,q=tau*(i+1)/32,points=[surface(a,p),surface(b,p),surface(b,q),surface(a,q)];
+        faces.push({points,depth:points.reduce((sum,point)=>sum+scene.project(point)[2],0)/4});
+      }
+      faces.sort((a,b)=>a.depth-b.depth);
+      let s=faces.map(face=>scene.polygon(face.points,U.C.a,.17,U.C.grid)).join('');
+      s+=scene.path(sequence(80,u=>surface(radius,tau*u)),U.C.ink,2);
+      s+=scene.line([0,0,0],[0,0,1.4],U.C.grid,1,'5 4')+scene.label([0,0,1.4],'Boresight +z',U.C.ink,-8,-22);
+      for(const [r,phi]of [[.3,0],[.65,tau/3],[.83,2*tau/3]]){
+        const p=surface(r,phi);s+=scene.arrow([p[0],p[1],1.15],p,U.C.c)+scene.arrow(p,[0,0,focus],U.C.c);
+      }
+      s+=scene.point([0,0,focus],U.C.b,5)+scene.label([0,0,focus],'Feed at focus',U.C.b);
+      s+=scene.arrow([1.4*Math.sin(error),0,1.4*Math.cos(error)],[0,0,0],U.C.b);
+      s+=scene.label([1.4*Math.sin(error),0,1.4*Math.cos(error)],'Source δ = '+v.error+'°',U.C.b,8,24);
+      s+=scene.line([-.9,0,rim],[.9,0,rim],U.C.ink,1,'5 4');
+      s+=scene.label([-.9,0,rim],'D = '+U.fmt(v.diameter,1)+' m',U.C.ink,-8,22);
+      return s+U.text(400,430,'Boresight reference rays · pointing separation enlarged ×10.','middle');
+    });
+  },{defaults:{azimuth:35,elevation:20},note:'The reflector shape is illustrative. Rays show the boresight reference, while the orange source direction marks the selected pointing separation enlarged tenfold. The main-beam gain and loss model below retains its stated approximation.'});
+
+  at('array-multiplication','Full three-dimensional linear-array pattern and array-axis reference',(v,U,module)=>{
+    const theta=rad(v.theta),count=Math.max(72,Math.ceil(12*v.n*v.spacing));
+    const thetas=sequence(count,u=>Math.acos(1-2*u)),power=angle=>module.spatialPower(angle,v);
+    return Spatial.figure(U,v,{height:460,center:[400,235],scale:135,
+      title:'Element pattern × array factor in space',label:'Axisymmetric three dimensional linear-array power pattern and probe direction'},scene=>{
+      let s=scene.surface(power,{thetaSamples:thetas,phiSteps:28,color:U.C.a});
+      s+=scene.axes([0,0,0],1.15,['x','y','array +z']);
+      s+=scene.line([0,0,-.8],[0,0,.8],U.C.ink,2);
+      for(let i=0;i<v.n;i++)s+=scene.point([0,0,-.8+1.6*i/Math.max(1,v.n-1)],U.C.ink,3);
+      s+=scene.arrow([0,0,0],scaled(ray(theta),1.18),U.C.b)+scene.label(scaled(ray(theta),1.18),'θ = '+v.theta+'°',U.C.b,8,24);
+      s+=scene.point(scaled(ray(theta),power(theta)),U.C.b,5);
+      return s+U.text(400,440,'Surface radius = power / (N² × element peak); array geometry enlarged.','middle');
+    });
+  },{note:'The 3D surface revolves the same θ-dependent power cut around the z array axis. Its radius retains the existing N² element-peak reference, including any selected dipole element factor.'});
+})();
+
+/* Spatial companions use the existing navigation models and preserve their readouts. */
+(() => {
+  'use strict';
+  const rad = degrees => degrees * Math.PI / 180;
+  const range = (steps, fn) => Array.from({length: steps + 1}, (_, i) => fn(i / steps));
+  const near = (a, b) => Math.abs(a - b) < 1e-9;
+  const moduleFor = id => modules.find(module => module.id === id);
+  const componentLabel = (scene, a, b, text, color, offset = 18) => {
+    const p = scene.project(a), q = scene.project(b), dx = q[0] - p[0], dy = q[1] - p[1];
+    const length = Math.hypot(dx, dy);
+    if (length < 18) return '';
+    let nx = -dy / length, ny = dx / length;
+    if (ny < 0) {nx = -nx; ny = -ny;}
+    return scene.label(a.map((value, i) => (value + b[i]) / 2), text, color, nx * offset, ny * offset + 5);
+  };
+  const extendChecks = (module, checks) => {
+    const previous = module.checks;
+    module.checks = () => [...(previous ? previous() : []), ...checks()];
+  };
+
+  const framePosition = v => {
+    const latitude = rad(v.latitude), longitude = rad(v.longitude), rotation = rad(v.rotation);
+    const radius = 6378 + v.altitude;
+    const fixed = [radius * Math.cos(latitude) * Math.cos(longitude),
+      radius * Math.cos(latitude) * Math.sin(longitude), radius * Math.sin(latitude)];
+    const inertial = [fixed[0] * Math.cos(rotation) - fixed[1] * Math.sin(rotation),
+      fixed[0] * Math.sin(rotation) + fixed[1] * Math.cos(rotation), fixed[2]];
+    return {fixed, inertial, radius, latitude, longitude, rotation};
+  };
+  const frames = moduleFor('navigation-frames');
+  if (frames) {
+    const original = frames.render;
+    Spatial.controls(frames, {azimuth: 35, elevation: 25});
+    frames.spatial = 'Geocentric XYZ and rotating Earth-fixed axes';
+    frames.render = (v, U) => {
+      const result = original(v, U), g = framePosition(v), earth = 6378 / g.radius;
+      const position = g.inertial.map(value => value / g.radius);
+      const figure = Spatial.figure(U, v, {width: 800, height: 460, center: [280, 250], scale: 142,
+        title: 'One position in two three-dimensional coordinate frames',
+        label: 'Spherical Earth, inertial XYZ axes, rotating Earth-fixed axes and the position vector'}, scene => {
+        let s = scene.sphere(earth) + scene.axes([0, 0, 0], 1.12, ['X', 'Y', 'Z = ZF']);
+        const fixedX = [1.08 * Math.cos(g.rotation), 1.08 * Math.sin(g.rotation), 0];
+        const fixedY = [-1.08 * Math.sin(g.rotation), 1.08 * Math.cos(g.rotation), 0];
+        s += scene.arrow([0, 0, 0], fixedX, U.C.b) + scene.label(fixedX, 'XF', U.C.b, 9, 14);
+        s += scene.arrow([0, 0, 0], fixedY, U.C.b) + scene.label(fixedY, 'YF', U.C.b, 9, 14);
+        const surface = (latitude, longitude) => [earth * Math.cos(latitude) * Math.cos(longitude),
+          earth * Math.cos(latitude) * Math.sin(longitude), earth * Math.sin(latitude)];
+        s += scene.path(range(60, t => surface(-Math.PI / 2 + Math.PI * t, g.rotation)), U.C.b, 2);
+        s += scene.path(range(60, t => surface(0, g.rotation + g.longitude * t)), U.C.c, 2);
+        s += scene.path(range(45, t => surface(g.latitude * t, g.rotation + g.longitude)), U.C.d, 2);
+        s += scene.arrow([0, 0, 0], position, U.C.a) + scene.point(position, U.C.a, 5);
+        s += scene.line(position, [position[0], position[1], 0], U.C.a, 1, '5 4');
+        s += scene.label(position, 'Position', U.C.a, 8, -10);
+        s += U.text(515, 93, 'Earth-fixed position (km)');
+        g.fixed.forEach((value, i) => {s += U.text(515, 125 + i * 30, ['xF', 'yF', 'zF'][i] + ' = ' + U.fmt(value, 1));});
+        s += U.text(515, 245, 'Inertial position (km)');
+        g.inertial.forEach((value, i) => {s += U.text(515, 277 + i * 30, ['X', 'Y', 'Z'][i] + ' = ' + U.fmt(value, 1));});
+        s += U.text(45, 426, 'Orange axes and prime meridian turn about the shared Z axis.');
+        return s;
+      });
+      return {...result, svg: figure + result.svg};
+    };
+    extendChecks(frames, () => {
+      const p = framePosition({latitude: 30, longitude: 0, rotation: 90, altitude: 0});
+      return [
+        {name: 'Spatial ECEF quarter-turn sends fixed x to inertial Y and preserves Z',
+          pass: Math.abs(p.inertial[0]) < 1e-9 && near(p.inertial[1], 6378 * Math.cos(Math.PI / 6)) && near(p.inertial[2], 3189)},
+        {name: 'Spatial frame rotation preserves the full geocentric radius',
+          pass: near(Math.hypot(...p.inertial), 6378)}
+      ];
+    });
+  }
+
+  const elevationGeometry = v => {
+    const ratio = 6378 / v.r, gamma = rad(v.gamma);
+    const station = [ratio, 0, 0], satellite = [Math.cos(gamma), Math.sin(gamma), 0];
+    const horizontal = satellite[1], up = satellite[0] - ratio;
+    return {ratio, gamma, station, satellite, horizontal, up,
+      elevation: Math.atan2(up, horizontal)};
+  };
+  const look = moduleFor('look-triangle');
+  if (look) {
+    const original = look.render;
+    Spatial.controls(look, {azimuth: -35, elevation: 25});
+    look.spatial = 'Spherical Earth, station tangent plane and the elevation cross-section';
+    look.render = (v, U) => {
+      const result = original(v, U), g = elevationGeometry(v), p = g.station;
+      const figure = Spatial.figure(U, v, {width: 800, height: 465, center: [285, 250], scale: 150,
+        title: 'The station’s horizon is a plane tangent to spherical Earth',
+        label: 'Earth and satellite in three-dimensional context with a local horizon plane, Up normal and line-of-sight components'}, scene => {
+        let s = scene.sphere(g.ratio);
+        s += scene.polygon([[p[0], -.55, -.4], [p[0], .95, -.4], [p[0], .95, .4], [p[0], -.55, .4]], U.C.b, .08, U.C.b);
+        s += scene.line([0, 0, 0], g.satellite, U.C.muted, 1, '5 4');
+        s += scene.line([0, 0, 0], p, U.C.muted, 1);
+        s += scene.path(range(50, t => [g.ratio * .7 * Math.cos(g.gamma * t),
+          g.ratio * .7 * Math.sin(g.gamma * t), 0]), U.C.muted, 1.5);
+        s += scene.label([g.ratio * .83 * Math.cos(g.gamma / 2), g.ratio * .83 * Math.sin(g.gamma / 2), 0], 'γ', U.C.muted, -8, -10);
+        const projection = [p[0], g.horizontal, 0];
+        s += scene.line(p, projection, U.C.b, 2, '5 4');
+        s += scene.line(projection, g.satellite, U.C.c, 2, '5 4');
+        s += scene.line(p, g.satellite, g.elevation >= 0 ? U.C.a : U.C.d, 2, g.elevation >= 0 ? '' : '7 4');
+        s += scene.arrow(p, [p[0] + .4, 0, 0], U.C.c);
+        s += scene.label([p[0] + .4, 0, 0], 'Up', U.C.c, 10, -10);
+        s += scene.arrow(p, [p[0], .48, 0], U.C.b);
+        s += scene.label([p[0], .48, 0], 'Horizontal', U.C.b, -14, 18);
+        s += scene.point(p, U.C.b, 5) + scene.label(p, 'Station', U.C.b, -22, 21);
+        s += scene.point(g.satellite, U.C.a, 5) + scene.label(g.satellite, 'Satellite', U.C.a, 10, -12);
+        s += U.text(505, 95, 'Earth center → station: RE');
+        s += U.text(505, 131, 'Earth center → satellite: rs');
+        s += U.text(505, 189, 'Ray = horizontal part + Up part');
+        s += U.text(505, 225, 'Elevation = ' + U.fmt(U.deg(g.elevation), 2) + '°');
+        s += U.text(505, 279, g.elevation >= 0 ? 'Ray clears the ideal spherical horizon.' : 'Dashed ray is blocked by Earth.');
+        s += U.text(45, 430, 'The central angle fixes an elevation cross-section; azimuth is free in this model.');
+        return s;
+      });
+      return {...result, svg: figure + result.svg};
+    };
+    extendChecks(look, () => {
+      const horizon = elevationGeometry({r: 24000, gamma: Math.acos(6378 / 24000) * 180 / Math.PI});
+      const overhead = elevationGeometry({r: 24000, gamma: 0});
+      return [
+        {name: 'Spatial look-angle horizon has zero Up component', pass: Math.abs(horizon.up) < 1e-12 && Math.abs(horizon.elevation) < 1e-12},
+        {name: 'Spatial overhead ray is radial with90-degree elevation', pass: near(overhead.elevation, Math.PI / 2) && near(overhead.horizontal, 0)}
+      ];
+    });
+  }
+
+  const bearingGeometry = v => {
+    const latitude = rad(v.Le), subpointLatitude = rad(v.Ls), longitudeDifference = rad(v.dl);
+    const east = Math.cos(subpointLatitude) * Math.sin(longitudeDifference);
+    const north = Math.sin(subpointLatitude) * Math.cos(latitude) -
+      Math.cos(subpointLatitude) * Math.sin(latitude) * Math.cos(longitudeDifference);
+    const magnitude = Math.hypot(east, north);
+    return {east, north, magnitude, bearing: magnitude < 1e-10 ? null : (Math.atan2(east, north) + 2 * Math.PI) % (2 * Math.PI)};
+  };
+  const azimuth = moduleFor('azimuth-components');
+  if (azimuth) {
+    const original = azimuth.render;
+    Spatial.controls(azimuth, {azimuth: -35, elevation: 25});
+    azimuth.spatial = 'East-north horizon projection with its Up normal';
+    azimuth.render = (v, U) => {
+      const result = original(v, U), g = bearingGeometry(v), projected = [g.east, g.north, 0];
+      const figure = Spatial.figure(U, v, {width: 800, height: 465, center: [285, 250], scale: 145,
+        title: 'Azimuth belongs to the local east–north horizon plane',
+        label: 'Three-dimensional local horizon plane and Up normal with east and north components of the horizontal ray projection'}, scene => {
+        let s = scene.polygon([[-1.08, -1.08, 0], [1.08, -1.08, 0], [1.08, 1.08, 0], [-1.08, 1.08, 0]], U.C.c, .05, U.C.grid);
+        s += scene.path(range(80, t => [Math.sin(2 * Math.PI * t), Math.cos(2 * Math.PI * t), 0]), U.C.grid, 1);
+        s += scene.axes([0, 0, 0], 1.12, ['E', 'N', 'Up']);
+        s += scene.line([0, 0, 0], [g.east, 0, 0], U.C.b, 2, '5 4');
+        s += scene.line([g.east, 0, 0], projected, U.C.c, 2, '5 4');
+        if (g.bearing !== null) {
+          s += scene.path(range(70, t => [.58 * Math.sin(g.bearing * t), .58 * Math.cos(g.bearing * t), 0]), U.C.a, 2);
+          s += scene.arrow([0, 0, 0], projected, U.C.a);
+          s += componentLabel(scene, [0, 0, 0], projected, 'Horizontal projection', U.C.a, 32);
+        }
+        s += scene.point([0, 0, 0], U.C.ink, 4);
+        s += U.text(515, 103, 'East component = ' + U.fmt(g.east, 3));
+        s += U.text(515, 139, 'North component = ' + U.fmt(g.north, 3));
+        s += U.text(515, 200, g.bearing === null ? 'Azimuth is undefined.' : 'Azimuth = ' + U.fmt(U.deg(g.bearing), 1) + '°');
+        s += U.text(515, 237, 'Clockwise from local North');
+        s += U.text(515, 296, 'Up is perpendicular to the horizon.');
+        s += U.text(45, 430, 'The plotted vector is the horizontal projection; this model determines bearing.');
+        return s;
+      });
+      return {...result, svg: figure + result.svg};
+    };
+    extendChecks(azimuth, () => {
+      const east = bearingGeometry({Le: 0, Ls: 0, dl: 90});
+      const south = bearingGeometry({Le: 30, Ls: 0, dl: 0});
+      return [
+        {name: 'Spatial ENU eastward projection has90-degree bearing', pass: near(east.east, 1) && near(east.north, 0) && near(east.bearing, Math.PI / 2)},
+        {name: 'Spatial ENU equatorial subpoint is south of a northern station at the same longitude', pass: near(south.east, 0) && near(south.north, -.5) && near(south.bearing, Math.PI)}
+      ];
+    });
+  }
+
+  const skyDirections = v => Array.from({length: 6}, (_, i) => {
+    const azimuth = rad(-v.spread / 2 + v.spread * i / 5);
+    const elevation = rad(i % 2 ? Math.min(85, v.low + v.separation) : v.low);
+    return {azimuth, elevation, point: [Math.cos(elevation) * Math.sin(azimuth),
+      Math.cos(elevation) * Math.cos(azimuth), Math.sin(elevation)]};
+  });
+  const dop = moduleFor('gnss-dop-3d');
+  if (dop) {
+    const original = dop.render;
+    Spatial.controls(dop, {azimuth: 35, elevation: 25});
+    dop.spatial = 'Local ENU sky hemisphere and elevation-group geometry';
+    dop.render = (v, U) => {
+      const result = original(v, U), directions = skyDirections(v);
+      const figure = Spatial.figure(U, v, {width: 800, height: 455, center: [285, 260], scale: 143,
+        title: 'Elevation separates vertical position from receiver-clock bias',
+        label: 'Three-dimensional ENU hemisphere with six line-of-sight directions and their vertical projections'}, scene => {
+        const ring = elevation => range(80, t => [Math.cos(elevation) * Math.sin(2 * Math.PI * t),
+          Math.cos(elevation) * Math.cos(2 * Math.PI * t), Math.sin(elevation)]);
+        let s = scene.polygon(ring(0), U.C.c, .05, U.C.muted);
+        for (const elevation of [0, 30, 60]) s += scene.path(ring(rad(elevation)), U.C.grid, 1);
+        for (const azimuth of [0, 90, 180, 270]) s += scene.path(range(50, t => {
+          const elevation = t * Math.PI / 2;
+          return [Math.cos(elevation) * Math.sin(rad(azimuth)), Math.cos(elevation) * Math.cos(rad(azimuth)), Math.sin(elevation)];
+        }), U.C.grid, 1);
+        s += scene.axes([0, 0, 0], 1.15, ['E', 'N', 'U']);
+        s += scene.path(ring(rad(v.low)), U.C.a, 1, '5 4');
+        if (v.separation) s += scene.path(ring(rad(Math.min(85, v.low + v.separation))), U.C.b, 1, '5 4');
+        directions.forEach(({point}, i) => {
+          const color = i % 2 ? U.C.b : U.C.a;
+          s += scene.line(point, [point[0], point[1], 0], U.C.muted, 1, '4 4');
+          s += scene.arrow([0, 0, 0], point, color) + scene.point(point, color, 4.5);
+          s += scene.label(point, String(i + 1), color, 8, -8);
+        });
+        s += scene.point([0, 0, 0], U.C.ink, 4);
+        s += U.text(510, 100, 'Receiver at the ENU origin');
+        s += U.text(510, 140, 'Lower group: ' + U.fmt(v.low, 0) + '° elevation');
+        s += U.text(510, 174, 'Upper group: ' + U.fmt(Math.min(85, v.low + v.separation), 0) + '° elevation');
+        s += U.text(510, 230, 'Vertical direction component = sin E');
+        if (v.separation === 0) {
+          s += U.text(510, 275, 'All rays end at the same height.');
+          s += U.text(510, 309, 'Height and clock columns are dependent.');
+        } else {
+          s += U.text(510, 275, 'Two heights give different U components.');
+          s += U.text(510, 309, 'Azimuth spread also affects conditioning.');
+        }
+        s += U.text(45, 425, 'Dashed drops show the horizontal projection of each unit ray.');
+        return s;
+      });
+      return {...result, svg: figure + result.svg};
+    };
+    extendChecks(dop, () => {
+      const rays = skyDirections({spread: 300, low: 20, separation: 35});
+      const flat = skyDirections({spread: 300, low: 20, separation: 0});
+      return [
+        {name: 'Spatial GNSS ENU rays have unit length', pass: rays.every(ray => near(Math.hypot(...ray.point), 1))},
+        {name: 'Equal GNSS elevations place every ray on one horizontal plane', pass: flat.every(ray => near(ray.point[2], Math.sin(rad(20))))}
+      ];
+    });
+  }
+
+  const passPosition = v => {
+    const along = v.speed * v.time / 1000;
+    return {position: [along, v.cross / 1000, .85],
+      halfTrack: Math.max(1.2, Math.abs(along) + .35), cross: v.cross / 1000, height: .85};
+  };
+  const pass = moduleFor('doppler-pass');
+  if (pass) {
+    const original = pass.render;
+    Spatial.controls(pass, {azimuth: 35, elevation: 25});
+    pass.spatial = 'Altitude, cross-track offset and along-track motion in three perpendicular directions';
+    pass.render = (v, U) => {
+      const result = original(v, U), g = passPosition(v), x = g.position[0];
+      const extent = Math.hypot(g.halfTrack + .8, g.cross + .5, g.height);
+      const figure = Spatial.figure(U, v, {width: 800, height: 460, center: [355, 250], scale: 155 / extent,
+        title: 'The line of sight combines altitude, cross-track offset and along-track motion',
+        label: 'Three-dimensional straight satellite pass over a flat ground plane showing h, b, vt and slant range'}, scene => {
+        let s = scene.polygon([[-g.halfTrack - .3, -.35, 0], [g.halfTrack + .3, -.35, 0],
+          [g.halfTrack + .3, g.cross + .5, 0], [-g.halfTrack - .3, g.cross + .5, 0]], U.C.c, .06, U.C.grid);
+        s += scene.line([-g.halfTrack, g.cross, 0], [g.halfTrack, g.cross, 0], U.C.muted, 1, '5 4');
+        s += scene.arrow([-g.halfTrack, g.cross, g.height], [g.halfTrack, g.cross, g.height], U.C.a);
+        s += scene.line([0, 0, 0], [0, g.cross, 0], U.C.c, 2);
+        s += scene.line([0, g.cross, 0], [x, g.cross, 0], U.C.muted, 2);
+        s += scene.line([x, g.cross, 0], g.position, U.C.d, 1.5, '5 4');
+        s += scene.line([0, 0, 0], g.position, U.C.b, 2);
+        s += scene.point([0, 0, 0], U.C.b, 5) + scene.label([0, 0, 0], 'Beacon', U.C.b, -54, 20);
+        s += scene.point(g.position, U.C.a, 5) + scene.label(g.position, 'Satellite', U.C.a, 8, -10);
+        s += componentLabel(scene, [x, g.cross, 0], g.position, 'h', U.C.d);
+        s += componentLabel(scene, [0, 0, 0], [0, g.cross, 0], 'b', U.C.c);
+        s += componentLabel(scene, [0, g.cross, 0], [x, g.cross, 0], 'vt', U.C.muted);
+        s += componentLabel(scene, [0, 0, 0], g.position, 'r(t)', U.C.b, 24);
+        s += U.text(45, 65, 'View refits; all dimensions share one scale. The ground is h = 0.');
+        s += U.text(45, 405, 'h = 850 km; b = ' + U.fmt(v.cross, 0) + ' km; vt = ' + U.fmt(v.speed * v.time, 0) + ' km');
+        s += U.text(45, 434, 'r(t) = ' + U.fmt(Math.hypot(...g.position) * 1000, 0) + ' km; motion is along the teal track.');
+        return s;
+      });
+      return {...result, svg: result.svg.replace(/<svg\b[^>]*>[\s\S]*?<\/svg>/, figure),
+        note: result.note + ' Altitude h, cross-track offset b and along-track motion vt are perpendicular in this model.'};
+    };
+    extendChecks(pass, () => {
+      const at = passPosition({speed: 7.4, cross: 400, time: 250});
+      const closest = passPosition({speed: 7.4, cross: 400, time: 0});
+      return [
+        {name: 'Spatial Doppler pass preserves independent altitude, cross-track and along-track dimensions',
+          pass: near(at.position[0], 1.85) && near(at.position[1], .4) && near(at.position[2], .85)},
+        {name: 'Spatial closest approach gives the original altitude/cross-track slant range',
+          pass: near(Math.hypot(...closest.position) * 1000, Math.hypot(850, 400))}
+      ];
+    });
+  }
+})();
+
+/* Spatial geometry accompanies the existing scalar budgets and angular cuts. */
+(() => {
+  const tau=2*Math.PI,add=(a,b)=>a.map((x,i)=>x+b[i]),scale=(a,s)=>a.map(x=>x*s);
+  const replaceFirst=(markup,view)=>markup.replace(/<svg\b[\s\S]*?<\/svg>/,()=>view);
+  function adapt(id,description,draw,replace=false,note){
+    const module=modules.find(m=>m.id===id),original=module.render;
+    Spatial.controls(module);module.spatial=description;
+    module.render=(v,U)=>{
+      const result=original(v,U),view=draw(v,U);
+      result.svg=replace?replaceFirst(result.svg,view):view+result.svg;
+      if(note)result.note=note;
+      return result;
+    };
+  }
+
+  adapt('solar-array','Physical panel area, normal and projected collecting area',(v,U)=>{
+    const angle=U.rad(v.angle),normal=[Math.sin(angle),0,Math.cos(angle)],along=[Math.cos(angle),0,-Math.sin(angle)];
+    // The full square is to one shared area scale; its projection is onto z=constant.
+    const half=Math.sqrt(v.area)/2,plane=1.6;
+    const panel=[[-1,-1],[1,-1],[1,1],[-1,1]].map(([x,y])=>add(scale(along,x*half),[0,y*half,0]));
+    const shadow=panel.map(p=>[p[0],p[1],-plane]);
+    return Spatial.figure(U,v,{title:'A tilted surface presents a smaller area to the Sun',label:'Three-dimensional panel and its collecting-area projection',height:460,center:[400,220],scale:65},s=>{
+      let out=s.polygon(shadow,v.angle<=90?U.C.b:U.C.grid,.13);
+      for(let j=0;j<4;j++)out+=s.line(panel[j],shadow[j],U.C.grid,1,'4 4');
+      out+=s.polygon(panel,U.C.a,.4);
+      for(const t of [-.5,0,.5]){
+        out+=s.line(add(scale(along,-half),[0,t*half,0]),add(scale(along,half),[0,t*half,0]),U.C.a);
+        out+=s.line(add(scale(along,t*half),[0,-half,0]),add(scale(along,t*half),[0,half,0]),U.C.a);
+      }
+      out+=s.arrow([0,0,0],scale(normal,1.3),U.C.c,'Panel normal');
+      for(const y of [-.9,0,.9])out+=s.arrow([-1.6,y,1.7],[-1.6,y,.6],U.C.b);
+      out+=U.text(24,64,'Sunlight travels along −z')+U.text(24,420,'A = '+U.fmt(v.area,2)+' m²; front-side projected area = '+U.fmt(v.area*Math.max(0,Math.cos(angle)),2)+' m²');
+      out+=U.text(24,445,v.angle<=90?'Orange outline: projection onto a plane perpendicular to sunlight':'Backside illumination: this front-side model collects zero power');
+      return out;
+    });
+  },true);
+
+  adapt('solid-angle','Finite spherical patch with polar and azimuth bounds',(v,U)=>{
+    const theta=U.rad(v.theta),half=U.rad(v.width)/2,dp=U.rad(v.azimuth),point=(t,p)=>Spatial.spherical(t,p);
+    return Spatial.figure(U,v,{title:'Both angular widths bound the spherical patch',label:'Three-dimensional solid angle with finite polar and azimuth extents',height:450,scale:145},s=>{
+      let out=s.sphere(1),vertices=[];
+      for(let i=0;i<=24;i++)vertices.push(point(theta-half,-dp/2+i*dp/24));
+      for(let i=0;i<=12;i++)vertices.push(point(theta-half+i*2*half/12,dp/2));
+      for(let i=0;i<=24;i++)vertices.push(point(theta+half,dp/2-i*dp/24));
+      for(let i=0;i<=12;i++)vertices.push(point(theta+half-i*2*half/12,-dp/2));
+      // Small surface tiles follow curvature; a single planar polygon would flatten it.
+      for(let j=0;j<6;j++)for(let k=0;k<12;k++){
+        const t0=theta-half+j*2*half/6,t1=t0+2*half/6,p0=-dp/2+k*dp/12,p1=p0+dp/12;
+        out+=s.polygon([point(t0,p0),point(t1,p0),point(t1,p1),point(t0,p1)],U.C.a,.55);
+      }
+      for(const corner of [point(theta-half,-dp/2),point(theta-half,dp/2),point(theta+half,-dp/2),point(theta+half,dp/2)])out+=s.line([0,0,0],corner,U.C.b,1,'4 4');
+      out+=s.path(vertices.concat([vertices[0]]),U.C.a,2)+s.arrow([0,0,0],[0,0,1.25],U.C.c,'Polar axis');
+      out+=U.text(24,407,'Δθ = '+v.width+'°; Δφ = '+v.azimuth+'°; θ is measured from the polar axis');
+      out+=U.text(24,435,'Radial edges enclose ΔΩ; the highlighted surface follows both exact angle bounds.');
+      return out;
+    });
+  },true,'The highlighted curved patch spans the stated finite polar and azimuth bounds on a unit sphere. Its exact area equals its solid angle; uniform intensity U gives patch power UΔΩ.');
+
+  adapt('free-space-flux','Spherical spreading and an enlarged receiver aperture',(v,U)=>Spatial.figure(U,v,{title:'Radiated power crosses spherical surfaces around the transmitter',label:'Three-dimensional spherical power flow and receiving aperture',height:470,center:[400,215],scale:110},s=>{
+    let out='';
+    for(const radius of [1.15,.8,.45])out+=s.sphere(radius);
+    const receiver=[1.35,0,0],aperture=[[1.35,-.3,-.3],[1.35,.3,-.3],[1.35,.3,.3],[1.35,-.3,.3]];
+    out+=s.point([0,0,0],U.C.b,6)+s.arrow([0,0,0],receiver,U.C.a,'R = '+U.fmt(v.range,0)+' km');
+    out+=s.polygon(aperture,U.C.c,.45)+s.label(receiver,'Receiver Aₑ',U.C.c,30,30);
+    for(const axis of [[0,1,0],[0,-1,0],[0,0,1],[0,0,-1],[-1,0,0]])out+=s.arrow(scale(axis,.3),scale(axis,.95),U.C.b);
+    out+=U.text(24,423,'S = EIRP/(4πR²); receiver captures S Aₑ, with Aₑ = Gᵣλ²/(4π)');
+    out+=U.text(24,453,'Spheres show fractions of the current range; the collecting aperture is enlarged.');
+    return out;
+  }),true);
+
+  adapt('array-normalization','Full forward-hemisphere power pattern used by the normalization integral',(v,U)=>{
+    const module=modules.find(m=>m.id==='array-normalization');
+    return Spatial.figure(U,v,{title:'The normalization integrates this full forward pattern',label:'Three-dimensional relative array power over the forward hemisphere',height:440,scale:150},s=>{
+      let out=s.surface((theta,phi)=>module.spatialPower(theta,phi,v),{thetaMax:Math.PI/2,thetaSteps:40,phiSteps:64,color:U.C.a});
+      out+=s.axes([0,0,0],1.12,['x','y','Normal +z']);
+      out+=U.text(24,397,'Radial distance = p/(2N²); the rear hemisphere has zero modeled radiation.');
+      out+=U.text(24,426,'The curve below is one angular cut; the power integral includes every θ and φ.');
+      return out;
+    });
+  });
+
+  adapt('planar-array','Steered three-dimensional forward pattern with its u-v companion',(v,U)=>{
+    const module=modules.find(m=>m.id==='planar-array'),sample=(n,center)=>{
+      const values=Array.from({length:35},(_,j)=>-1+2*j/34);
+      for(let j=-5;j<=5;j++)values.push(U.clamp(center+j/(4*n),-1,1));
+      return [...new Set(values)].sort((a,b)=>a-b);
+    };
+    const us=sample(v.nx,v.u0),vs=sample(v.ny,v.v0);
+    return Spatial.figure(U,v,{title:'Two phase gradients steer a beam in the forward hemisphere',label:'Three-dimensional normalized rectangular-array power pattern',height:440,scale:150},s=>{
+      const faces=[],position=(u,w)=>{
+        const p=module.spatialPower(u,w,v);return scale([u,w,Math.sqrt(Math.max(0,1-u*u-w*w))],p);
+      };
+      for(let i=0;i<us.length-1;i++)for(let j=0;j<vs.length-1;j++){
+        const uv=[[us[i],vs[j]],[us[i+1],vs[j]],[us[i+1],vs[j+1]],[us[i],vs[j+1]]];
+        if(uv.some(([u,w])=>u*u+w*w>1))continue;
+        const points=uv.map(([u,w])=>position(u,w));faces.push({points,depth:points.reduce((x,p)=>x+s.project(p)[2],0)/4});
+      }
+      let out=faces.sort((a,b)=>a.depth-b.depth).map(f=>s.polygon(f.points,U.C.a,.18)).join('');
+      const target=[v.u0,v.v0,Math.sqrt(1-v.u0*v.u0-v.v0*v.v0)];
+      out+=s.axes([0,0,0],1.1,['x','y','Broadside +z'])+s.arrow([0,0,0],target,U.C.b,'Steered peak');
+      out+=U.text(24,397,'Radial distance = |AF/(NₓNᵧ)|²; the marked direction has u = u₀, v = v₀.');
+      out+=U.text(24,426,'The u–v map below gives the same pattern in a flat angular-coordinate view.');
+      return out;
+    });
+  });
+
+  adapt('array-footprint','Individual rays connect a spatial transmitter to the sampled target plane',(v,U)=>{
+    const module=modules.find(m=>m.id==='array-footprint'),half=1.2,height=v.range/22500,source=[0,0,height],threshold=10**(v.level/10);
+    return Spatial.figure(U,v,{title:'The same angular field reaches different locations on a target plane',label:'Three-dimensional transmitter-to-flat-target geometry and relative coverage',height:460,center:[400,255],scale:78},s=>{
+      const faces=[];
+      for(let i=0;i<24;i++)for(let j=0;j<24;j++){
+        const x=-1500+3000*(i+.5)/24,y=-1500+3000*(j+.5)/24,p=module.spatialPower(x,y,v),color=p>=threshold?U.C.a:U.C.grid;
+        const x0=-half+2*half*i/24,y0=-half+2*half*j/24,d=2*half/24,points=[[x0,y0,0],[x0+d,y0,0],[x0+d,y0+d,0],[x0,y0+d,0]];
+        faces.push({points,color,depth:s.project([x0+d/2,y0+d/2,0])[2]});
+      }
+      let out=faces.sort((a,b)=>a.depth-b.depth).map(f=>s.polygon(f.points,f.color,.55)).join('');
+      for(const point of [[-half,-half,0],[half,-half,0],[half,half,0],[-half,half,0]])out+=s.line(source,point,U.C.b,1,'4 4');
+      out+=s.point(source,U.C.b,6)+s.label(source,'Array',U.C.b)+s.arrow(source,[0,0,0],U.C.c,'Boresight');
+      out+=U.text(24,405,'Colored target cells meet the selected '+v.level+' dB contour; window = ±1500 km.');
+      out+=U.text(24,432,'Axial distance is compressed; the quantitative map below keeps its own ground scale.');
+      return out;
+    });
   });
 })();
 
