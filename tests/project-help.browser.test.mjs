@@ -26,17 +26,20 @@ async function check(name,body){try{const detail=await body();results.push({name
 async function fits(label){const box=await panel.boundingBox(),viewport=page.viewportSize();assert.ok(box&&box.x>=-1&&box.y>=-1&&box.x+box.width<=viewport.width+1&&box.y+box.height<=viewport.height+1,`${label}: explanation outside viewport ${JSON.stringify({box,viewport})}`);assert.ok(await panel.evaluate(e=>e.scrollWidth<=e.clientWidth+1),label+': explanation text overflows horizontally');}
 try{
  await mkdir(output,{recursive:true});await visit();
- await check('Every project control and requested readout has one named contextual explanation',async()=>{
+ await check('Technical controls retain contextual help while routine actions stay uncluttered',async()=>{
   const audit=await page.evaluate(()=>{
    const buttons=[...document.querySelectorAll('#project-overview .project-help-button')];
-   const controls=[...document.querySelectorAll('#project-overview input,#project-overview select,#project-overview button:not(.project-help-button)')];
+   const selectors=Object.keys(GeorgiaHelp).filter(key=>key.startsWith('['));
+   const controls=[...document.querySelectorAll('#project-overview input,#project-overview select,#project-overview button:not(.project-help-button)')].filter(control=>GeorgiaHelp[control.id]||selectors.some(selector=>control.matches(selector)));
    const missing=controls.filter(control=>{
     const wrapper=control.closest('.project-help-control,.project-help-action')||control.labels?.[0]?.closest('.project-help-label-row');
     return !wrapper||![...wrapper.querySelectorAll('.project-help-button')].some(button=>button.dataset.helpKey===control.id||(button.dataset.helpKey.startsWith('[')&&control.matches(button.dataset.helpKey)));
    }).map(control=>control.id||control.outerHTML.slice(0,100));
-   return{count:buttons.length,reported:ProjectControlHelp.count,missing,invalid:buttons.filter(button=>button.type!=='button'||!button.getAttribute('aria-label')?.startsWith('About ')||button.getAttribute('aria-controls')!=='project-help-panel'||button.getAttribute('aria-haspopup')!=='dialog'||!GeorgiaHelp[button.dataset.helpKey]).map(button=>button.dataset.helpKey),readouts:['phasor','feed-phase','fom','coverage','spill','installed'].filter(key=>!buttons.some(button=>button.dataset.helpKey===key))};
+   return{count:buttons.length,reported:ProjectControlHelp.count,missing,invalid:buttons.filter(button=>button.type!=='button'||!button.getAttribute('aria-label')?.startsWith('About ')||button.getAttribute('aria-controls')!=='project-help-panel'||button.getAttribute('aria-haspopup')!=='dialog'||!GeorgiaHelp[button.dataset.helpKey]).map(button=>button.dataset.helpKey),readouts:['phasor','feed-phase','fom','spill'].filter(key=>!buttons.some(button=>button.dataset.helpKey===key))};
   });
-  assert.ok(audit.count>=60);assert.equal(audit.reported,audit.count);assert.deepEqual(audit.missing,[]);assert.deepEqual(audit.invalid,[]);assert.deepEqual(audit.readouts,[]);
+  assert.ok(audit.count>25&&audit.count<50);assert.equal(audit.reported,audit.count);assert.deepEqual(audit.missing,[]);assert.deepEqual(audit.invalid,[]);assert.deepEqual(audit.readouts,[]);
+  for(const key of ['gs-phase-x','gs-phase-y','gs-stride','gs-normal','gs-auto-steer','gs-steer-lat','gs-steer-lon','gs-power','project-planar-array-u0','project-link-budget-gt'])assert.equal(await help(key).count(),1,key+' retains its explanation');
+  for(const key of ['[data-hint]','[data-compare]','[data-gs-play]','[data-gs-reset]','[data-gs-power-colors]','[data-gs-remove]','gs-tab-system','gs-tab-array','gs-tab-georgia','gs-controls-geometry','gs-controls-aperture','gs-controls-beam','gs-element','gs-rows','gs-columns','project-rays','project-axes','coverage','installed'])assert.equal(await help(key).count(),0,key+' needs no information button');
   assert.equal(await panel.getAttribute('role'),'dialog');assert.equal(await panel.getAttribute('aria-modal'),'false');assert.equal(await panel.getAttribute('aria-labelledby'),'project-help-title');assert.equal(await page.locator('#project-help-body').count(),1);
   return{explanations:audit.count};
  });

@@ -67,7 +67,7 @@
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
     "figure-viewer.css": "a58abfea138e0784ce080c9aa2934a08608bae0689a0b4692e6f62827e57acc2",
     "figure-viewer.js": "1aa99f3b91043ecfeb1d63337687bce0ea6ecff8e1ea338612ed24e4fcd1b850",
-    "georgia-help.js": "1735dd4c2ce61a09f39d387ac83c70cec7c89084b69bf1caf1b24c3d4c7b97bc",
+    "georgia-help.js": "7bbb649b328cdc33d3eb966feae1bc0e028db3ba7aeb629dadc0ac34d95826d5",
     "georgia-optimal.js": "92d3a30391c894daf252836fee9fdc95bda27956fb6707426de420a49a581912",
     "georgia-system-model.js": "33670b05355c49b7b5f7434e010e2c04b58402f7975cfe5e4b0d112a9c772b79",
     "georgia-system.js": "6846cd20494abd54d707e28549db2444ebc6e0a46b95fc009c7d52cf9611e1de",
@@ -106,5 +106,5 @@
   "reference_links": [
     "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ],
-  "version": "1.6.0"
+  "version": "1.6.1"
 }

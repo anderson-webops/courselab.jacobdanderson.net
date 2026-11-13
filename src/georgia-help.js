@@ -7,58 +7,10 @@
       title:'Array examples',
       paragraphs:['Default, compact, wide and thinned arrays provide synthetic equal-amplitude starting layouts. Their aperture sizes and empty sites change the interference pattern, coverage and hardware count.','Optimal loads the saved best-found 175-element design evaluated on the original raster. This explorer uses coarse samples and a schematic boundary, so its displayed miss/spill counts and score can differ from that reference. Re-evaluate the full raster and off-map reception when judging a modified design.']
     },
-    '[data-gs-play]':{
-      title:'Wave animation',
-      paragraphs:['Play or pause the slowed visual wave motion. The current array, calculated coverage and figure of merit stay the same while this animation runs.']
-    },
-    '[data-gs-reset]':{
-      title:'Reset the whole system',
-      paragraphs:['Restore the default array, geometry, phases and transmit power. This returns all physical settings to one shared starting example.']
-    },
-    'gs-tab-system':{
-      title:'System view',
-      paragraphs:['See the satellite, Earth, Georgia footprint, enlarged array and phase-coherence inset together. The connections show how one set of array settings produces a geographic result.']
-    },
-    'gs-tab-array':{
-      title:'Array view',
-      paragraphs:['Inspect the installed sites and their feed phases at a larger scale. Dot colors and arrows show the total applied feed phase; the phasor inset includes propagation phase toward Georgia’s center.']
-    },
-    'gs-tab-georgia':{
-      title:'Georgia view',
-      paragraphs:['Inspect the received-power samples and state boundary. Each location uses its own observation direction and slant range, so the same feed phases can reinforce differently across the map.']
-    },
-    '[data-gs-power-colors]':{
-      title:'Coverage and power colors',
-      paragraphs:['Coverage colors separate covered Georgia samples, missed Georgia samples and reception outside Georgia at the −80 dBm threshold. Power colors instead show the continuous received level using the displayed dBm scale. The calculated field and score stay the same.']
-    },
-    'gs-element':{
-      title:'Selected element',
-      paragraphs:['Choose a grid site or saved sparse feed to inspect or edit. The selected installed element’s contribution is highlighted orange in the phasor inset. Selecting it changes the highlight; its physical settings change through the phase and install/remove controls.']
-    },
     'gs-element-phase':{
       title:'Individual phase offset',
       paragraphs:['Add the phase offset δ to the selected feed after automatic steering and the X/Y phase ramps. This rotates that element’s complex contribution while the other feeds retain their settings. Changing one contribution can alter the combined field and coverage.'],
       example:'Try moving one installed feed’s offset from 0° to 180°. Its phasor reverses, and the teal mean-field arrow changes as the sum is recomputed.'
-    },
-    '[data-gs-remove]':{
-      title:'Install or remove an element',
-      paragraphs:['Removing an element removes its field contribution and its hardware from N. Its grid site becomes empty; other sites keep their positions and phase-ramp indices. Installing it restores that site with its stored individual phase offset.']
-    },
-    'gs-controls-geometry':{
-      title:'Physical geometry',
-      paragraphs:['These settings place the satellite and orient the physical aperture. Geometry determines the rays, ranges and array-local coordinates used by the field calculation.']
-    },
-    'gs-controls-aperture':{
-      title:'Aperture layout',
-      paragraphs:['Rows, columns and lattice step set the array’s installed-site layout and physical extent. The aperture controls angular beam widths and the locations of other lobes.']
-    },
-    'gs-controls-beam':{
-      title:'Electronic beam control',
-      paragraphs:['These settings change feed phases while the physical aperture stays in its selected orientation. Automatic steering aims a regular array toward a geographic target or retargets the saved shaped footprint. Extra ramps and individual offsets modify that solution.']
-    },
-    'gs-longitude':{
-      title:'Satellite longitude',
-      paragraphs:['Choose the equatorial GEO satellite’s Earth-fixed longitude. Moving it changes the ray directions and slant ranges to Georgia, which changes the steering phases and free-space received power.']
     },
     'gs-normal':{
       title:'Physical array normal',
@@ -75,14 +27,6 @@
     'gs-roll':{
       title:'Array roll',
       paragraphs:['Rotate the element layout about the aperture’s own normal. The normal stays fixed while the layout axes and phase-ramp directions rotate relative to Earth. Automatic steering recalculates the feed phases in the rotated frame.']
-    },
-    'gs-rows':{
-      title:'Array rows',
-      paragraphs:['On a regular grid, change the number of potential sites along local y. At fixed lattice step, more rows extend the aperture and add feeds except at removed sites. The pattern and the score’s hardware term both change.','Optimal keeps its saved sparse layout. Choose a regular preset to unlock the row, column and lattice-step controls.']
-    },
-    'gs-columns':{
-      title:'Array columns',
-      paragraphs:['On a regular grid, change the number of potential sites along local x. At fixed lattice step, more columns extend the aperture and add feeds except at removed sites. The beam shape and hardware count both affect the score.','Optimal keeps its saved sparse layout. Choose a regular preset to unlock the row, column and lattice-step controls.']
     },
     'gs-stride':{
       title:'Lattice step and physical spacing',
@@ -143,33 +87,13 @@
       paragraphs:['The score combines installed hardware N, missed Georgia samples M and covered samples outside Georgia S. Each Georgia miss contributes 100 times the count penalty of one outside sample. The teaching score assumes W = 1 for a valid radiating model.','The full assignment uses its original pixels and model-correctness conditions. This coarse regional score helps compare the current teaching examples; a strong center-point phasor alone does not establish statewide coverage or control remote sidelobes.'],
       equation:'FoM = W / [√(N + 100) × (100M + S)].'
     },
-    'coverage':{
-      title:'Georgia covered',
-      paragraphs:['This is the fraction of sampled Georgia locations with received power at or above −80 dBm. Each point uses its own array factor, visibility and slant range. The center-point phasor is one directional sample of that wider calculation.']
-    },
     'spill':{
       title:'Outside reception',
       paragraphs:['Count the regional grid samples outside the schematic Georgia boundary whose received power reaches −80 dBm. This count changes as lobes move or transmit power changes. Whole-Earth sidelobe checks and physical covered area are separate calculations.']
     },
-    'installed':{
-      title:'Installed elements N',
-      paragraphs:['N counts the actual installed feeds, all active with equal magnitude in this teaching model. Empty lattice positions contribute neither hardware count nor a field. Adding elements changes both the radiation pattern and the score’s √(N + 100) factor.']
-    },
-    'project-longitude':{
-      title:'Illustrative GEO longitude',
-      paragraphs:['Move the equatorial satellite relative to this geometry figure’s target at 33° N, 84° W. Slant range, ground look angles and the target’s array-local coordinates are recomputed. This figure has independent controls from Whole system.']
-    },
     'project-normal':{
       title:'Illustrative aperture normal',
       paragraphs:['Choose a physical normal toward this figure’s target or toward Earth’s center. The target ray stays fixed while its coordinates relative to the aperture change. Electronic steering can aim a beam away from broadside.']
-    },
-    'project-rays':{
-      title:'Transmit and look rays',
-      paragraphs:['The satellite-to-target ray is used for the transmitted pattern. The reverse ground-to-satellite ray is used for the station’s look angles. The display can show either direction or both without changing the physical positions.']
-    },
-    'project-axes':{
-      title:'Local coordinate axes',
-      paragraphs:['Show the station’s east, north and up axes together with the aperture’s xA, yA and normal zA. Projecting the same ray into these different frames gives the coordinates appropriate to ground pointing or array steering.']
     },
     'project-steer':{
       title:'Target steering in the geometry figure',
@@ -204,14 +128,6 @@
       title:'Second-element feed phase',
       paragraphs:['Apply phase β electronically to the second element. It combines with the geometric path phase at the observer. Reinforcement occurs when their total relative phase is a multiple of 360°.']
     },
-    'project-planar-array-nx':{
-      title:'Planar elements along x',
-      paragraphs:['Set the number of half-wavelength-spaced elements along x in this independent rectangular array. More x extent generally narrows the coherent peak along the corresponding angular coordinate.']
-    },
-    'project-planar-array-ny':{
-      title:'Planar elements along y',
-      paragraphs:['Set the number of half-wavelength-spaced elements along y in this independent rectangular array. The two aperture dimensions control the two angular widths of its pattern.']
-    },
     'project-planar-array-u0':{
       title:'Steering direction cosine u₀',
       paragraphs:['Set the target ray’s component along aperture x. Together with v₀, this chooses an angular direction in the forward visible disk u² + v² ≤ 1. These are dimensionless local direction coordinates.']
@@ -219,10 +135,6 @@
     'project-planar-array-v0':{
       title:'Steering direction cosine v₀',
       paragraphs:['Set the target ray’s component along aperture y. Linear feed-phase ramps align the rectangular array toward the chosen u₀, v₀ direction. The geographic conversion is handled separately in Whole system.']
-    },
-    'project-array-normalization-n':{
-      title:'Elements in the normalization example',
-      paragraphs:['Change the number of equal-amplitude feeds in this independent linear array. Both the directional field sum and the total angular radiation integral change, so absolute gain follows their ratio.']
     },
     'project-array-normalization-spacing':{
       title:'Spacing in the normalization example',
@@ -273,14 +185,6 @@
       paragraphs:['Set information bit rate Rb. At fixed carrier power and noise density, a higher rate provides less energy per information bit.'],
       equation:'Eb/N₀ = C/N₀ − 10 log₁₀(Rb), using C/N₀ in dB-Hz and Rb in bits/s.'
     },
-    '[data-hint]':{
-      title:'Practice hint',
-      paragraphs:['Reveal a short cue for the nearby practice question while keeping its worked comparison separate.']
-    },
-    '[data-compare]':{
-      title:'Compare your reasoning',
-      paragraphs:['After writing an attempt, open the nearby explanation and compare its physical reasoning with yours. Simulator settings remain unchanged.']
-    }
   };
   for(const entry of Object.values(help)){
     Object.freeze(entry.paragraphs);
