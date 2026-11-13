@@ -43,9 +43,13 @@
 .gs-system .gs-tabs button[aria-selected="true"] { color:var(--site-ink); background:var(--site-surface); border-color:var(--site-line); box-shadow:inset 0 3px var(--site-accent); font-weight:650; }
 .gs-canvas-panel { background:#081722; border-radius:0 0 10px 10px; overflow:hidden; }
 .gs-system canvas { display:block; width:100%; height:auto; aspect-ratio:1.55; touch-action:manipulation; }
-.gs-map-legend { display:flex; align-items:center; gap:7px 15px; flex-wrap:wrap; margin:10px 0 14px; font-size:.76rem; color:var(--site-muted); }
+.gs-map-legend { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px 12px; margin:10px 0 14px; font-size:.76rem; color:var(--site-muted); }
 .gs-map-legend span { display:inline-flex; gap:6px; align-items:center; }
-.gs-map-legend span[hidden] { display:none; }
+.gs-legend-keys { display:grid; min-width:0; }
+.gs-legend-keys > * { grid-area:1 / 1; display:flex; flex-wrap:wrap; align-items:center; gap:7px 15px; }
+.gs-map-legend .gs-legend-keys > [hidden] { display:flex !important; visibility:hidden; pointer-events:none; }
+.gs-legend-actions { display:flex; align-items:center; gap:8px; }
+.gs-legend-actions > span { white-space:nowrap; }
 .gs-map-legend i { width:9px; height:9px; border-radius:2px; display:inline-block; }
 .gs-key-covered { background:#4bc6ab; }.gs-key-missed { background:#72528a; }.gs-key-spill { background:#d88e58; }
 .gs-map-legend .gs-key-power { width:100px; background:linear-gradient(90deg,hsl(225 60% 14%),hsl(40 80% 56%)); }
@@ -73,3 +77,5 @@
 @media(max-width:520px) { .gs-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px 20px; } .gs-system canvas { aspect-ratio:.82; } .gs-toolbar { gap:12px; } .gs-toolbar-actions { width:100%; } .gs-toolbar-actions button { flex:1; } .gs-element-editor { grid-template-columns:1fr; } .gs-control-panel { grid-template-columns:1fr; } .gs-power-control { grid-template-columns:1fr; } .gs-element-state { flex-wrap:wrap; } .gs-system .gs-map-legend button { margin-left:0; } }
 @media(max-width:850px) { .project-page .workspace { grid-template-columns:1fr; } .project-page .controls { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px 24px; } }
 @media(max-width:520px) { .project-page .controls { grid-template-columns:1fr; } .project-controls label { width:100%; min-width:0; } .project-definitions { grid-template-columns:1fr; } }
+
+@media(max-width:600px) { .gs-map-legend { grid-template-columns:1fr; } .gs-legend-actions { justify-content:space-between; } }

@@ -1,0 +1,44 @@
+.project-help-control { display:flex; flex-direction:column; gap:8px; min-width:0; }
+.project-help-label-row { display:flex; align-items:center; gap:5px; min-width:0; width:100%; }
+.project-page .project-help-label-row > label { display:flex; flex:1; flex-direction:row; align-items:center; justify-content:space-between; gap:8px; min-width:0; margin:0; }
+.project-help-control > input,.project-help-control > select { width:100%; }
+.project-help-label-row > input[type="checkbox"] { flex:none; }
+.project-help-action { display:inline-flex; align-items:center; gap:3px; min-width:0; }
+.project-page button.project-help-button { display:inline-flex; flex:none; align-items:center; justify-content:center; width:24px; height:24px; min-width:24px; min-height:24px; margin:0; padding:0; border:0; border-radius:50%; color:var(--site-muted,var(--muted)); background:transparent; cursor:help; vertical-align:middle; }
+.project-help-button > span { display:inline-flex; align-items:center; justify-content:center; width:15px; height:15px; border:1px solid currentColor; border-radius:50%; font:600 10px/1 Georgia,serif; }
+.project-page .project-help-button:hover,.project-page .project-help-button.is-help-open { color:var(--site-accent,var(--a)); background:var(--site-tint,var(--surface)); }
+.project-help-button:focus-visible { outline:2px solid var(--site-accent,var(--a)); outline-offset:2px; }
+.project-help-button.is-help-open { anchor-name:--project-help-anchor; }
+.project-help-panel { position:fixed; z-index:100; inset:auto 16px 16px auto; margin:0; width:min(420px,calc(100vw - 24px)); max-height:min(65dvh,600px); overflow:auto; padding:18px; border:1px solid var(--site-line,var(--line)); border-radius:10px; color:var(--site-ink,var(--ink)); background:var(--site-surface,var(--surface)); box-shadow:0 10px 36px rgb(0 0 0 / .24); font:15px/1.6 system-ui,sans-serif; }
+.project-help-panel[hidden] { display:none; }
+.project-help-panel h2 { font:650 1rem/1.4 system-ui,sans-serif; padding-right:25px; margin:0 0 12px; }
+.project-help-panel p { margin:10px 0; }
+.project-help-panel p:last-child { margin-bottom:0; }
+.project-help-panel .project-help-equation { white-space:pre-wrap; overflow-wrap:anywhere; font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:.86rem; padding:10px; border:1px solid var(--site-line,var(--line)); border-radius:5px; }
+.project-help-example { white-space:pre-wrap; padding-left:10px; border-left:2px solid var(--site-accent,var(--a)); }
+.project-help-close { position:absolute; right:8px; top:8px; display:flex; align-items:center; justify-content:center; width:28px; height:28px; padding:0; font:24px/1 system-ui,sans-serif; color:inherit; background:transparent; border:0; border-radius:5px; cursor:pointer; }
+@supports (top:anchor(bottom)) {
+ .project-help-panel { position-anchor:--project-help-anchor; inset:anchor(bottom) auto auto anchor(left); margin-top:6px; position-try-fallbacks:flip-inline,flip-block,flip-inline flip-block,--project-help-fallback; }
+ @position-try --project-help-fallback { inset:auto 12px 12px auto; margin:0; }
+}
+.gs-tabs > .project-help-action { flex:1; min-width:0; }
+.gs-tabs > .project-help-action > [role="tab"] { min-width:0; }
+.gs-toolbar > .project-help-control { flex-direction:row; align-items:center; gap:10px; }
+.gs-toolbar > .project-help-control > .project-help-label-row { width:auto; }
+.gs-toolbar > .project-help-control > .project-help-label-row > label { flex:none; white-space:nowrap; }
+.gs-toolbar > .project-help-control > select { width:auto; }
+.project-page .gs-experiment { grid-template-columns:minmax(0,1fr) 300px; }
+.gs-system .gs-control-tabs [role="tab"] { font-size:.82rem; padding-inline:4px; }
+.gs-toolbar-actions > .project-help-action { flex:0 0 auto; }
+.gs-toolbar-actions [data-gs-play] { min-inline-size:7.7rem; }
+.gs-system .gs-map-legend [data-gs-power-colors] { min-inline-size:7.5rem; }
+.gs-element-state strong { display:inline-block; min-inline-size:7ch; }
+.gs-element-state > span { display:inline-flex; align-items:center; flex-wrap:wrap; gap:4px; }
+.gs-element-state [data-gs-remove] { min-inline-size:8.5rem; }
+.gs-metrics dt { display:flex; align-items:center; justify-content:space-between; gap:3px; }
+@media(max-width:850px) { .project-page .gs-experiment { grid-template-columns:1fr; } }
+@media(max-width:600px) {
+ .project-help-panel { inset:auto 12px 12px 12px; width:auto; max-height:60dvh; margin:0; }
+ .gs-system .gs-tabs [role="tab"] { font-size:.78rem; padding-inline:4px; }
+ .gs-toolbar > .project-help-control { width:100%; }
+}

@@ -321,7 +321,7 @@ def build():
     write_generated(assets / 'course-lab.js', lab_js)
     count = build_topics(ROOT, CSP)
     build_project(ROOT, CSP)
-    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'georgia-system-model.js', 'georgia-system.js', 'figure-viewer.js', 'figure-viewer.css', 'catalog.css', 'search.js', 'progress.js']:
+    for name in ['site.css', 'site.js', 'sun-view.js', 'favicon.svg', 'orbit-runtime.css', 'topics.css', 'topic-practice.js', 'project.css', 'project.js', 'georgia-optimal.js', 'georgia-system-model.js', 'georgia-system.js', 'georgia-help.js', 'project-help.js', 'project-help.css', 'status-slots.js', 'status-slots.css', 'figure-viewer.js', 'figure-viewer.css', 'catalog.css', 'search.js', 'progress.js']:
         shutil.copyfile(ROOT / 'src' / name, assets / name)
     configured_models = json.loads((ROOT/'src/course-model-assets.json').read_text())
     for name in ['figure-registry.js','course-figures.js', *sorted({name for names in configured_models.values() for name in names})]:
@@ -329,6 +329,11 @@ def build():
         if (ROOT/'src'/name).exists():
             shutil.copyfile(ROOT/'src'/name,assets/name)
     build_catalog(ROOT, CSP)
+    # Known automatic feedback uses reserved frames on all applicable routes.
+    for page in dest.rglob('*.html'):
+        prefix = '../' * (len(page.relative_to(dest).parts) - 1)
+        extra = f'<link rel="stylesheet" href="{prefix}assets/status-slots.css"><script src="{prefix}assets/status-slots.js" defer></script>'
+        page.write_text(page.read_text().replace('</head>', extra + '</head>'))
     (dest / '_headers').write_text('/*\n  Content-Security-Policy: ' + CSP + "; frame-ancestors 'none'\n  X-Content-Type-Options: nosniff\n  X-Frame-Options: DENY\n  Referrer-Policy: no-referrer\n  Permissions-Policy: camera=(), microphone=(), geolocation=()\n  Cache-Control: no-cache\n")
     provenance = json.loads((ROOT / 'src/provenance.json').read_text())
     provenance['version'] = (ROOT / 'VERSION').read_text().strip()

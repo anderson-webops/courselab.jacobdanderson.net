@@ -40,7 +40,10 @@
     "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs.",
     "Reference figures preserve authored text colors and font sizes on a consistent chart surface, with an accessible natural-size vector viewer for zooming and panning.",
     "Lecture-informed explanations connect carrier statistics, transport, contacts, MOS charge control, confinement and switching, including organ-pipe and faucet analogies.",
-    "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states."
+    "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states.",
+    "Contextual control help opens in accessible hover, focus and click popovers, including phase gradients, coherent field addition and link/scoring meanings.",
+    "A user-authorized saved best-found GeorgiaTenna preset preserves 175 individual element positions/phases and its simulation settings; the regional teaching score retains its coarse-grid scope.",
+    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry."
   ],
   "source_sha256": {
     "additional-course-topics.json": "c5b63044c854e081416598ad3a2c69ac16275cc82df792163354d1f04a1b52ca",
@@ -63,16 +66,20 @@
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
     "figure-viewer.css": "a58abfea138e0784ce080c9aa2934a08608bae0689a0b4692e6f62827e57acc2",
     "figure-viewer.js": "1aa99f3b91043ecfeb1d63337687bce0ea6ecff8e1ea338612ed24e4fcd1b850",
-    "georgia-system-model.js": "5ef4d04db221426b1893ea2438f40376f1c963c07abef5e282722bb668f458f2",
-    "georgia-system.js": "fa28e2a8b0ee6c038bd723aa3eac47acf9c6ec382add06d943c0e621d09e4a21",
+    "georgia-help.js": "1735dd4c2ce61a09f39d387ac83c70cec7c89084b69bf1caf1b24c3d4c7b97bc",
+    "georgia-optimal.js": "92d3a30391c894daf252836fee9fdc95bda27956fb6707426de420a49a581912",
+    "georgia-system-model.js": "33670b05355c49b7b5f7434e010e2c04b58402f7975cfe5e4b0d112a9c772b79",
+    "georgia-system.js": "6846cd20494abd54d707e28549db2444ebc6e0a46b95fc009c7d52cf9611e1de",
     "orbit-runtime.css": "6dd52dbf5c67b5616c75cfbe576d6677d4cc94128dea92819195648f3eed2afa",
     "orbit-types-topic.json": "245faf51230071f0cb8ebdd272239ae07f538872db0d7bd166ce30d5d51aa9dd",
     "orbit-types.js": "4db50ecaacde412b1250108a27a1a064d12ea6ce397903cef7cd52c00b20a651",
     "orbit.html": "798f06231e9148daeb3e31c972de0932f368b6f662ee173b46cf9aad6857721d",
     "progress.html": "b3a269c87cd2275db596ae879643668f374398d418475e3e6c361cdcb85cd763",
     "progress.js": "0bff4a8f781755c8884d0acfb313aa45ae56253f72a64157140a4549d7ad4d11",
-    "project.css": "83dc06d8b880068711c212ce396ad8d0232f5b780b17999c6864e8dcacbc85e6",
-    "project.html": "64465bfc3170676d68df0920670c0a5e4a4dd382e0e5224a34d58c791a96fe6f",
+    "project-help.css": "d015598e77a6c4800b199b48fb2b53cbb0445aed1b4841408180b64369e01667",
+    "project-help.js": "f84313c369bfc03448d7ebf9e2bfa23b283cea14a652e01bcc305bae3d518e59",
+    "project.css": "38778695d8f3ad90064f7cb221b35b1f7571b0c6043c1a1b609c267593eacbe7",
+    "project.html": "c62e8a5d8d30a3c73d5d20f2801a4ad526f2f7908e0eb2a921b021f95459b117",
     "project.js": "34cd2610066dcfaa07477cab5b28f6f57876a429863ddb54032457d4a27ea2aa",
     "related-tools.json": "645aee26aa224ac3f6452b8db540cb420e1177258cdb51abd0613c5a7ea21f19",
     "search.js": "2b48776e621e52b5dbdf8e86f0f0b640f8d3e8783ed4be906f0d9981e1d4f8e8",
@@ -81,6 +88,8 @@
     "site.css": "17ff97b31254daaa8b34eb0bf6b37419e37b32553b6aa55b6558639da98d0430",
     "site.js": "54e3d11c5eca82748f3a574a5526fe35b3160e20b9b1afb4d8d3e832a86cd427",
     "solar-acceleration-visualizer.html": "8f2b49f1315fde5973ff1bb87cadf40900ed27e94f9ea2326c11ff8764ce5cea",
+    "status-slots.css": "3d53bd84b90777ee60596cf3480984a0ffd2e2dc72e21d742f9105f99ad5ccf8",
+    "status-slots.js": "d889c8ced102b137876bc4bd63dfa51ffdea5b60c2e6852bd3596885cc4bc2eb",
     "sun-view.html": "621291cfebba79f65e737c85ec6d2109c742a1d82011802dc1c36a2ab0dfa1e6",
     "sun-view.js": "70301ffa1b839e387ee0c4cfe787f4bdfceed2bffbe5cb7589beab5dc2a66de1",
     "topic-content.json": "2ca1b6e080d0b838860130536078da432ca58565879d155d1d94d4aec2145bee",
@@ -96,5 +105,5 @@
   "reference_links": [
     "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ],
-  "version": "1.4.0"
+  "version": "1.5.0"
 }

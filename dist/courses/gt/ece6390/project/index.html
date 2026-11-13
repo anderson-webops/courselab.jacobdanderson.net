@@ -12,9 +12,13 @@
 <script src="../../../../assets/figure-utils.js" defer></script>
 <script src="../../../../assets/course-lab.js" defer></script>
 <script src="../../../../assets/project.js" defer></script>
+<script src="../../../../assets/georgia-optimal.js" defer></script>
 <script src="../../../../assets/georgia-system-model.js" defer></script>
 <script src="../../../../assets/georgia-system.js" defer></script>
-<script src="../../../../assets/topic-practice.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/project/"><link rel="stylesheet" href="../../../../assets/catalog.css"></head><body class="topic-site">
+<script src="../../../../assets/topic-practice.js" defer></script>
+<link rel="stylesheet" href="../../../../assets/project-help.css">
+<script src="../../../../assets/georgia-help.js" defer></script>
+<script src="../../../../assets/project-help.js" defer></script><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/project/"><link rel="stylesheet" href="../../../../assets/catalog.css"><link rel="stylesheet" href="../../../../assets/status-slots.css"><script src="../../../../assets/status-slots.js" defer></script></head><body class="topic-site">
 <a class="lab-skip" href="#project-overview">Skip to content</a>
 <header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary"><a data-site-view="courses" href="../../../">Courses</a><a data-site-view="topics" href="../../../../topics/">Topics</a><a data-site-view="simulations" href="../lab/" aria-current="page">Simulations</a></div><a data-site-view="search" href="../../../../search/">Search</a></nav></header>
 <main id="project-overview" data-project-overview class="project-page">
@@ -23,14 +27,14 @@
 <nav class="project-jumps" aria-label="Project components"><a href="#whole-system">Whole system</a><a href="#mission">Geometry</a><a href="#elements">Elements</a><a href="#phase">Phase</a><a href="#beam">Steering</a><a href="#power">Gain</a><a href="#link">Transmission</a><a href="#map">Coverage</a><a href="#pipeline">Workflow</a></nav>
 <section id="whole-system" aria-labelledby="whole-system-heading"><h2 id="whole-system-heading">Whole system</h2>
 <div id="georgia-system" class="gs-system">
-<div class="gs-toolbar"><label for="gs-preset">Array <select id="gs-preset" data-gs-preset><option value="default">Default lattice</option><option value="compact">Compact lattice</option><option value="wide">Wide lattice</option><option value="thinned">Thinned lattice</option><option value="custom" disabled>Custom array</option></select></label><div class="gs-toolbar-actions"><button type="button" data-gs-play aria-pressed="true">Pause waves</button><button type="button" data-gs-reset>Reset</button></div></div>
+<div class="gs-toolbar"><label for="gs-preset">Array <select id="gs-preset" data-gs-preset><option value="default">Default lattice</option><option value="compact">Compact lattice</option><option value="wide">Wide lattice</option><option value="thinned">Thinned lattice</option><option value="optimal">Optimal</option><option value="custom" disabled>Custom array</option></select></label><div class="gs-toolbar-actions"><button type="button" data-gs-play aria-pressed="true">Pause waves</button><button type="button" data-gs-reset>Reset</button></div></div>
 <dl class="gs-metrics" aria-live="polite" aria-atomic="true"><div><dt>Regional sampled FoM</dt><dd data-gs-fom>—</dd></div><div><dt>Georgia covered</dt><dd data-gs-covered>—</dd><span data-gs-covered-count></span></div><div><dt>Outside reception</dt><dd data-gs-spill>—</dd><span>samples ≥ −80 dBm</span></div><div><dt>Installed elements</dt><dd data-gs-installed>—</dd><span>N in the score</span></div></dl>
 <p data-gs-status class="gs-status" role="status"></p>
 <div class="gs-experiment">
 <div class="gs-visual">
 <div class="gs-tabs" role="tablist" aria-label="System view"><button type="button" id="gs-tab-system" role="tab" aria-controls="gs-visual-panel" aria-selected="true" data-gs-view="system">System</button><button type="button" id="gs-tab-array" role="tab" aria-controls="gs-visual-panel" aria-selected="false" tabindex="-1" data-gs-view="array">Array</button><button type="button" id="gs-tab-georgia" role="tab" aria-controls="gs-visual-panel" aria-selected="false" tabindex="-1" data-gs-view="georgia">Georgia</button></div>
 <div id="gs-visual-panel" role="tabpanel" aria-labelledby="gs-tab-system" class="gs-canvas-panel"><canvas data-gs-canvas aria-label="Satellite, Earth, Georgia, array elements and combined coverage." role="img">The array controls change the coherent field and coverage counts shown above.</canvas></div>
-<div class="gs-map-legend"><span data-gs-coverage-key><i class="gs-key-covered"></i>Georgia covered</span><span data-gs-coverage-key><i class="gs-key-missed"></i>Georgia missed</span><span data-gs-coverage-key><i class="gs-key-spill"></i>Outside reception</span><span data-gs-power-key hidden>−110 <i class="gs-key-power"></i> −60 dBm</span><button type="button" data-gs-power-colors aria-pressed="false">Power colors</button></div>
+<div class="gs-map-legend"><div class="gs-legend-keys"><div class="gs-coverage-legend"><span data-gs-coverage-key><i class="gs-key-covered"></i>Georgia covered</span><span data-gs-coverage-key><i class="gs-key-missed"></i>Georgia missed</span><span data-gs-coverage-key><i class="gs-key-spill"></i>Outside reception</span></div><span data-gs-power-key hidden>−110 <i class="gs-key-power"></i> −60 dBm</span></div><div class="gs-legend-actions"><span data-help-phasor>Phasor sum</span><button type="button" data-gs-power-colors aria-pressed="false">Power colors</button></div></div>
 <div class="gs-element-editor"><label for="gs-element">Selected element<select id="gs-element" data-gs-element></select></label><label for="gs-element-phase">Phase offset <output data-gs-phase-output for="gs-element-phase">0°</output><input type="range" id="gs-element-phase" data-gs-element-phase min="-180" max="180" step="5" value="0"></label><div class="gs-element-state"><span>Feed phase <strong data-gs-feed-phase>—</strong></span><button type="button" data-gs-remove aria-pressed="false">Remove element</button></div></div>
 </div>
 <div class="gs-adjustments">

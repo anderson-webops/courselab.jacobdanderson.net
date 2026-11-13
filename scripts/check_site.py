@@ -42,7 +42,7 @@ class Page(HTMLParser):
 def check():
     dist = ROOT / 'dist'
     course = 'courses/gt/ece6390/'
-    required = ['index.html', course+'solar/index.html', course+'admin/index.html', course+'lab/index.html', 'assets/course-lab.js', 'assets/course-lab.css', 'assets/site.js', 'assets/site.css', 'assets/orbit.js', 'assets/sun-view.js', 'assets/orbit.css', 'assets/solar.js', 'assets/solar.css', 'assets/orbit-runtime.css', 'assets/favicon.svg', '_headers', 'source-info.json', 'sitemap.xml', 'robots.txt', 'search/index.html', 'progress/index.html', course+'project/index.html', 'assets/georgia-system-model.js', 'assets/georgia-system.js', 'assets/figure-viewer.js', 'assets/figure-viewer.css']
+    required = ['index.html', course+'solar/index.html', course+'admin/index.html', course+'lab/index.html', 'assets/course-lab.js', 'assets/course-lab.css', 'assets/site.js', 'assets/site.css', 'assets/orbit.js', 'assets/sun-view.js', 'assets/orbit.css', 'assets/solar.js', 'assets/solar.css', 'assets/orbit-runtime.css', 'assets/favicon.svg', '_headers', 'source-info.json', 'sitemap.xml', 'robots.txt', 'search/index.html', 'progress/index.html', course+'project/index.html', 'assets/georgia-system-model.js', 'assets/georgia-system.js', 'assets/figure-viewer.js', 'assets/figure-viewer.css', 'assets/georgia-optimal.js', 'assets/georgia-help.js', 'assets/project-help.js', 'assets/project-help.css', 'assets/status-slots.js', 'assets/status-slots.css']
     for name in required:
         assert (dist / name).is_file(), f'Missing required artifact: {name}'
     allowed_links = {link['url'] for links in json.loads((ROOT / 'src/related-tools.json').read_text()).values() for link in links}

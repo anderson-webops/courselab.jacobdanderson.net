@@ -1,0 +1,13 @@
+.course-status-slot { position:relative; display:block; min-inline-size:0; }
+.course-status-slot__measure { display:grid; visibility:hidden; pointer-events:none; }
+.course-status-slot__measure > span { grid-area:1 / 1; display:block; overflow-wrap:anywhere; }
+.course-status-slot > .course-status-slot__live { position:absolute; inset:0; min-block-size:0; max-block-size:100%; overflow:auto; overflow-wrap:anywhere; margin:0 !important; }
+.course-status-slot > .course-status-slot__live:empty:not([hidden]) { display:block !important; }
+.course-status-slot--georgia { margin:0 0 14px; font-size:.9rem; line-height:1.8; }
+.course-status-slot--solar-import { margin:-8px 0 20px; font-size:15px; line-height:1.65; }
+.course-status-slot--solar-feedback { margin:8px 0 15px; font-size:15px; line-height:1.65; }
+.course-status-slot--solar-result { margin:8px 0 0; font-size:15px; line-height:1.65; }
+.course-status-slot--sun-force { margin:16px 0 8px; font-size:15px; line-height:1.6; }
+.course-status-slot--orbit-error { font-size:15px; line-height:1.6; }
+.course-status-slot--progress { margin:16px 0; font-size:16px; line-height:1.8; }
+.course-status-slot > .course-status-slot__live:focus-visible { outline:3px solid var(--site-accent,var(--a)); outline-offset:3px; }

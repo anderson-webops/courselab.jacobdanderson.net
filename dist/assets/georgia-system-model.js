@@ -17,7 +17,7 @@
   ].map(p=>Object.freeze(p)));
   const MAP_BOUNDS=Object.freeze({west:-89,east:-79,south:28.5,north:37});
   const DEFAULT_STATE=Object.freeze({
-    longitude:-84,rows:10,columns:10,stride:4,normal:'target',
+    aperture:'regular',longitude:-84,rows:10,columns:10,stride:4,normal:'target',
     tiltX:0,tiltY:0,roll:0,steeringLat:32.7,steeringLon:-83.6,
     phaseX:0,phaseY:0,autoSteer:true,powerDBW:75,frequencyGHz:30,
     probeLat:32.7,probeLon:-83.6,
@@ -63,10 +63,26 @@
     x=rotate(x,n,radians(roll));y=rotate(y,n,radians(roll));
     return{x:unit(x),y:unit(y),normal:unit(n)};
   }
+  function normalizeExplicitFeeds(input){
+    if(!Array.isArray(input))return[];
+    const feeds=[],ids=new Set(),sites=new Set();
+    for(let i=0;i<Math.min(input.length,400);i++){
+      const source=input[i];if(!source||typeof source!=='object')continue;
+      const gx=Number(source.gx),gy=Number(source.gy),phaseRad=Number(source.phaseRad);
+      if(![gx,gy,phaseRad].every(Number.isFinite)||!Number.isInteger(gx)||!Number.isInteger(gy)||Math.abs(gx)>10000||Math.abs(gy)>10000)continue;
+      const site=gx+','+gy;if(sites.has(site))continue;
+      let id=typeof source.id==='string'&&/^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/.test(source.id)?source.id:'feed'+i;
+      if(ids.has(id))id='feed'+i;
+      while(ids.has(id))id+='x';
+      sites.add(site);ids.add(id);feeds.push({id,gx,gy,phaseRad:wrapPhase(phaseRad)});
+    }
+    return feeds;
+  }
   function normalizeState(input={}){
     if(!input||typeof input!=='object')input={};
     const d=DEFAULT_STATE;
     const state={
+      aperture:input.aperture==='explicit'?'explicit':'regular',
       longitude:bounded(input.longitude,-150,-20,d.longitude),
       rows:Math.round(bounded(input.rows,1,20,d.rows)),
       columns:Math.round(bounded(input.columns,1,20,d.columns)),
@@ -86,10 +102,16 @@
       probeLon:bounded(input.probeLon,-180,180,d.probeLon),
       phaseOffsets:{},removed:[]
     };
+    if(state.aperture==='explicit'){
+      state.explicitFeeds=normalizeExplicitFeeds(input.explicitFeeds);
+      const reference=input.steeringReference||{};
+      state.steeringReference={u:bounded(reference.u,-1,1,0),v:bounded(reference.v,-1,1,0)};
+    }
     const offsets=input.phaseOffsets&&typeof input.phaseOffsets==='object'?input.phaseOffsets:{};
     const removed=new Set(Array.isArray(input.removed)?input.removed:[]);
-    for(let row=0;row<state.rows;row++)for(let col=0;col<state.columns;col++){
-      const id=`r${row}c${col}`;
+    const elementIds=state.aperture==='explicit'?state.explicitFeeds.map(e=>e.id):
+      Array.from({length:state.rows*state.columns},(_,i)=>`r${Math.floor(i/state.columns)}c${i%state.columns}`);
+    for(const id of elementIds){
       if(Object.hasOwn(offsets,id))state.phaseOffsets[id]=wrapPhase(radians(finite(offsets[id],0)))/DEG;
       if(removed.has(id))state.removed.push(id);
     }
@@ -145,7 +167,21 @@
     const steeringDirection=unit(sub(steeringPoint,satellite));
     const steerU=dot(steeringDirection,basis.x),steerV=dot(steeringDirection,basis.y);
     const absent=new Set(state.removed),elements=[];
-    for(let row=0;row<state.rows;row++)for(let col=0;col<state.columns;col++){
+    if(state.aperture==='explicit'){
+      const minGX=state.explicitFeeds.length?Math.min(...state.explicitFeeds.map(e=>e.gx)):0;
+      const minGY=state.explicitFeeds.length?Math.min(...state.explicitFeeds.map(e=>e.gy)):0;
+      const reference=state.steeringReference;
+      for(const feed of state.explicitFeeds){
+        const {id,gx,gy}=feed,x=gx*wavelengthM/2,y=gy*wavelengthM/2;
+        const extraPhase=state.phaseOffsets[id]||0;
+        // Re-target the saved shaped field relative to its fixed reference direction.
+        const auto=state.autoSteer?k*(x*(reference.u-steerU)+y*(reference.v-steerV)):0;
+        const phase=wrapPhase(feed.phaseRad+auto+radians(gx*state.phaseX+gy*state.phaseY+extraPhase));
+        elements.push({id,row:gy-minGY,col:gx-minGX,gx,gy,x,y,phase,phaseDeg:phase/DEG,
+          basePhaseDeg:feed.phaseRad/DEG,extraPhaseDeg:extraPhase,installed:!absent.has(id),
+          relativeECEF:add(scale(basis.x,x),scale(basis.y,y))});
+      }
+    }else for(let row=0;row<state.rows;row++)for(let col=0;col<state.columns;col++){
       const id=`r${row}c${col}`,gx=col*state.stride,gy=row*state.stride;
       const x=(col-(state.columns-1)/2)*state.stride*wavelengthM/2;
       const y=(row-(state.rows-1)/2)*state.stride*wavelengthM/2;
@@ -192,9 +228,13 @@
     const probeECEF=spherical(state.probeLat,state.probeLon),probe={
       lat:state.probeLat,lon:state.probeLon,ecef:probeECEF,...evaluatePoint(probeECEF,true)};
     const targetResult={lat:GA_CENTER.lat,lon:GA_CENTER.lon,ecef:target,...evaluatePoint(target,true)};
+    const layout={kind:state.aperture,phaseStepBasis:state.aperture==='explicit'?'half-wavelength grid':'displayed row or column',
+      gridRows:elements.length?Math.max(...elements.map(e=>e.row))+1:0,
+      gridColumns:elements.length?Math.max(...elements.map(e=>e.col))+1:0};
     return{state,params:state,satellite,target,basis,arrayNormal:basis.normal,
-      earthRadiusM:EARTH_RADIUS_M,geoRadiusM:GEO_RADIUS_M,wavelengthM,spacingM:state.stride*wavelengthM/2,
-      thresholdDBm:THRESHOLD_DBM,receiveGainDBi:RECEIVE_GAIN_DBI,elements,activeElements,
+      earthRadiusM:EARTH_RADIUS_M,geoRadiusM:GEO_RADIUS_M,wavelengthM,
+      spacingM:(state.aperture==='explicit'?1:state.stride)*wavelengthM/2,
+      thresholdDBm:THRESHOLD_DBM,receiveGainDBi:RECEIVE_GAIN_DBI,elements,activeElements,layout,
       normalizationQ:q,hemisphereIntegral:2*Math.PI*q,
       geometry:{satellite,target,basis,normal:basis.normal,rangeM:targetResult.rangeM},
       steering:{lat:state.steeringLat,lon:state.steeringLon,ecef:steeringPoint,direction:steeringDirection,u:steerU,v:steerV},
@@ -212,6 +252,11 @@
   }
   function preset(name='compact'){
     const state={...DEFAULT_STATE,phaseOffsets:{},removed:[]};
+    if(name==='optimal'){
+      const saved=root.GeorgiaOptimalPreset;
+      if(!saved)throw new Error('The saved design data is unavailable.');
+      return{...state,...saved.settings,explicitFeeds:saved.feeds.map(e=>({...e})),steeringReference:{...saved.steeringReference}};
+    }
     if(name==='wide')state.stride=12;
     else if(name==='thinned'){
       state.rows=14;state.columns=14;state.stride=6;

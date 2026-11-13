@@ -40,7 +40,10 @@
     "Coupled GeorgiaTenna teaching scene with satellite and Earth geometry, individual phase-controlled elements, coherent wave addition, regional received-power coverage and a sampled figure of merit. Synthetic adjustable arrays are separate from private homework designs.",
     "Reference figures preserve authored text colors and font sizes on a consistent chart surface, with an accessible natural-size vector viewer for zooming and panning.",
     "Lecture-informed explanations connect carrier statistics, transport, contacts, MOS charge control, confinement and switching, including organ-pipe and faucet analogies.",
-    "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states."
+    "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states.",
+    "Contextual control help opens in accessible hover, focus and click popovers, including phase gradients, coherent field addition and link/scoring meanings.",
+    "A user-authorized saved best-found GeorgiaTenna preset preserves 175 individual element positions/phases and its simulation settings; the regional teaching score retains its coarse-grid scope.",
+    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry."
   ],
   "source_sha256": {},
   "aliases": [

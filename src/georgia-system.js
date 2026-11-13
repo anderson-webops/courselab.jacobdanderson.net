@@ -23,8 +23,8 @@
   let elementHits=[],mapHits=[],selectedCell=null;
   const controls=$$('[data-gs-param]');
   const fields={
-    longitude:v=>fmt(v,1)+'°',tiltX:v=>fmt(v,1)+'°',tiltY:v=>fmt(v,1)+'°',roll:v=>fmt(v,0)+'°',
-    phaseX:v=>fmt(v,0)+'°',phaseY:v=>fmt(v,0)+'°',steeringLat:v=>fmt(Math.abs(v),2)+'° '+(v<0?'S':'N'),
+    longitude:v=>fmt(v,state.aperture==='explicit'?2:1)+'°',tiltX:v=>fmt(v,1)+'°',tiltY:v=>fmt(v,1)+'°',roll:v=>fmt(v,0)+'°',
+    phaseX:v=>fmt(v,state.aperture==='explicit'?1:0)+'°',phaseY:v=>fmt(v,state.aperture==='explicit'?1:0)+'°',steeringLat:v=>fmt(Math.abs(v),2)+'° '+(v<0?'S':'N'),
     steeringLon:v=>fmt(Math.abs(v),2)+'° '+(v<0?'W':'E'),rows:v=>String(v),columns:v=>String(v),
     stride:v=>String(v)+' × λ/2',powerDBW:v=>fmt(v,1)+' dBW',normal:v=>v==='target'?'Toward Georgia':'Toward Earth’s center'
   };
@@ -32,13 +32,13 @@
 
   function syncControls(){
     $('[data-gs-preset]').value=presetName;
-    for(const input of controls){const key=input.dataset.gsParam;if(input.type==='checkbox')input.checked=Boolean(state[key]);else input.value=state[key];const out=root.querySelector(`[data-gs-output="${key}"]`);if(out)out.textContent=(fields[key]||String)(state[key]);}
+    for(const input of controls){const key=input.dataset.gsParam;const locked=state.aperture==='explicit'&&['rows','columns','stride'].includes(key);input.disabled=locked;if(['phaseX','phaseY'].includes(key))input.step=state.aperture==='explicit'?'.1':'2';if(key==='longitude')input.step=state.aperture==='explicit'?'.01':'.5';if(input.type==='checkbox')input.checked=Boolean(state[key]);else input.value=state[key];const out=root.querySelector(`[data-gs-output="${key}"]`);if(out)out.textContent=locked?'Saved':(fields[key]||String)(state[key]);}
     const e=(result?.elements||[]).find(x=>x.id===selected);
     if(!e){selected=result?.elements?.[0]?.id||'r0c0';}
     const select=$('[data-gs-element]'),old=select.value;
     const signature=(result?.elements||[]).map(e=>e.id+(e.installed?'1':'0')).join(',');
     if(select.dataset.signature!==signature){
-      select.replaceChildren(...(result?.elements||[]).map(e=>{const o=document.createElement('option');o.value=e.id;o.textContent=`Row ${e.row+1}, column ${e.col+1}${e.installed?'':' · removed'}`;return o;}));
+      select.replaceChildren(...(result?.elements||[]).map(e=>{const o=document.createElement('option');o.value=e.id;o.textContent=(state.aperture==='explicit'?`Feed ${e.id.replace('feed','')*1+1} · (${e.gx}, ${e.gy}) λ/2`:`Row ${e.row+1}, column ${e.col+1}`)+(e.installed?'':' · removed');return o;}));
       select.dataset.signature=signature;
     }
     select.value=selected||old;
@@ -52,16 +52,18 @@
     $('[data-gs-play]').setAttribute('aria-pressed',String(playing));
     $('[data-gs-power-colors]').setAttribute('aria-pressed',String(showPower));
     $('[data-gs-power-colors]').textContent=showPower?'Coverage colors':'Power colors';
-    for(const item of $$('[data-gs-coverage-key]'))item.hidden=showPower;
+    $('.gs-coverage-legend').hidden=showPower;
     $('[data-gs-power-key]').hidden=!showPower;
   }
   function update(){
     pending=false;
     try{
       result=Model.evaluateSystem(state);
+      if(selectedCell)selectedCell=result.map.cells.find(c=>c.i===selectedCell.i&&c.j===selectedCell.j)||null;
       if(result.state)state=clone(result.state);
       const counts=result.counts;
-      $('[data-gs-fom]').textContent=result.scoreStatus==='unbounded-regional'?'Unbounded on this grid':typeof result.score==='number'?result.score.toExponential(3):'—';
+      $('[data-gs-fom]').textContent=result.scoreStatus==='unbounded-regional'?'∞':typeof result.score==='number'?result.score.toExponential(3):'—';
+      $('[data-gs-fom]').setAttribute('aria-label',result.scoreStatus==='unbounded-regional'?'Unbounded on this sampled regional grid':String(result.score));
       $('[data-gs-covered]').textContent=fmt(counts.ga?100*counts.coveredGA/counts.ga:0,1)+'%';
       $('[data-gs-covered-count]').textContent=fmt(counts.coveredGA,0)+' / '+fmt(counts.ga,0)+' samples';
       $('[data-gs-spill]').textContent=fmt(counts.outsideCovered,0);
@@ -171,10 +173,14 @@
   function drawArray(box,detailed=false){
     const {x,y,w,h}=box;roundRect(x,y,w,h,12,'#0d2130','#4a6476');
     text(w<220?'Array':'Array · enlarged',x+15,y+20,colors.text,w<220?11:13);if(w>=250)text('Feed phase',x+w-14,y+20,colors.muted,10,'right');
-    const padding=detailed?53:33,availableH=h-(detailed?112:75),cell=Math.min((w-2*padding)/Math.max(state.columns-1,1),availableH/Math.max(state.rows-1,1));
-    const gridW=cell*(state.columns-1),gridH=cell*(state.rows-1),sx=x+w/2-gridW/2,sy=y+42+(availableH-gridH)/2;
+    const padding=detailed?53:33,availableH=Math.max(10,h-(detailed?112:75)),availableW=Math.max(10,w-2*padding);
+    const sites=result.elements.length?result.elements:[{x:0,y:0}];
+    const xmin=Math.min(...sites.map(e=>e.x)),xmax=Math.max(...sites.map(e=>e.x)),ymin=Math.min(...sites.map(e=>e.y)),ymax=Math.max(...sites.map(e=>e.y));
+    const scale=Math.min(availableW/Math.max(xmax-xmin,result.wavelengthM/2),availableH/Math.max(ymax-ymin,result.wavelengthM/2));
+    const gridW=(xmax-xmin)*scale,gridH=(ymax-ymin)*scale,sx=x+w/2-gridW/2,sy=y+42+(availableH-gridH)/2;
+    const cell=state.aperture==='explicit'?Math.min(availableW,availableH)/Math.max(1,Math.sqrt(result.elements.length)):result.spacingM*scale;
     elementHits=[];
-    for(const e of result.elements){const px=sx+e.col*cell,py=sy+(state.rows-1-e.row)*cell;const selectedNow=e.id===selected;const radius=clamp(cell*.20,2.1,detailed?9:5.5);
+    for(const e of result.elements){const px=sx+(e.x-xmin)*scale,py=sy+(ymax-e.y)*scale;const selectedNow=e.id===selected;const radius=clamp(cell*.20,2.1,detailed?9:5.5);
       if(e.installed){
         const phase=e.phase??rad(e.phaseDeg||0),color=hue(e.phaseDeg||0);circle(px,py,radius,color);
         if(cell>9)arrow([px,py],[px+cell*.32*Math.cos(phase),py-cell*.32*Math.sin(phase)],color,.9);
@@ -183,7 +189,7 @@
       if(selectedNow){ctx.strokeStyle='#ffffff';ctx.lineWidth=1.5;ctx.strokeRect(px-radius-3,py-radius-3,2*radius+6,2*radius+6);}
       elementHits.push({id:e.id,x:px,y:py,r:Math.max(8,cell*.48)});
     }
-    const extX=Math.max(...result.elements.map(e=>e.x),0)-Math.min(...result.elements.map(e=>e.x),0),extY=Math.max(...result.elements.map(e=>e.y),0)-Math.min(...result.elements.map(e=>e.y),0);
+    const extX=xmax-xmin,extY=ymax-ymin;
     text(`${fmt(extX*1000,1)} × ${fmt(extY*1000,1)} mm`,x+14,y+h-18,colors.muted,w<250?8:10);
     if(w>=290){const legendX=x+w-135,legendY=y+h-20;
     for(let i=0;i<90;i++){ctx.fillStyle=hue(-180+4*i);ctx.fillRect(legendX+i*1.2,legendY-5,1.3,7);}
@@ -201,8 +207,8 @@
     circle(x,y,r,'#102735','#3d5b6b');line([x-r,y],[x+r,y],colors.line,.6);line([x,y-r],[x,y+r],colors.line,.6);
     let re=0,im=0;
     for(const item of on){const pr=item.re??Math.cos(item.phase||0),pi=item.im??Math.sin(item.phase||0);re+=pr;im+=pi;const e=result.elements.find(e=>e.id===item.elementId);line([x,y],[x+r*.8*pr,y-r*.8*pi],item.elementId===selected?colors.orange:'#7cb1c6',item.elementId===selected?1.8:.7,item.elementId===selected?1:.18);}
-    const n=on.length||1,ratio=Math.hypot(re,im)/n;arrow([x,y],[x+r*.8*re/n,y-r*.8*im/n],colors.teal,2.2);
-    text('At Georgia center',x,y-r-13,colors.text,11,'center');text('|Σ field| / N = '+fmt(ratio,3),x,y+r+15,colors.muted,10,'center');
+    const n=on.length,ratio=n?Math.hypot(re,im)/n:null;if(n)arrow([x,y],[x+r*.8*re/n,y-r*.8*im/n],colors.teal,2.2);
+    text('At Georgia center',x,y-r-13,colors.text,11,'center');text(n?'|Σ field| / N = '+fmt(ratio,3):'No installed elements',x,y+r+15,colors.muted,10,'center');
   }
   function drawSystem(w,h){
     const mobile=w<570;
