@@ -16,13 +16,12 @@
     "code": "ece6612",
     "displayCode": "ECE 6612",
     "title": "Computer Network Security",
-    "status": "in-progress",
+    "status": "available",
     "description": "Cryptography, secure network protocols, web and email trust, access control, availability, and malware.",
     "sourceNotes": [
-      "Course scope follows the reviewed syllabus, lecture slides 01\u201320, recorded lectures through November 10, 2026, and conceptual lab exercises.",
+      "Course scope follows the reviewed syllabus, lecture slides 01\u201320, complete recorded lectures through the final class on November 12, 2026, and conceptual lab exercises.",
       "All lessons, figures, numerical experiments and practice cases are original educational material."
-    ],
-    "gap": "Recorded coverage extends through SYN cookies on November 10. Later denial-of-service and malware topics follow the supplied slides; their lecture recording remains to be reviewed."
+    ]
   },
   {
     "institution": "byu",

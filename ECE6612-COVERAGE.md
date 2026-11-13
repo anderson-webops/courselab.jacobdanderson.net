@@ -17,7 +17,7 @@ The conceptual lab review contributes byte-level reasoning, capture interpretati
 
 ## Taught cutoff and remaining depth
 
-- Recorded lecture coverage reviewed through **November 10, 2026**, ending with SYN cookies. Later DoS material, including amplification/CDN defenses and telescopes, and malware follow the supplied slides. The November 12 recording remains to be reviewed.
+- Recorded lecture coverage is reviewed through the **November 12, 2026 final lecture**, completing DoS and malware. The final lecture adds reflection and cloud-capacity explanations, telescope observation designs, worm targeting and execution examples, and layered botnet-disruption cases. Course topic coverage is complete through that lecture; the following items describe the collection’s remaining depth limits.
 - Lessons describe protocol mechanisms and security decisions. Cryptographic round internals, exhaustive packet-header field catalogs, vendor-specific BGP/firewall commands, full protocol implementations and research-project measurements remain outside this edition's depth.
 - Models expose a defined relationship using small examples. Tiny RSA/Diffie–Hellman values demonstrate algebra; the XOR model demonstrates keystream reuse. Probability models state independence/uniformity assumptions. Password hardware cost is an input, and worm growth uses an explicitly bounded early-phase approximation.
 - VPN visibility assumes the illustrated tunnel termination, routing and application encryption. Provider collusion, traffic correlation, DNS paths, endpoint compromise and operational implementation require additional evidence in a real evaluation.

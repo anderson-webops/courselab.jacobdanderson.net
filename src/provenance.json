@@ -10,7 +10,7 @@
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
     "Fall 2024 PHSCS 587 notebooks and all 28 available lecture recordings; original device-physics explanations, figures and staged practice",
-    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
+    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through the final class on November 12, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -43,7 +43,8 @@
     "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states.",
     "Contextual control help opens in accessible hover, focus and click popovers, including phase gradients, coherent field addition and link/scoring meanings.",
     "A user-authorized saved best-found GeorgiaTenna preset preserves 175 individual element positions/phases and its simulation settings; the regional teaching score retains its coarse-grid scope.",
-    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry."
+    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry.",
+    "ECE 6612 final-lecture reconciliation: original reflection/telescope and malware-control diagrams and examples; final recorded course coverage verified through malware, with source audio and ASR retained privately"
   ],
   "source_sha256": {},
   "aliases": [

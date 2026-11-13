@@ -10,7 +10,7 @@
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
     "Fall 2024 PHSCS 587 notebooks and all 28 available lecture recordings; original device-physics explanations, figures and staged practice",
-    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through November 10, 2026; conceptual lab scope reviewed privately"
+    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through the final class on November 12, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -43,7 +43,8 @@
     "Finite-temperature Fermi occupation has independent energy-reference and temperature controls, with explicit band edges and a distinction between occupation and available states.",
     "Contextual control help opens in accessible hover, focus and click popovers, including phase gradients, coherent field addition and link/scoring meanings.",
     "A user-authorized saved best-found GeorgiaTenna preset preserves 175 individual element positions/phases and its simulation settings; the regional teaching score retains its coarse-grid scope.",
-    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry."
+    "Automatic feedback regions reserve responsive text space; legend modes share a fixed geometry.",
+    "ECE 6612 final-lecture reconciliation: original reflection/telescope and malware-control diagrams and examples; final recorded course coverage verified through malware, with source audio and ASR retained privately"
   ],
   "source_sha256": {
     "additional-course-topics.json": "c5b63044c854e081416598ad3a2c69ac16275cc82df792163354d1f04a1b52ca",
@@ -55,11 +56,11 @@
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
     "course-model-assets.json": "a86b6d6b93b4bd429f90d2c50d8a12442f6272af6a64e12f36b2fdf01aa52146",
     "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
-    "course-topics/ece6612-applications.json": "3b91404fa6a9f6d446f193ce66dc9a4aec64969347538cb93f11725c958b0adc",
+    "course-topics/ece6612-applications.json": "fd01ad7d4a40252cd1aa53f4c0b90df23fc65118c92c3bb3260b28e3ef253c66",
     "course-topics/ece6612-foundations.json": "a276dbf4f2cdcf3521ff2fa6f7037872173138f5a1c242fc865fdbf5a5abae8a",
     "course-topics/ece6612-protocols.json": "c287406f1d35c1f19b03707d74733fa21ff4e158f59349d6eba68c62fc56901e",
     "course-update.js": "2ea4272433d578b207b9a3e6ce0cfba0fa53772e4cdbf1b9073db4ff618e1722",
-    "courses.json": "945787c265ea41d3d1d924fb25abb6d32c60fa1f0fd91f246a1374e931810d3e",
+    "courses.json": "c77f9459308492b1531a359cdbcb25676979e490e0cf76f59694b33a8567480b",
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
     "fermi-model.js": "080a23db72e640288992d3097773c8d6a3129e20f2f966482f1cf2fe14572af4",
@@ -105,5 +106,5 @@
   "reference_links": [
     "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
   ],
-  "version": "1.5.0"
+  "version": "1.6.0"
 }
