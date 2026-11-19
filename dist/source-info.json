@@ -55,9 +55,9 @@
     "course-extensions.js": "70bde2df9603d750a7125404a8cf1437e6320ff85c805f32de6263f46e378f0b",
     "course-figures.js": "7bf4d4364142464ad8772aaa3ca649cebe82235cdb4e4ec9a7057b4f5acf8bd0",
     "course-lab.html": "cbbd184f816b1ad9a84e51b536e5b515eb0ccab23c0db1a55b4230c75318c1a8",
-    "course-model-assets.json": "319e7127dc4b6e684f52d00d9344134d29695c640b39b814b0f927abf3b27f61",
+    "course-model-assets.json": "83c2320da1de8a78dddccd853b7f5d3926466a201d7a1c5bf32c025d653b3929",
     "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
-    "course-topics/ece6390-narrative.json": "6d09d9246bac80b5c50cd65da5921ed0ec077940fcf335260b80b5272fa46ebb",
+    "course-topics/ece6390-narrative.json": "8d65ada8d7c1f45889b2979cbc568c8c804fda1cfb2bd8103197f9bb0c2bdbe7",
     "course-topics/ece6612-applications.json": "fd01ad7d4a40252cd1aa53f4c0b90df23fc65118c92c3bb3260b28e3ef253c66",
     "course-topics/ece6612-foundations.json": "a276dbf4f2cdcf3521ff2fa6f7037872173138f5a1c242fc865fdbf5a5abae8a",
     "course-topics/ece6612-protocols.json": "c287406f1d35c1f19b03707d74733fa21ff4e158f59349d6eba68c62fc56901e",
@@ -65,7 +65,8 @@
     "courses.json": "c77f9459308492b1531a359cdbcb25676979e490e0cf76f59694b33a8567480b",
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
     "ece6390-models.js": "73ed816032c281311e3299b2c586d84e32d5633bdb0b8ec0c995b0261e7da06b",
-    "ece6390-timing-geometry-models.js": "a403fef3a655940273187734f6c8db39c9c53ed8f99a96cc64df8fb77f93dc9a",
+    "ece6390-signal-link-models.js": "cae4fe98afd9da55e28df19d8a6dd96c8ea483ead476dca66091c0171bfcd1ba",
+    "ece6390-timing-geometry-models.js": "3003682cb827f8ede36d94ea9c7adc48cdae41d40fcaa448ff4e3d975c8fc494",
     "favicon.svg": "6d5ac81a213f9e697420b1253e19f863056141567e64840e1314ee0b941f23a1",
     "fermi-model.js": "080a23db72e640288992d3097773c8d6a3129e20f2f966482f1cf2fe14572af4",
     "figure-registry.js": "8b78afe49e427550e672619bd81b01ee32350ef0f115cefa31e133e292a2d80b",
@@ -298,7 +299,7 @@
     "sun-view.js": "70301ffa1b839e387ee0c4cfe787f4bdfceed2bffbe5cb7589beab5dc2a66de1",
     "topic-content.json": "2ca1b6e080d0b838860130536078da432ca58565879d155d1d94d4aec2145bee",
     "topic-extensions.json": "653d3ee8c32b92ff1af03609eb21d822a5c84755ab44ca4b70c49263e334db4c",
-    "topic-groups.json": "27633d4f35fbf20220fb8d1baf3fcbdbbe63c439ebdc09c4ef314d234a22d629",
+    "topic-groups.json": "45bcdd0fa99ae961574417bffb9cc9960456d98877945fbba0dba463aa2af9cf",
     "topic-navigation.json": "d92cc056c59e1b19f4ae4644d008f4391864b70b96a1c465b2f05170265b3c8a",
     "topic-practice.js": "0f730cf9322f1a558e200e91e224316f473e02db81d03a94049424b0a48bd56a",
     "topics.css": "cf238cc417b39fd562cec7ca2bc581c5f84879e2147b596aa2f58f29d229d23b"
@@ -346,5 +347,5 @@
     "https://www.youtube.com/watch?v=qjN4bdMASjE",
     "https://www.youtube.com/watch?v=ulCRyxC5H3o"
   ],
-  "version": "1.10.0"
+  "version": "1.11.0"
 }

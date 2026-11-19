@@ -91,11 +91,15 @@
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/bpsk-detection/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/broadcast-constellations/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/carrier-offset/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/carrier-sidebands/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/circular-aperture/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/code-tracking/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/coding-gain/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/companding/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/convolutional-code/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/db-distance/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/differential-correction/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/differential-phase/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/dipole-pattern/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/dish-gain/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/dish-illumination/</loc></url>
@@ -110,6 +114,7 @@
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/electric-propulsion/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/energy-per-bit/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/eye-diagram/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/fft-frequency-grid/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/free-space-flux/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gain-references/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/geo-frames/</loc></url>
@@ -118,7 +123,9 @@
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gnss-error-budget/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gnss-geometry/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gnss-orbits/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gps-signal-plan/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/grating-lobes/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/gt-link-margin/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/helmholtz-curvature/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/hohmann-transfer/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/</loc></url>
@@ -157,6 +164,7 @@
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/rocket-mass/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/sampling-alias/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/satellite-scan-angle/</loc></url>
+<url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/sinc-reconstruction/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/soft-decisions/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/solar-array/</loc></url>
 <url><loc>https://courselab.jacobdanderson.net/courses/gt/ece6390/topics/solar-pressure-components/</loc></url>

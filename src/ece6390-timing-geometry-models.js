@@ -324,5 +324,5 @@
 
   const captions={'ece-grating':'Adjustable line array: visible window, main beam and grating lobes.','ece-eye':'Adjustable raised-cosine eye diagram and worst-case opening at a chosen sampling instant.','ece-packet':'Adjustable header search and symbol-clock drift across a packet.','ece-carrier':'Adjustable carrier frequency and phase offset acting on recovered QPSK points.','ece-scan':'Adjustable station and antenna aim: ground look angles and the satellite scan angle.','ece-dish-feed':'Adjustable dish focal ratio and feed pattern: spillover, edge taper and aperture efficiency.','ece-dll':'Adjustable early–late tracking with one delayed echo.','ece-tdoa':'Adjustable receiver position, clock bias and range-difference tolerance.','ece-dgps':'Adjustable differential-correction ledger for one satellite.'};
   for(const model of models)if(captions[model.id])model.caption=captions[model.id];
-  window.ECE6390TimingGeometry={grating,arrayFactor,raisedCosine,eyeOpening,packet,carrier,scan,dish,silver,tracking,hyperbola,tdoa,differential,models:()=>models.filter(m=>captions[m.id])};
+  window.ECE6390TimingGeometry={helpers:{frame,curve,samples,dotMark,control,near,wrap,sinc,gaussians,mSequence},grating,arrayFactor,raisedCosine,eyeOpening,packet,carrier,scan,dish,silver,tracking,hyperbola,tdoa,differential,models:()=>models.filter(m=>captions[m.id])};
 })();

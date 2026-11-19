@@ -10,6 +10,7 @@
   ],
   "gt/ece6390": [
     "ece6390-models.js",
-    "ece6390-timing-geometry-models.js"
+    "ece6390-timing-geometry-models.js",
+    "ece6390-signal-link-models.js"
   ]
 }

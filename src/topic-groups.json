@@ -57,6 +57,7 @@
       "ids": [
         "db-distance",
         "link-budget",
+        "gt-link-margin",
         "receiver-noise",
         "doppler-shift",
         "rain-path",
@@ -107,7 +108,9 @@
       "anchor": "Digital",
       "ids": [
         "sampling-alias",
+        "sinc-reconstruction",
         "quantization-pcm",
+        "companding",
         "source-compression"
       ]
     },
@@ -116,6 +119,7 @@
       "ids": [
         "nyquist-pulse",
         "rectangular-pulse-spectrum",
+        "fft-frequency-grid",
         "eye-diagram",
         "matched-filter",
         "packet-sync",
@@ -127,6 +131,8 @@
       "ids": [
         "iq-constellation",
         "carrier-offset",
+        "carrier-sidebands",
+        "differential-phase",
         "broadcast-constellations",
         "rate-bandwidth",
         "modem-chain",
@@ -150,6 +156,7 @@
         "product-parity",
         "block-code-distance",
         "convolutional-code",
+        "coding-gain",
         "iterative-decoding",
         "ldpc-constraints"
       ]
@@ -174,6 +181,7 @@
       "ids": [
         "pn-correlation",
         "lfsr-code",
+        "gps-signal-plan",
         "processing-gain",
         "near-far",
         "gnss-acquisition",
