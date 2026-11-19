@@ -55,7 +55,11 @@
   models.push({id:'ece-bpsk',controls:[control('ebn','Energy per bit / N₀',-8,14,.5,4,'dB'),control('threshold','Decision threshold τ',-2,2,.1,0,'normalized'),control('prior','Prior probability of +1',.05,.95,.05,.5)],
     render(v,U){
       const z=bpsk(v),limit=Math.max(2.7,1+4*z.sigma),density=(x,mu)=>Math.exp(-.5*((x-mu)/z.sigma)**2)/(z.sigma*Math.sqrt(tau));
-      const ymax=1/(z.sigma*Math.sqrt(tau))*1.12,series=[{name:'Sent −1',color:U.C.b,points:U.range(360,t=>{const x=-limit+2*limit*t;return[x,density(x,-1)];})},{name:'Sent +1',color:U.C.a,points:U.range(360,t=>{const x=-limit+2*limit*t;return[x,density(x,1)];})},{name:'Selected threshold',color:U.C.d,dash:'4 4',points:[[v.threshold,0],[v.threshold,ymax]]}];
+      const ymax=1/(z.sigma*Math.sqrt(tau))*1.12;
+      const series=[{name:'Sent −1: right tail '+scientific(z.minus),color:U.C.b,dash:'8 3',points:U.range(360,t=>{const x=-limit+2*limit*t;return[x,density(x,-1)];})},{name:'Sent +1: left tail '+scientific(z.plus),color:U.C.a,points:U.range(360,t=>{const x=-limit+2*limit*t;return[x,density(x,1)];})}];
+      const sameThreshold=near(v.threshold,z.optimum);
+      series.push({name:(sameThreshold?'Selected = MAP threshold':'Selected threshold')+' ('+U.fmt(v.threshold,3)+')',color:U.C.d,dash:'4 4',points:[[v.threshold,0],[v.threshold,ymax]]});
+      if(!sameThreshold)series.push({name:'MAP threshold ('+U.fmt(z.optimum,3)+')',color:U.C.c,dash:'9 3 2 3',points:[[z.optimum,0],[z.optimum,ymax]]});
       const opts={xmin:-limit,xmax:limit,ymin:0,ymax,xlabel:'Matched-filter sample y (normalized amplitude)',ylabel:'Conditional probability density',title:'Decision +1 to the right of τ; decision −1 to the left',height:390};
       let chart=U.plot(series,opts);
       const X=x=>88+(x+limit)/(2*limit)*(800-88-28),Y=y=>390-65-y/ymax*(390-65-48);
@@ -91,13 +95,20 @@
 
   // Six supported normal-frame examples, checked against ETSIEN302307V1.3.1 tables5a and12.
   const profiles=[{name:'QPSK 1/4',m:2,k:16008,inner:.25},{name:'QPSK 1/2',m:2,k:32208,inner:.5},{name:'QPSK 3/4',m:2,k:48408,inner:.75},{name:'8PSK 3/4',m:3,k:48408,inner:.75},{name:'16APSK 3/4',m:4,k:48408,inner:.75},{name:'32APSK 3/4',m:5,k:48408,inner:.75}];
-  const frame=v=>{const p=profiles[v.profile],symbolRate=v.bandwidth*1e6/(1+v.rolloff),mapped=64800/p.m,slots=mapped/90,pilots=v.pilots?36*Math.floor((slots-1)/16):0,full=mapped+90+pilots,payload=p.k-80;return{p,symbolRate,mapped,slots,pilots,full,payload,raw:symbolRate*p.m,information:symbolRate*payload/full};};
+  const frame=v=>{
+    const p=profiles[v.profile],symbolRate=v.bandwidth*1e6/(1+v.rolloff);
+    const mapped=64800/p.m,slots=mapped/90;
+    const pilots=v.pilots?36*Math.floor((slots-1)/16):0;
+    const full=mapped+90+pilots,payload=p.k-80,seconds=full/symbolRate;
+    return {p,symbolRate,mapped,slots,pilots,full,payload,seconds,raw:symbolRate*p.m,codedRate:64800/seconds,information:payload/seconds};
+  };
   models.push({id:'ece-dvbs2',controls:[control('profile','DVB-S2 profile index',0,5,1,2),control('bandwidth','Occupied RF channel width',1,36,1,6,'MHz'),control('rolloff','Raised-cosine rolloff α',.2,.35,.05,.25),control('pilots','Pilots: 0 off, 1 on',0,1,1,1)],
     render(v,U){
-      const z=frame(v),rows=[['BB information and header',z.payload+' payload bits + 80 header bits'],['BCH output / LDPC input',U.fmt(64800*z.p.inner,0)+' bits'],['LDPC-coded FEC frame','64800 coded bits'],['Mapping',U.fmt(z.mapped,0)+' symbols at '+z.p.m+' coded bits/symbol'],['Physical frame',U.fmt(z.full,0)+' symbols including header/pilots']];
-      let s=U.text(400,30,z.p.name+'; completely filled normal frame','middle');
+      const z=frame(v),rows=[['Baseband frame (BCH input)',U.fmt(z.payload,0)+' payload bits + 80 header bits'],['BCH output / LDPC input',U.fmt(64800*z.p.inner,0)+' bits'],['LDPC output','64,800 coded bits'],['Mapped symbols',U.fmt(z.mapped,0)+' symbols × '+z.p.m+' coded bits/symbol'],['Physical frame',U.fmt(z.mapped,0)+' mapped + 90 header + '+z.pilots+' pilots = '+U.fmt(z.full,0)+' symbols']];
+      let s=U.text(400,30,z.p.name+' at '+U.fmt(z.symbolRate/1e6,3)+' Msym/s','middle');
       rows.forEach(([a,b],i)=>{const y=55+77*i;s+=panel(U,85,y,630,59,[a,b],i<3?U.C.a:U.C.b);if(i<4)s+=U.arrow(400,y+59,400,y+75,U.C.muted);});
-      return{svg:U.svg(s,'DVB-S2 normal-frame resource accounting for a supported profile',800,470),stats:[['Mapper bit rate',U.fmt(z.raw/1e6,3)+' Mbit/s'],['Filled-frame payload rate',U.fmt(z.information/1e6,3)+' Mbit/s'],['Pilot symbols per frame',String(z.pilots)]],equation:'R<sub>s</sub>=B/(1+α); S=64800/(90m); N<sub>PL</sub>=64800/m+90+36⌊(S−1)/16⌋ (pilots on); R<sub>payload</sub>=R<sub>s</sub>(K<sub>BCH</sub>−80)/N<sub>PL</sub>',note:'Normal DVB-S2 FEC frames using the selected supported profile. BCH and LDPC protection, 80-bit BB header, 90-symbol PL header and optional 36-symbol pilots are counted. Input-packet, stuffing, padding, guard-band and implementation losses are excluded.'};
+      s+=U.text(400,451,'Frame duration = '+U.fmt(z.full,0)+' symbols ÷ '+U.fmt(z.symbolRate/1e6,3)+' Msym/s = '+U.fmt(z.seconds*1000,3)+' ms','middle');
+      return{svg:U.svg(s,'DVB-S2 normal-frame resource accounting for a supported profile',800,475),stats:[['Coded rate during mapped symbols',U.fmt(z.raw/1e6,3)+' Mbit/s'],['Frame-average coded rate',U.fmt(z.codedRate/1e6,3)+' Mbit/s'],['Filled-frame payload rate',U.fmt(z.information/1e6,3)+' Mbit/s']],equation:'R<sub>s</sub>=B/(1+α); S=64800/(90m); N<sub>PL</sub>=64800/m+90+36⌊(S−1)/16⌋ (pilots on); T<sub>frame</sub>=N<sub>PL</sub>/R<sub>s</sub>; R<sub>coded,avg</sub>=64800/T<sub>frame</sub>; R<sub>payload</sub>=(K<sub>BCH</sub>−80)/T<sub>frame</sub>',note:'A physical header and optional pilots use symbol time in every normal frame. Only mapped symbols carry FEC-frame bits. The 80-bit baseband header occupies part of the BCH input. Payload assumes a full frame with no input-packet, stuffing, padding, guard-band or implementation losses.'};
     },checks:()=>{
       const z=frame({profile:2,bandwidth:6,rolloff:.25,pilots:1}),a=frame({profile:2,bandwidth:6,rolloff:.25,pilots:0});
       return[{name:'QPSKnormalframe has360slots and792pilot symbols',pass:z.slots===360&&z.pilots===792},{name:'Usefulpayload cannot exceed mapperbitrate',pass:profiles.every((_,profile)=>{const r=frame({profile,bandwidth:6,rolloff:.25,pilots:1});return r.information<r.raw;})},{name:'Removingpilotsraisesfilledframepayloadrate',pass:a.information>z.information},{name:'QPSK3/4BCHdatacountmatchesstandard',pass:z.payload===48328}];
@@ -108,7 +119,7 @@
   const productReceived=v=>{const a=productBlock(v.data),positions=[v.first,v.second].filter(n=>n>0);for(const n of new Set(positions))a[Math.floor((n-1)/3)][(n-1)%3]^=1;return{a,flips:new Set(positions).size,badRows:a.map(row=>row.reduce((s,b)=>s^b,0)),badCols:[0,1,2].map(j=>a.reduce((s,row)=>s^row[j],0))};};
   models.push({id:'ece-product-parity',controls:[control('data','Four-bit information word as integer',0,15,1,11),control('first','First flipped position (0 = none)',0,9,1,4),control('second','Second flipped position (0 = none)',0,9,1,0)],
     render(v,U){
-      const z=productReceived(v);let s=U.text(400,35,'Data '+word(bits(v.data,4))+'; each complete row and column has even parity.','middle');
+      const z=productReceived(v);let s=U.text(400,35,'Data '+word(bits(v.data,4))+' · Received block after '+z.flips+' selected bit flip'+(z.flips===1?'':'s'),'middle');
       for(let i=0;i<3;i++)for(let j=0;j<3;j++){const x=190+j*90,y=75+i*90;s+=panel(U,x,y,90,90,[String(z.a[i][j])],z.badRows[i]&&z.badCols[j]?U.C.d:U.C.a)+U.text(x+10,y+20,String(i*3+j+1),'start',U.C.muted);}
       for(let i=0;i<3;i++)s+=U.text(500,130+i*90,z.badRows[i]?'FAIL':'even','start',z.badRows[i]?U.C.d:U.C.a)+U.text(235+i*90,380,z.badCols[i]?'FAIL':'even','middle',z.badCols[i]?U.C.d:U.C.a);
       const rs=z.badRows.flatMap((b,i)=>b?[i]:[]),cs=z.badCols.flatMap((b,i)=>b?[i]:[]),repair=z.flips===1&&rs.length===1&&cs.length===1?String(1+rs[0]*3+cs[0]):'No guaranteed repair in this selected pattern';
@@ -146,7 +157,10 @@
   models.push({id:'ece-soft',controls:[control('sample','Observation y',-2,2,.05,.1,'normalized'),control('sigma','Noise standard deviation σ',.2,1.5,.05,.5,'normalized'),control('prior','Prior probability of bit 1',.05,.95,.05,.5)],
     render(v,U){
       const z=soft(v),bound=2/(v.sigma*v.sigma)*2+Math.abs(z.prior)+1,pts=U.range(150,t=>{const x=-2+4*t;return[x,2*x/(v.sigma*v.sigma)];});
-      return{svg:U.plot([{name:'Channel log-likelihood L(y)',color:U.C.a,points:pts},{name:'Posterior log odds',color:U.C.b,points:pts.map(([x,L])=>[x,L+z.prior])},{name:'Chosen sample',color:U.C.c,dash:'4 4',points:[[v.sample,-bound],[v.sample,bound]]}],{xmin:-2,xmax:2,ymin:-bound,ymax:bound,xlabel:'Observation y (normalized; bit 1 mean +1)',ylabel:'Natural-log odds',title:'Sample strength and noise scale determine reliability',height:400}),stats:[['Channel LLR',U.fmt(z.L,4)],['Posterior P(bit 1|y)',U.fmt(z.one,6)],['Model posterior error',scientific(z.error)]],equation:'L=ln[p(y|1)/p(y|0)]=2y/σ²; L<sub>post</sub>=L+ln[p₁/(1−p₁)]; P(1|y)=1/(1+e<sup>−Lpost</sup>)',note:'Gaussian samples with means ±1, common variance σ². Positive channel LLR favors bit 1; another library may define the opposite sign. Prior evidence is counted once. These probabilities rely on the selected channel and prior model; the figure does not implement a full iterative decoder.'};
+      const series=[{name:z.prior===0?'Channel LLR = posterior log odds':'Channel log-likelihood L(y)',color:U.C.a,points:pts}];
+      if(z.prior!==0)series.push({name:'Posterior log odds',color:U.C.b,dash:'7 3',points:pts.map(([x,L])=>[x,L+z.prior])});
+      series.push({name:'Chosen sample y = '+U.fmt(v.sample,2),color:U.C.c,dash:'4 4',points:[[v.sample,-bound],[v.sample,bound]]});
+      return{svg:U.plot(series,{xmin:-2,xmax:2,ymin:-bound,ymax:bound,xlabel:'Observation y (normalized; bit 1 mean +1)',ylabel:'Natural-log odds',title:'Sample strength and noise scale determine reliability',height:400}),stats:[['Channel LLR',U.fmt(z.L,4)],['Posterior P(bit 1|y)',U.fmt(z.one,6)],['Model posterior error',scientific(z.error)]],equation:'L=ln[p(y|1)/p(y|0)]=2y/σ²; L<sub>post</sub>=L+ln[p₁/(1−p₁)]; P(1|y)=1/(1+e<sup>−Lpost</sup>)',note:'Gaussian samples with means ±1, common variance σ². Positive channel LLR favors bit 1; another library may define the opposite sign. Prior evidence is counted once. These probabilities rely on the selected channel and prior model; the figure does not implement a full iterative decoder.'};
     },checks:()=>[{name:'y0andequalpriorsgiveposterioronehalf',pass:soft({sample:0,sigma:.5,prior:.5}).one===.5},{name:'sigma2scalingreducesLLRby4',pass:near(soft({sample:.1,sigma:1,prior:.5}).L/.8,.25)},{name:'Equalpriory0point1anchor',pass:near(soft({sample:.1,sigma:.5,prior:.5}).one,.6899744811,1e-8)}]
   });
 

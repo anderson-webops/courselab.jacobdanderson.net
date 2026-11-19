@@ -15,7 +15,8 @@
   const fit=button('Fit','Fit the complete figure'),minus=button('−','Zoom out');
   const readout=document.createElement('output');readout.setAttribute('aria-label','Figure zoom');toolbar.append(readout);
   const plus=button('+','Zoom in'),close=button('Close');
-  dialog.append(title,toolbar,stage);document.body.append(dialog);
+  const legend=document.createElement('div');legend.className='fv-legend';legend.hidden=true;
+  dialog.append(title,toolbar,legend,stage);document.body.append(dialog);
   let picture=null,opener=null,returnActions=null,returnIndex=0,scale=1,width=900,height=500;
   function resize(next){
     if(!picture)return;
@@ -33,16 +34,23 @@
     }
     return 'rgb(255, 255, 255)';
   };
-  function open(source,launch,actions,index){
-    opener=launch;returnActions=actions;returnIndex=index;picture=source.cloneNode(true);const prefix='fv-'+(++serial)+'-';
-    const ids=new Map([...picture.querySelectorAll('[id]')].map(e=>[e.id,prefix+e.id]));
-    if(picture.id)ids.set(picture.id,prefix+picture.id);
-    for(const e of [picture,...picture.querySelectorAll('*')])for(const a of [...e.attributes]){
+  function copyForViewer(source){
+    const copy=source.cloneNode(true),prefix='fv-'+(++serial)+'-';
+    const ids=new Map([...copy.querySelectorAll('[id]')].map(e=>[e.id,prefix+e.id]));
+    if(copy.id)ids.set(copy.id,prefix+copy.id);
+    for(const e of [copy,...copy.querySelectorAll('*')])for(const a of [...e.attributes]){
       let value=a.value;if(a.name==='id')value=ids.get(value)||value;
       else if(['aria-labelledby','aria-describedby'].includes(a.name))value=value.split(/\s+/).map(id=>ids.get(id)||id).join(' ');
       else for(const [id,replacement]of ids){value=value.replaceAll('url(#'+id+')','url(#'+replacement+')');if(value==='#'+id)value='#'+replacement;}
       if(value!==a.value)e.setAttribute(a.name,value);
     }
+    return copy;
+  }
+  function open(source,launch,actions,index){
+    opener=launch;returnActions=actions;returnIndex=index;picture=copyForViewer(source);
+    const key=source.nextElementSibling;
+    legend.replaceChildren();legend.hidden=!key?.matches('.legend');
+    if(!legend.hidden)legend.append(copyForViewer(key));
     const box=source.viewBox?.baseVal;width=box?.width||source.naturalWidth||Number(source.getAttribute('width'))||900;height=box?.height||source.naturalHeight||Number(source.getAttribute('height'))||500;scale=1;
     if(source.tagName.toLowerCase()==='svg'){
       // Preserve text colors supplied by the figure's surrounding theme rules.

@@ -48,6 +48,31 @@ try{
   await goto(topics.find(t=>t.simulation));const checks=await page.evaluate(()=>ECE6390Teaching.models().flatMap(m=>m.checks().map(c=>({model:m.id,...c}))));
   assert.equal(checks.length,31);assert.deepEqual(checks.filter(x=>!x.pass),[]);return{checks:checks.length};
  });
+ await check('Detection and coding figures expose the decisions and rates they compare',async()=>{
+  const topic=id=>topics.find(t=>t.id===id);
+  await goto(topic('qam-error-probability'));
+  const reference=page.locator('.course-static > svg');
+  for(const label of ['Sent 0101','Right neighbor 1101','Diagonal neighbor 1111','1 symbol error, 1 bit error','1 symbol error, 2 bit errors']){
+   assert.equal(await reference.locator('text').filter({hasText:label}).count(),1,label);
+  }
+  assert.ok((await reference.locator('desc').textContent()).includes('midway'));
+  await goto(topic('bpsk-detection'));const legend=page.locator('figure').nth(1).locator('.legend');
+  assert.match(await legend.textContent(),/Selected = MAP threshold/);
+  await page.locator('#device-prior').focus();await page.keyboard.press('ArrowRight');
+  assert.match(await legend.textContent(),/MAP threshold \([−-]/);
+  assert.match(await legend.textContent(),/left tail/);assert.match(await legend.textContent(),/right tail/);
+  await goto(topic('soft-decisions'));assert.match(await legend.textContent(),/Channel LLR = posterior log odds/);
+  await page.locator('#device-prior').focus();await page.keyboard.press('ArrowRight');
+  assert.match(await legend.textContent(),/Posterior log odds/);
+  await goto(topic('dvbs2-chain'));const stats=page.locator('figure').nth(1).locator('.stat strong');
+  assert.deepEqual(await stats.allTextContents(),['9.6 Mbit/s','9.346 Mbit/s','6.97 Mbit/s']);
+  await page.locator('#device-pilots').selectOption('0');
+  const newRates=(await stats.allTextContents()).map(parseFloat);
+  assert.equal(newRates[0],9.6);assert.ok(newRates[1]>9.346 && newRates[2]>6.97);
+  await goto(topic('ldpc-constraints'),'?c_mask=63');
+  assert.match(await page.locator('figure').nth(1).locator('.figure').textContent(),/Transmit 101010; receive 010101/);
+  return{topics:5};
+ });
  await check('Each live figure enlarges its current state and restores keyboard focus',async()=>{
   for(const t of topics.filter(t=>t.simulation)){await goto(t);const defs=await page.evaluate(id=>CourseFigureModels.models.find(x=>x.id===id).controls,t.simulation),c=defs[0],input=page.locator('#device-'+c.id),value=c.options?c.options.find(o=>o.value!==c.value).value:c.value===c.max?c.min:c.max;
    if(c.options)await input.selectOption(String(value));else await input.evaluate((e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));},value);

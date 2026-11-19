@@ -103,7 +103,7 @@ def course_lab(source):
     js = replace_once(js, 'style="fill:${color}"', 'fill="${color}"')
     js = replace_once(js,
                       '<i style="border-color:${q.color||C.a};${q.dash?\'border-top-style:dashed\':\'\'}"></i>',
-                      '<svg class="legend-key" viewBox="0 0 22 6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="${q.color||C.a}" stroke-width="3" stroke-dasharray="${q.dash?\'5 3\':\'none\'}"/></svg>')
+                      '<svg class="legend-key" viewBox="0 0 22 6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="${q.color||C.a}" stroke-width="3" stroke-dasharray="${typeof q.dash===\'string\'?esc(q.dash):q.dash?\'5 3\':\'none\'}"/></svg>')
     # Internal authoring paths do not help a visitor identify course sources.
     js = replace_once(js, ".map(s=>`<li>${esc(s)}</li>`)",
                       ".map(s=>`<li>${esc(sourceLabel(s))}</li>`)")

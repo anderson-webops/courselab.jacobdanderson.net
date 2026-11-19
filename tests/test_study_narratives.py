@@ -5,6 +5,7 @@ import json
 import re
 import unittest
 from urllib.parse import urljoin, urlsplit, unquote
+from scripts.catalog import relative
 
 ROOT=Path(__file__).resolve().parents[1]
 
@@ -19,7 +20,7 @@ class Elements(HTMLParser):
 class StudyNarrativeTests(unittest.TestCase):
     def test_both_exam_readings_preserve_all_scientific_figures(self):
         books=json.loads((ROOT/'src/study-narratives.json').read_text())
-        self.assertEqual({b['id']:b['figureCount'] for b in books},{'exam-1':54,'exam-2':137})
+        self.assertEqual({b['id']:b['figureCount'] for b in books},{'exam-1':54,'exam-2':138})
         for book in books:
             for chapter in book['chapters']:
                 with self.subTest(chapter=chapter['route']):
@@ -54,6 +55,40 @@ class StudyNarrativeTests(unittest.TestCase):
                 text=file.read_text()
                 self.assertIn('Read the connected explanation',text)
                 self.assertRegex(text,r'href="[^"]*study/exam-[12]/')
+
+    def test_topic_readings_open_the_relevant_figure_inside_the_right_chapter(self):
+        corrected={'array-normalization':'link','soft-decisions':'coding','amplifier-backoff':'advanced-digital'}
+        for file in (ROOT/'dist/courses/gt/ece6390/topics').glob('*/index.html'):
+            with self.subTest(topic=file.parent.name):
+                links=[a['href'] for tag,a in Elements(file.read_text()).items
+                       if tag=='a' and '/study/exam-' in a.get('href','')]
+                self.assertTrue(links)
+                for link in links:
+                    target=urlsplit(urljoin(file.as_uri(),link))
+                    self.assertTrue(target.fragment.startswith('fig:'))
+                    page=Path(unquote(target.path))/'index.html'
+                    self.assertIn(('figure',{'class':'narrative-figure','id':target.fragment}),Elements(page.read_text()).items)
+                    if file.parent.name in corrected:
+                        self.assertEqual(page.parent.name,corrected[file.parent.name])
+
+    def test_reading_fragments_keep_directory_routes_and_the_requested_hostname(self):
+        file='courses/gt/ece6390/topics/array-normalization/index.html'
+        target='/courses/gt/ece6390/study/exam-2/link/?from=topic#fig:arr-normal'
+        link=relative(file,target)
+        self.assertEqual(link,'../../study/exam-2/link/?from=topic#fig:arr-normal')
+        for host in ('courselab.jacobdanderson.net','learn.jacobdanderson.net'):
+            self.assertEqual(urljoin('https://'+host+'/'+file,link),'https://'+host+target)
+
+    def test_referenced_equations_display_their_source_numbers(self):
+        books=json.loads((ROOT/'src/study-narratives.json').read_text())
+        numbered=0
+        for book in books:
+            for chapter in book['chapters']:
+                for display in re.finditer(r'<span id="(eq:[^"]+)"></span>\s*<span class="narrative-equation">(.*?<span class="narrative-equation-number">[^<]+</span>)</span>',chapter['html'],re.S):
+                    with self.subTest(equation=display[1]):
+                        self.assertRegex(display[2],r'<span class="narrative-equation-number">\([0-9]+\)</span>')
+                        numbered+=1
+        self.assertGreaterEqual(numbered,35)
 
     def test_readings_are_discoverable_without_changing_primary_navigation(self):
         overview=(ROOT/'dist/courses/gt/ece6390/index.html').read_text()

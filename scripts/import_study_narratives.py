@@ -160,7 +160,12 @@ def import_book(folder, exam):
             anchors = ''.join('<span id="'+escape(x)+'"></span>' for x in targets)
             math = '<math'+attrs+'>'+content+'</math>'
             if 'display="block"' in attrs:
-                math = '<div class="narrative-equation">'+math+'</div>'
+                referenced = list(dict.fromkeys(numbers[label] for label in targets if label in numbers))
+                number = ''
+                if referenced:
+                    assert len(referenced) == 1, 'Distinct equation numbers in one display: '+str(targets)
+                    number = '<span class="narrative-equation-number">('+escape(plain(referenced[0]))+')</span>'
+                math = '<span class="narrative-equation"><span class="narrative-equation-math">'+math+'</span>'+number+'</span>'
             return anchors + math
         rendered = re.sub(r'<math([^>]*)>(.*?)</math>', equation, rendered, flags=re.S)
         def figure(match):

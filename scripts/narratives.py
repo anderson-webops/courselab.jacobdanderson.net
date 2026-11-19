@@ -17,16 +17,58 @@ READING = {
  },
  'exam-2': {
   'apertures': ['aperture-phasors','circular-aperture','dish-gain','reflector-screens'],
-  'arrays': ['array-multiplication','array-path-phase','planar-array','array-normalization','beamforming-frontends'],
-  'link': ['array-footprint'],
+  'arrays': ['array-multiplication','array-path-phase','planar-array','beamforming-frontends'],
+  'link': ['array-footprint','array-normalization'],
   'digital': ['sampling-alias','quantization-pcm','source-compression'],
   'pulses': ['nyquist-pulse','rectangular-pulse-spectrum','matched-filter'],
-  'modulation': ['iq-constellation','rate-bandwidth','adaptive-modcod','amplifier-backoff','ofdm-multipath','modem-chain'],
-  'advanced-digital': ['broadcast-constellations','dvbs2-chain'],
-  'detection': ['energy-per-bit','bpsk-detection','qam-error-probability','soft-decisions'],
-  'coding': ['product-parity','block-code-distance','convolutional-code','iterative-decoding','ldpc-constraints'],
+  'modulation': ['iq-constellation','rate-bandwidth','adaptive-modcod','ofdm-multipath','modem-chain'],
+  'advanced-digital': ['broadcast-constellations','dvbs2-chain','amplifier-backoff'],
+  'detection': ['energy-per-bit','bpsk-detection','qam-error-probability'],
+  'coding': ['product-parity','block-code-distance','convolutional-code','iterative-decoding','ldpc-constraints','soft-decisions'],
   'navigation': ['gnss-orbits','doppler-pass','pseudorange-clock','gnss-geometry','pn-correlation','lfsr-code','processing-gain','gnss-error-budget','navigation-frames','near-far','dual-frequency','gnss-acquisition','gnss-dop-3d'],
  },
+}
+# Stable figure labels lead a learner straight to the matching explanation.
+READING_FIGURES = {
+ 'kepler-ellipse':'fig:e1-orbit-ellipse','geo-frames':'fig:e1-orbit-groundtracks',
+ 'solar-pressure-components':'fig:e1-orbit-srp','numerical-orbits':'fig:e1-orbit-numerical',
+ 'hohmann-transfer':'fig:e1-orbit-transfer','orbit-types':'fig:e1-orbit-families',
+ 'look-triangle':'fig:e1-look-triangle','azimuth-components':'fig:e1-look-bearing',
+ 'eclipse-battery':'fig:e1-systems-eclipse','solar-array':'fig:e1-systems-solar',
+ 'rocket-mass':'fig:e1-systems-rocket','electric-propulsion':'fig:e1-systems-electric',
+ 'thermal-balance':'fig:e1-systems-thermal','radiation-redundancy':'fig:e1-systems-radiation',
+ 'divergence-curl':'fig:e1-wave-maxwell','standing-wave':'fig:e1-wave-doublecurl',
+ 'plane-wave':'fig:e1-wave-plane','polarization':'fig:e1-wave-polarization',
+ 'phasor-interference':'fig:e1-wave-phasor','double-curl':'fig:e1-wave-doublecurl',
+ 'displacement-current':'fig:e1-wave-maxwell','helmholtz-curvature':'fig:e1-wave-doublecurl',
+ 'dipole-pattern':'fig:e1-ant-pattern3d','gain-references':'fig:e1-ant-losses',
+ 'solid-angle':'fig:e1-ant-directivity','db-distance':'fig:e1-rf-rangefrequency',
+ 'link-budget':'fig:e1-rf-budget','receiver-noise':'fig:e1-rf-noise',
+ 'doppler-shift':'fig:e1-rf-doppler','rain-path':'fig:e1-rf-rain',
+ 'bandwidth-noise':'fig:e1-rf-noise','free-space-flux':'fig:e1-rf-link',
+ 'aperture-phasors':'fig:aperturepaths','circular-aperture':'fig:disk',
+ 'dish-gain':'fig:dish','reflector-screens':'fig:dish-spillover',
+ 'array-multiplication':'fig:arr-element','array-path-phase':'fig:arr-steering',
+ 'planar-array':'fig:arr-planar','beamforming-frontends':'fig:arr-feed-controls',
+ 'array-footprint':'fig:arr-workflow','array-normalization':'fig:arr-normal',
+ 'sampling-alias':'fig:rep-folding','quantization-pcm':'fig:rep-quantizer',
+ 'source-compression':'fig:rep-compression','nyquist-pulse':'fig:rep-rolloff',
+ 'rectangular-pulse-spectrum':'fig:rep-rectangular','matched-filter':'fig:rep-matched',
+ 'iq-constellation':'fig:mod-iq','rate-bandwidth':'fig:mod-rates',
+ 'adaptive-modcod':'fig:mod-adaptation','ofdm-multipath':'fig:mod-ofdm',
+ 'modem-chain':'fig:mod-chain','broadcast-constellations':'fig:vid789-constellations',
+ 'dvbs2-chain':'fig:vid789-dvbs2-chain','amplifier-backoff':'fig:vid789-amplifier',
+ 'energy-per-bit':'fig:vid789-ber-energy','bpsk-detection':'fig:vid789-bpsk-tail',
+ 'qam-error-probability':'fig:vid789-qam-errors','product-parity':'fig:vid789-parity-product',
+ 'block-code-distance':'fig:vid789-codebook','convolutional-code':'fig:vid789-convolutional',
+ 'iterative-decoding':'fig:vid789-iterative-code','ldpc-constraints':'fig:vid789-ldpc-graph',
+ 'soft-decisions':'fig:vid789-soft-decisions','gnss-orbits':'fig:nav-purpose',
+ 'doppler-pass':'fig:nav-doppler','pseudorange-clock':'fig:nav-clock',
+ 'gnss-geometry':'fig:nav-circles','pn-correlation':'fig:nav-correlation',
+ 'lfsr-code':'fig:nav-lfsr','processing-gain':'fig:nav-processing-bandwidth',
+ 'gnss-error-budget':'fig:nav-error-budget','navigation-frames':'fig:nav-ecef',
+ 'near-far':'fig:nav-near-far','dual-frequency':'fig:nav-ionosphere',
+ 'gnss-acquisition':'fig:audit-nav-acquisition','gnss-dop-3d':'fig:audit-nav-sky-dop',
 }
 QUESTIONS = {
  'orbits': ('Two satellites have the same semi-major axis but different eccentricities. Which properties must match, and which can differ?', 'Separate the period and specific energy from the instantaneous speed and endpoint radii.', 'In the same two-body central field, period and specific orbital energy depend on semi-major axis and match. Perigee/apogee radii, angular momentum, instantaneous speeds and time spent at a given radius can differ.'),
@@ -75,7 +117,10 @@ def build_study_pages(root, csp, courses, page, relative, practice, index):
                 assert ident in topic_lookup, 'Reading links missing topic '+ident
                 topic=topic_lookup[ident]
                 experiments.append('<li><a href="'+relative(file,topic['route'])+'">'+html.escape(topic['title'])+'</a></li>')
-                related.setdefault(ident,[]).append((book['title']+': '+chapter['title'],chapter['route']))
+                figure = READING_FIGURES[ident]
+                fragment = re.search(r'<figure class="narrative-figure" id="'+re.escape(figure)+r'">.*?<figcaption><strong>Fig\. ([^.]+)\.</strong>', chapter['html'], re.S)
+                assert fragment, 'Reading figure absent from chapter: '+ident+' / '+figure
+                related.setdefault(ident,[]).append((book['title']+': '+chapter['title']+', Fig. '+fragment[1],chapter['route']+'#'+figure))
             if experiments:
                 content+='<section class="study-experiments"><h2>Explore the figures</h2><ul class="study-links">'+''.join(experiments)+'</ul></section>'
             question=QUESTIONS.get(chapter['slug'],QUESTIONS['radio'])

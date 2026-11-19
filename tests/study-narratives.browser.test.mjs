@@ -47,6 +47,31 @@ try{
   assert.ok(Number(await dialog.locator('img').getAttribute('width'))>before);
   await page.keyboard.press('Escape');assert.equal(await dialog.isVisible(),false);await assert.doesNotReject(()=>launch.evaluate(button=>{if(document.activeElement!==button)throw Error('Focus not restored');}));
  });
+ await check('Lesson readings open the matching figure and retain their section on refresh',async()=>{
+  for(const [topic,chapter,label] of [['array-normalization','link','fig:arr-normal'],['soft-decisions','coding','fig:vid789-soft-decisions'],['amplifier-backoff','advanced-digital','fig:vid789-amplifier']]){
+   await page.goto(new URL('/courses/gt/ece6390/topics/'+topic+'/',base).href);
+   const link=page.locator('.topic-reading a[href*="study/"]');
+   await link.click();
+   assert.ok(page.url().includes('/'+chapter+'/#'+label));
+   await page.waitForFunction(id=>{const target=document.getElementById(id),rect=target?.getBoundingClientRect();return rect&&rect.top>=0&&rect.top<innerHeight;},label);
+   await page.reload();
+   await page.waitForFunction(id=>{const target=document.getElementById(id),rect=target?.getBoundingClientRect();return rect&&rect.top>=0&&rect.top<innerHeight;},label);
+  }
+ });
+ await check('Referenced equations display their number and preserve native mathematics on narrow screens',async()=>{
+  for(const width of [320,1440]){
+   await page.setViewportSize({width,height:1000});
+   await page.goto(new URL('/courses/gt/ece6390/study/exam-2/link/#eq:arr-look',base).href);
+   const equation=page.locator('.narrative-equation').filter({has:page.locator('.narrative-equation-number')}).first();
+   await equation.scrollIntoViewIfNeeded();
+   assert.match(await equation.locator('.narrative-equation-number').textContent(),/^\([0-9]+\)$/);
+   assert.equal(await equation.locator('math').count(),1);
+   assert.ok(await equation.locator('math').evaluate(math=>math.getBoundingClientRect().height>0));
+   const number=await equation.locator('.narrative-equation-number').boundingBox();
+   assert.ok(number.x>=0&&number.x+number.width<=width,'Referenced equation number stays in view');
+   assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
+  }
+ });
  await check('Course overview and practice connect readings with existing simulations',async()=>{
   await page.goto(new URL('/courses/gt/ece6390/',base).href);
   assert.equal(await page.locator('.study-cards a').count(),2);

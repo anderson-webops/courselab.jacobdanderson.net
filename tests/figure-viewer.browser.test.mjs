@@ -28,6 +28,44 @@ try{
   await page.keyboard.press('Escape');assert.equal(await dialog.isVisible(),false);assert.equal(await opener.evaluate(e=>document.activeElement===e),true);
   violations.push(...await page.evaluate(()=>window.viewerCsp||[]));
  }
+ await page.setViewportSize({width:320,height:780});
+ await page.goto(new URL('/courses/gt/ece6390/topics/bpsk-detection/?c_prior=0.8',base).href);
+ const figures=page.locator('main figure.topic-demonstration');
+ const live=figures.nth(1),key=live.locator('.figure > svg + .legend');
+ const signature=el=>[...el.querySelectorAll('span')].map(item=>({
+   text:item.textContent,stroke:getComputedStyle(item.querySelector('line')).stroke,
+   dash:item.querySelector('line').getAttribute('stroke-dasharray')
+ }));
+ const expected=await key.evaluate(signature);
+ assert.equal(expected.length,4);
+ const curveStyles=await live.locator('.figure > svg > path').evaluateAll(paths=>paths.map(path=>({
+   stroke:getComputedStyle(path).stroke,dash:path.getAttribute('stroke-dasharray')||'none'
+ })));
+ assert.deepEqual(expected.map(({stroke,dash})=>({stroke,dash})),curveStyles);
+ const action=live.getByRole('button',{name:'Enlarge figure',exact:true});
+ await action.focus();await page.keyboard.press('Enter');
+ const dialog=page.getByRole('dialog');
+ assert.deepEqual(await dialog.locator('.fv-legend .legend').evaluate(signature),expected);
+ assert.equal(await dialog.locator('.fv-stage > svg').count(),1);
+ assert.ok((await dialog.boundingBox()).width<=320);
+ await page.keyboard.press('Escape');assert.ok(await action.evaluate(e=>e===document.activeElement));
+ await figures.first().getByRole('button',{name:'Enlarge figure',exact:true}).click();
+ assert.equal(await dialog.locator('.fv-legend').isVisible(),false,'a reference figure receives no unrelated key');
+ await page.keyboard.press('Escape');
+ // Several diagrams share one figure container. Only a diagram with an adjacent key inherits it.
+ await page.goto(new URL('/courses/gt/ece6390/topics/array-multiplication/',base).href);
+ const diagrams=page.locator('#figure > svg:not(.legend-key)');
+ const buttons=page.locator('#figure + .figure-enlarge-actions > button');
+ await buttons.first().waitFor();let withKey=0,withoutKey=0;
+ for(let i=0;i<await diagrams.count();i++){
+   const next=diagrams.nth(i).locator('xpath=following-sibling::*[1][contains(concat(" ",normalize-space(@class)," "), " legend ")]');
+   const hasKey=await next.count()>0;
+   await buttons.nth(i).click();assert.equal(await dialog.locator('.fv-legend').isVisible(),hasKey);
+   if(hasKey){assert.deepEqual(await dialog.locator('.fv-legend .legend').evaluate(signature),await next.evaluate(signature));withKey++;}else withoutKey++;
+   await page.keyboard.press('Escape');
+ }
+ assert.ok(withKey>0 && withoutKey>0);
+ violations.push(...await page.evaluate(()=>window.viewerCsp||[]));
  assert.deepEqual(errors,[]);assert.deepEqual(violations,[]);
  await writeFile(path.join(out,'figure-viewer-report.json'),JSON.stringify({status:'passed',themes:2,widths:[320,1440],naturalFontMinimum:18,zoomPanKeyboardAndFocus:true,errors,violations},null,2));
  console.log('PASS reference figure enlargement preserves readable labels, vector zoom, pan, unique IDs, keyboard focus and CSP across themes and viewport sizes');

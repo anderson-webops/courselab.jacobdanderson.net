@@ -21,12 +21,11 @@ def route(file):
 
 def relative(file, target):
     folder = str(PurePosixPath(file).parent)
-    out = posixpath.relpath(target.lstrip('/').split('#')[0] or '.', folder)
-    if target.endswith('/') and not out.endswith('/'):
+    parsed = urlsplit(target)
+    out = posixpath.relpath(parsed.path.lstrip('/') or '.', folder)
+    if parsed.path.endswith('/') and not out.endswith('/'):
         out += '/'
-    if '#' in target:
-        out += '#' + target.split('#',1)[1]
-    return out
+    return urlunsplit(('', '', out, parsed.query, parsed.fragment))
 
 
 def header(file, courses, current=None):
