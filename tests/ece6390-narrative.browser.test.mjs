@@ -17,14 +17,14 @@ async function check(name,fn){try{const data=await fn();results.push({name,statu
 async function goto(t,search=''){const r=await page.goto(route(t)+search);assert.ok(r.ok(),t.id);await page.waitForSelector('main svg');if(t.simulation)await page.waitForSelector('.additional-controls');}
 async function outside(){return page.locator('main svg').evaluateAll(svgs=>svgs.flatMap(svg=>{const v=svg.viewBox.baseVal;return [...svg.querySelectorAll('text')].flatMap(e=>{const b=e.getBBox(),m=svg.getCTM().inverse().multiply(e.getCTM()),pts=[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].map(([x,y])=>new DOMPoint(x,y).matrixTransform(m));return pts.some(p=>p.x<-.75||p.y<-.75||p.x>v.width+.75||p.y>v.height+.75)?[{text:e.textContent,box:{x:b.x,y:b.y,width:b.width,height:b.height},viewbox:{w:v.width,h:v.height}}]:[];});}));}
 try{
- await check('Eleven topic pages have original figures, complete explanations, semantic captions and attempt-first practice',async()=>{
+ await check('All twenty narrative topic pages have original figures, complete explanations, semantic captions and attempt-first practice',async()=>{
   for(const t of topics){await goto(t);assert.equal(await page.locator('h1').textContent(),t.title);assert.equal(await page.locator('[data-practice]').count(),2);assert.equal(await page.locator('.practice-answer:visible').count(),0);assert.equal(await page.locator('[style]').count(),0);
    const q=page.locator('[data-practice]').first();assert.ok(await q.locator('[data-compare]').isDisabled());await q.locator('[data-hint]').click();assert.ok(await q.locator('.practice-hint').isVisible());assert.ok(await q.locator('[data-compare]').isDisabled());await q.locator('textarea').fill('My first reasoning attempt.');await q.locator('[data-compare]').click();assert.ok(await q.locator('.practice-answer').isVisible());
    if(t.id==='soft-decisions'){const overlap=await page.locator('figure').first().locator('svg').evaluate(svg=>{const boxes=[...svg.querySelectorAll('text')].filter(e=>/^bit [01]$/.test(e.textContent)).map(e=>e.getBBox());return boxes.some((a,i)=>boxes.slice(i+1).some(b=>Math.min(a.x+a.width,b.x+b.width)>Math.max(a.x,b.x)&&Math.min(a.y+a.height,b.y+b.height)>Math.max(a.y,b.y)));});assert.equal(overlap,false,'soft reference labels remain separated');}
    if(t.simulation){const caption=await page.locator('figure').nth(1).locator('figcaption').textContent();assert.ok(!caption.includes('ece-'),caption);assert.ok(await page.locator('.additional-controls label').count());}
-  }return{pages:topics.length,questions:22};
+  }return{pages:topics.length,questions:topics.length*2};
  });
- await check('All ten model controls change, preserve URL state, refresh, reset and support keyboard adjustment',async()=>{
+ await check('All nineteen model controls change, preserve URL state, refresh, reset and support keyboard adjustment',async()=>{
   let controls=0,options=0;
   for(const t of topics.filter(x=>x.simulation)){
    await goto(t);const defs=await page.evaluate(id=>CourseFigureModels.models.find(x=>x.id===id).controls,t.simulation);
@@ -33,7 +33,7 @@ try{
     assert.notEqual(await page.locator('figure').nth(1).innerHTML(),before,t.id+':'+c.id);assert.equal(new URL(page.url()).searchParams.get('c_'+c.id),String(target));await page.reload();await page.waitForSelector(selector);assert.equal(await page.locator(selector).inputValue(),String(target),t.id+':replay:'+c.id);
     await page.getByRole('button',{name:'Reset example',exact:true}).click();assert.equal(await page.locator(selector).inputValue(),String(c.value));assert.equal(new URL(page.url()).searchParams.has('c_'+c.id),false);await page.locator(selector).focus();const keyBefore=await page.locator(selector).inputValue();if(c.options)await page.keyboard.type(c.options[0].label[0]);else await page.keyboard.press(c.value===c.max?'ArrowLeft':'ArrowRight');assert.notEqual(await page.locator(selector).inputValue(),keyBefore,t.id+':keyboard:'+c.id);await page.getByRole('button',{name:'Reset example',exact:true}).click();controls++;
    }
-  }return{models:10,controls,nativeSelects:options};
+  }return{models:topics.filter(t=>t.simulation).length,controls,nativeSelects:options};
  });
  await check('Invalid query values return to defaults and discrete options reject unsupported values',async()=>{
   let cases=0;
@@ -46,7 +46,7 @@ try{
  });
  await check('All new model numerical invariants pass in the actual browser',async()=>{
   await goto(topics.find(t=>t.simulation));const checks=await page.evaluate(()=>ECE6390Teaching.models().flatMap(m=>m.checks().map(c=>({model:m.id,...c}))));
-  assert.equal(checks.length,31);assert.deepEqual(checks.filter(x=>!x.pass),[]);return{checks:checks.length};
+  assert.equal(checks.length,65);assert.deepEqual(checks.filter(x=>!x.pass),[]);return{checks:checks.length};
  });
  await check('Detection and coding figures expose the decisions and rates they compare',async()=>{
   const topic=id=>topics.find(t=>t.id===id);
@@ -79,7 +79,7 @@ try{
    const figure=page.locator('figure').nth(1),before=await figure.locator('.figure > svg').textContent(),button=figure.getByRole('button',{name:'Enlarge figure',exact:true});
    assert.equal(await button.count(),1,t.id);await button.click();const dialog=page.locator('.figure-viewer');assert.ok(await dialog.isVisible());assert.equal(await dialog.locator('.fv-stage > svg').textContent(),before,t.id+':latest-state');await dialog.getByRole('button',{name:'Fit the complete figure'}).click();await page.keyboard.press('Escape');assert.equal(await dialog.isVisible(),false);assert.ok(await button.evaluate(e=>document.activeElement===e),t.id+':focus');
    await page.keyboard.press('Enter');assert.ok(await dialog.isVisible());await dialog.getByRole('button',{name:'Close',exact:true}).click();
-  }return{models:10};
+  }return{models:topics.filter(t=>t.simulation).length};
  });
  await check('Multi-diagram figures enlarge each current diagram without legend actions and restore focus',async()=>{
   await page.goto(base+'/courses/gt/ece6390/topics/look-triangle/');await page.waitForSelector('#figure > svg');
@@ -108,7 +108,7 @@ try{
     csp.push(...await page.evaluate(()=>window.violations||[]));
    }
   }
-  assert.deepEqual(layout,[]);assert.deepEqual(bounds,[]);assert.deepEqual(fitFailures,[]);return{pages:11,widths:[320,390,1440],themes:['light','dark']};
+  assert.deepEqual(layout,[]);assert.deepEqual(bounds,[]);assert.deepEqual(fitFailures,[]);return{pages:topics.length,widths:[320,390,1440],themes:['light','dark']};
  });
  await check('Every model default, numeric endpoint and discrete option keeps SVG labels inside its viewBox',async()=>{
   await page.setViewportSize({width:1440,height:1050});await page.emulateMedia({colorScheme:'light'});let states=0;const failures=[];

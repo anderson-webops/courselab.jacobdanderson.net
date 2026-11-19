@@ -6,10 +6,10 @@ import json
 import re
 import shutil
 try:
-    from scripts.topics import build_topics, build_project
+    from scripts.topics import build_topics, build_project, TITLE_OVERRIDES
     from scripts.catalog import build_catalog
 except ModuleNotFoundError:
-    from topics import build_topics, build_project
+    from topics import build_topics, build_project, TITLE_OVERRIDES
     from catalog import build_catalog
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -106,7 +106,7 @@ def course_lab(source):
                       '<svg class="legend-key" viewBox="0 0 22 6" aria-hidden="true"><line x1="0" y1="3" x2="22" y2="3" stroke="${q.color||C.a}" stroke-width="3" stroke-dasharray="${typeof q.dash===\'string\'?esc(q.dash):q.dash?\'5 3\':\'none\'}"/></svg>')
     # Internal authoring paths do not help a visitor identify course sources.
     js = replace_once(js, ".map(s=>`<li>${esc(s)}</li>`)",
-                      ".map(s=>`<li>${esc(sourceLabel(s))}</li>`)")
+                      ".map(sourceLabel).filter((s,i,a)=>a.indexOf(s)===i).map(s=>`<li>${esc(s)}</li>`)")
     js = replace_once(js, "const groups=[", """function sourceLabel(source) {
   if (source.includes('Yn-MEMaiA0Y')) return 'WAV01: Maxwell’s equations';
   if (source.includes('R3KHaRWzpFM')) return 'WAV02: Helmholtz wave equation';
@@ -121,6 +121,9 @@ def course_lab(source):
   return 'Supplied course notes and guided reading';
 }
 const groups=[""")
+    for ident, title in TITLE_OVERRIDES.items():
+        js, count = re.subn(r"(id:'" + ident + r"',group:'[A-Za-z]+',title:')[^']*'", lambda m: m.group(1) + title + "'", js)
+        assert count == 1, ident
     # Spatial surfaces sample the same canonical antenna fields as their 2D cuts.
     js = replace_once(js, '\n})();\n\nfunction sourceLabel(source) {', '''
 modules.find(m=>m.id==='dipole-pattern').spatialField=(theta,v)=>dipole(theta,v.kind);

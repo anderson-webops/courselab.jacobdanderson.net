@@ -111,12 +111,14 @@ def build_catalog(root, csp):
         assert replaced==1,(name,replaced)
         text = text.replace('| Orbital HW','| Course Lab').replace('ECE 6390 · Course Lab','All simulations')
         if name=='lab/index.html':
-            linked=[topic for topic in extra_topics if topic['course']=='gt/ece6390' and topic.get('simulation')]
-            groups_of_models=[('Detection and digital transmission',linked[:5]+[topic for topic in linked[5:] if topic['id']=='soft-decisions']),('Error correction',[topic for topic in linked[5:] if topic['id']!='soft-decisions'])]
+            linked={topic['id']:topic for topic in extra_topics if topic['course']=='gt/ece6390' and topic.get('simulation')}
+            # Library sections reuse the course's topic groups, so new adjustable lessons land beside their subject.
+            groups_of_models=[(definition['title'],[linked[i] for i in definition['ids'] if i in linked]) for definition in groups.get('gt/ece6390',[])]
+            assert sum(len(items) for _,items in groups_of_models)==len(linked),'Every adjustable ECE 6390 lesson needs one topic group'
             sections=[]
             for heading,items in groups_of_models:
                 if items:
-                    sections.append('<section class="library-extensions"><h2>'+heading+'</h2><ul>'+''.join('<li><a href="'+relative(new_file,'/'+ECE+'/topics/'+topic['id']+'/')+'">'+html.escape(topic['title'])+'</a></li>' for topic in items)+'</ul></section>')
+                    sections.append('<section class="library-extensions"><h2>'+html.escape(heading)+'</h2><ul>'+''.join('<li><a href="'+relative(new_file,'/'+ECE+'/topics/'+topic['id']+'/')+'">'+html.escape(topic['title'])+'</a></li>' for topic in items)+'</ul></section>')
             text=text.replace('</main>',''.join(sections)+'</main>',1)
         if not name.startswith('learn/'):
             breadcrumb=f'<p class="topic-breadcrumb"><a href="{relative(new_file,"/"+ECE+"/")}">ECE 6390</a></p>'

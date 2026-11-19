@@ -44,11 +44,11 @@ The 26 topic lessons follow cryptography, link/IP protection, routing, transport
 
 ## ECE 6390 study narratives
 
-The course overview links Exam 1 and Exam 2 readings under `/courses/gt/ece6390/study/exam-1/` and `/courses/gt/ece6390/study/exam-2/`. Each chapter has a stable URL, figure references, native MathML equations, related simulations and attempt-first practice. All 78 topic pages link directly to the relevant figure in their longer connected explanation. `READING_FIGURES` in `scripts/narratives.py` maps each lesson to its stable figure label. Referenced equations retain their printed numbers, which stay visible while a wide expression scrolls.
+The course overview links Exam 1 and Exam 2 readings under `/courses/gt/ece6390/study/exam-1/` and `/courses/gt/ece6390/study/exam-2/`. Each chapter has a stable URL, figure references, native MathML equations, related simulations and attempt-first practice. All 87 topic pages link directly to the relevant figure in their longer connected explanation. `READING_FIGURES` in `scripts/narratives.py` maps each lesson to its stable figure label. Referenced equations retain their printed numbers, which stay visible while a wide expression scrolls.
 
 `src/study-narratives.json` and `src/narrative-figures/` contain original reviewed learning material. `scripts/narratives.py` publishes it through the shared course shell. The optional authoring tool `scripts/import_study_narratives.py` imports reviewed LaTeX and scientific figure PDFs using Pandoc and Poppler; these tools are not required for an ordinary site build. Raw lectures, recordings, assignments, submissions and answer documents remain outside this repository. Source-specific figure numbers are retained within each exam reading.
 
-The detection/coding additions are in `src/course-topics/ece6390-narrative.json` and `src/ece6390-models.js`. Discrete profile controls use named native selections, URL state validates supported choices, and enlarged figures capture the current simulation state. Existing progress keys are preserved.
+The detection/coding additions and the timing, synchronization and link-geometry lessons are in `src/course-topics/ece6390-narrative.json`; their adjustable models are in `src/ece6390-models.js` and `src/ece6390-timing-geometry-models.js`. Library sections on `/lab/` follow the course topic groups in `src/topic-groups.json`. [Coverage and remaining depth](ECE6390-COVERAGE.md) maps course material to lessons. Discrete profile controls use named native selections, URL state validates supported choices, and enlarged figures capture the current simulation state. Existing progress keys are preserved.
 
 ## State and sharing
 

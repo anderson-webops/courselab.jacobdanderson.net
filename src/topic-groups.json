@@ -72,6 +72,7 @@
         "aperture-phasors",
         "circular-aperture",
         "dish-gain",
+        "dish-illumination",
         "reflector-screens"
       ]
     },
@@ -80,8 +81,10 @@
       "ids": [
         "array-multiplication",
         "array-path-phase",
+        "grating-lobes",
         "planar-array",
         "array-footprint",
+        "satellite-scan-angle",
         "beamforming-frontends"
       ],
       "links": [
@@ -109,11 +112,13 @@
       ]
     },
     {
-      "title": "Pulses, channels and detection",
+      "title": "Pulses, channels and timing",
       "ids": [
         "nyquist-pulse",
         "rectangular-pulse-spectrum",
+        "eye-diagram",
         "matched-filter",
+        "packet-sync",
         "ofdm-multipath"
       ]
     },
@@ -121,6 +126,7 @@
       "title": "Modulation and satellite broadcasting",
       "ids": [
         "iq-constellation",
+        "carrier-offset",
         "broadcast-constellations",
         "rate-bandwidth",
         "modem-chain",
@@ -155,10 +161,12 @@
         "gnss-orbits",
         "doppler-pass",
         "pseudorange-clock",
+        "tdoa-hyperbola",
         "navigation-frames",
         "gnss-geometry",
         "gnss-dop-3d",
-        "gnss-error-budget"
+        "gnss-error-budget",
+        "differential-correction"
       ]
     },
     {
@@ -169,6 +177,7 @@
         "processing-gain",
         "near-far",
         "gnss-acquisition",
+        "code-tracking",
         "dual-frequency"
       ]
     }

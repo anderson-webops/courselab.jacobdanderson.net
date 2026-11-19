@@ -49,7 +49,7 @@ class StudyNarrativeTests(unittest.TestCase):
 
     def test_every_ece6390_topic_connects_to_its_longer_explanation(self):
         topics=list((ROOT/'dist/courses/gt/ece6390/topics').glob('*/index.html'))
-        self.assertEqual(len(topics),78)
+        self.assertEqual(len(topics),87)
         for file in topics:
             with self.subTest(topic=file.parent.name):
                 text=file.read_text()

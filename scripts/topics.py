@@ -9,6 +9,10 @@ GROUPS = [('Orbits', 'Orbits and look angles'), ('Systems', 'Spacecraft systems'
           ('Navigation', 'Navigation'), ('Digital', 'Digital signals')]
 
 
+# Clearer visitor-facing titles for two preserved lab modules; ids, routes and saved state are unchanged.
+TITLE_OVERRIDES = {'array-multiplication': 'Pattern multiplication', 'reflector-screens': 'Reflector size and far field'}
+
+
 def inventory(root):
     result = []
     for name in ['course-lab.html', 'course-update.js', 'course-extensions.js', 'course-navigation.js', 'orbit-types.js']:
@@ -21,6 +25,7 @@ def inventory(root):
                 field = re.search(r'\b'+key+r"\s*:\s*'((?:\\.|[^'])*)'", block)
                 assert field, f'Missing {key}: {item["id"]}'
                 item[key] = field.group(1).replace("\\'", "'")
+            item['title'] = TITLE_OVERRIDES.get(item['id'], item['title'])
             result.append(item)
     assert len(result) == len({item['id'] for item in result})
     return result

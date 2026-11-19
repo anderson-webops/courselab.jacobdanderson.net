@@ -250,7 +250,7 @@
   {
     "id": "reflector-screens",
     "group": "Antennas",
-    "title": "Usable band",
+    "title": "Reflector size and far field",
     "heading": "Electrical size, surface precision, and range set different screens",
     "route": "/courses/gt/ece6390/topics/reflector-screens/",
     "questions": 1
@@ -258,7 +258,7 @@
   {
     "id": "array-multiplication",
     "group": "Antennas",
-    "title": "Arrays",
+    "title": "Pattern multiplication",
     "heading": "The array factor multiplies the element pattern",
     "route": "/courses/gt/ece6390/topics/array-multiplication/",
     "questions": 1
