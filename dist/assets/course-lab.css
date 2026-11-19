@@ -6,6 +6,11 @@
 @media print{header,.tabstrip,.controls,footer{display:none}.page{border:0;padding:0}.workspace{display:block}.figure svg{min-width:0}.question{break-inside:avoid}}
 
 .legend .legend-key { display:inline-block; width:22px; min-width:22px; height:6px; flex:none; }
+@media (any-pointer:fine) {
+  [data-camera-host] svg[data-spatial]:not(:has([data-spatial-hit])),
+  [data-camera-host] [data-spatial-hit] { cursor:grab; user-select:none; }
+  [data-camera-dragging] svg[data-spatial], [data-camera-dragging] [data-spatial-hit] { cursor:grabbing; }
+}
 .lab-site-header { max-width:1204px; margin:0 auto; padding:18px 0 0; }
 .lab-site-tabs { display:flex; flex-wrap:wrap; gap:5px; border-bottom:1px solid var(--line); }
 .lab-site-tabs a { display:inline-flex; align-items:center; min-height:44px; padding:9px 15px; color:var(--muted); background:var(--soft); border:1px solid var(--line); border-bottom:0; border-radius:8px 8px 0 0; text-decoration:none; }

@@ -22,7 +22,70 @@ modules.push({id:'planar-array',group:'Antennas',title:'Planar steering',heading
 modules.push({id:'array-footprint',group:'Antennas',title:'Beam to footprint',heading:'An angular beam becomes a patch of ground through geometry',intro:'Change aperture dimensions and slant distance to see a simplified ground footprint stretch.',sources:src('Array-factor, look-angle and free-space link-budget prerequisites'),controls:[ctl('nx','Elements along x',10,160,10,80),ctl('ny','Elements along y',10,160,10,100),ctl('range','Range to flat target plane',20000,45000,1000,36000,'km'),ctl('level','Coverage contour',-20,-1,1,-3,'dB from peak')],render(v,U){const p=(x,y)=>{const r=Math.hypot(v.range,x,y);return af(v.nx,Math.PI*x/r)*af(v.ny,Math.PI*y/r);};let s=heat(U,p,1500,['Cross-range x (km)','Along-range y (km)'],10**(v.level/10));let count=0,total=0;for(let iy=0;iy<80;iy++)for(let ix=0;ix<80;ix++){let x=-1500+3000*(ix+.5)/80,y=-1500+3000*(iy+.5)/80;total++;if(10*Math.log10(Math.max(p(x,y),1e-30))>=v.level)count++;}s+=U.text(505,220,'Flat plane normal to boresight')+U.text(505,310,'Angular width × distance sets size.');return{svg:U.svg(s,'Illustrative array power projected onto a flat ground plane'),stats:[['Relative contour',v.level+' dB'],['Area above contour in shown window',U.fmt(count/total*3000*3000,0)+' km²'],['Active elements',String(v.nx*v.ny)]],equation:'u = x/√(r₀²+x²+y²), &nbsp; v = y/√(r₀²+x²+y²); &nbsp; Pₙ(x,y) = |AF(u,v)/N|²',note:'This is a flat-plane geometric preview using relative power, not an absolute −80 dBm coverage claim. The outlined contour and sampled area cover only the shown ±1500 km window; coverage can extend beyond it. The area uses an illustrative 80×80 sample. The actual homework instead needs spherical georeferenced geometry, absolute gain normalization, slant-range loss and every supplied raster location.',question:'If range doubles and the angular pattern stays fixed, how should footprint width and area scale?'};},checks:()=>[{name:'Boresight on flat plane has normalized unit power',pass:af(80,0)*af(100,0)===1},{name:'Area scales as distance squared for a fixed angular contour',pass:(2*2)===4}]});
 
 function inv3(a){const m=a.map((r,i)=>r.concat([0,0,0].map((_,j)=>+(i===j))));for(let j=0;j<3;j++){let p=j;for(let k=j+1;k<3;k++)if(Math.abs(m[k][j])>Math.abs(m[p][j]))p=k;[m[p],m[j]]=[m[j],m[p]];let q=m[j][j];if(Math.abs(q)<1e-12)return null;for(let k=0;k<6;k++)m[j][k]/=q;for(let i=0;i<3;i++)if(i!==j){let q=m[i][j];for(let k=0;k<6;k++)m[i][k]-=q*m[j][k];}}return m.map(r=>r.slice(3));}
-modules.push({id:'gnss-orbits',group:'Navigation',title:'GPS orbit geometry',heading:'Inclined MEO planes spread satellites across the sky',intro:'Compare a simple six-plane constellation as Earth rotates beneath its orbiting satellites.',sources:src('October 29 GPS introduction, note page 6; GPS.gov space segment'),controls:[ctl('inclination','Inclination',0,90,1,55,'°'),ctl('latitude','Observer latitude',-80,80,2,34,'°'),ctl('time','Elapsed time',0,24,.25,0,'h')],animate:{id:'time',min:0,max:24,step:.08},render(v,U){const R=6378,r=26560,w=tau/86164.0905,n=tau/(86164.0905/2),t=v.time*3600,i=U.rad(v.inclination),la=U.rad(v.latitude),lo=U.rad(-84)+w*t,obs=[R*Math.cos(la)*Math.cos(lo),R*Math.cos(la)*Math.sin(lo),R*Math.sin(la)],dot=(a,b)=>a.reduce((s,x,j)=>s+x*b[j],0),az=-Math.atan(.3),el=.24,p=a=>[300+175*(Math.cos(az)*a[0]-Math.sin(az)*a[1])/r,220+175*(Math.sin(el)*(Math.sin(az)*a[0]+Math.cos(az)*a[1])-Math.cos(el)*a[2])/r];let s=U.circle(300,220,175*R/r,'var(--earth)',U.C.ink),visible=0;for(let plane=0;plane<6;plane++){const a=plane*tau/6,pos=q=>[r*(Math.cos(a)*Math.cos(q)-Math.sin(a)*Math.cos(i)*Math.sin(q)),r*(Math.sin(a)*Math.cos(q)+Math.cos(a)*Math.cos(i)*Math.sin(q)),r*Math.sin(i)*Math.sin(q)];s+=U.path(U.range(90,q=>p(pos(q*tau))),U.C.grid,1);for(let j=0;j<4;j++){const q=n*t+j*tau/4+plane*tau/24,ss=pos(q),ok=dot(ss.map((x,k)=>x-obs[k]),obs)>0;if(ok){visible++;s+=U.line(...p(obs),...p(ss),U.C.a,1,'3 4');}s+=U.circle(...p(ss),ok?4:2.5,ok?U.C.a:U.C.muted,ok?U.C.a:U.C.muted);}}s+=U.circle(...p(obs),5,U.C.b,U.C.b)+U.text(520,70,'Six planes; four satellites per plane')+U.text(520,108,'Illustrative phasing, not live GPS slots')+U.text(520,175,'Orange point: rotating Earth station')+U.text(520,216,'Dashed rays: ideal above-horizon links')+U.text(520,290,'GNSS benefits from varied directions,')+U.text(520,321,'not simply a large satellite count.');return{svg:U.svg(s,'Idealized 24-satellite inclined MEO constellation and visibility'),stats:[['Toy satellites above horizon',String(visible)],['Nominal orbital altitude',U.fmt(r-R,0)+' km'],['Idealized period',U.fmt(86164.0905/7200,3)+' h']],equation:'T ≈ ½ sidereal day; &nbsp; h ≈ 20,200 km; &nbsp; i ≈ 55°',note:'The orbit radius and half-sidereal-day period are rounded GPS teaching values. Earth and orbit share one spatial scale, with an orthographic projection. This idealized 24-satellite phasing does not guarantee a particular visibility count or represent the current operational constellation; terrain and elevation masks are omitted.',question:'Why can satellites clustered in one part of the sky give worse positioning than the same count spread widely?'};},checks:()=>[{name:'Half sidereal period about11.97 hours',pass:Math.abs(86164.0905/7200-11.9672348)<1e-6},{name:'GPS nominal altitude is MEO not GEO',pass:26560-6378>20000&&26560-6378<21000}]});
+modules.push({
+  id:'gnss-orbits', group:'Navigation', title:'GPS orbit geometry',
+  heading:'Inclined MEO planes spread satellites across the sky',
+  intro:'Compare a simple six-plane constellation as Earth rotates beneath its orbiting satellites.',
+  sources:src('October 29 GPS introduction, note page 6; GPS.gov space segment'),
+  spatial:'Six inclined orbital planes and above-horizon links from a rotating Earth station',
+  controls:[
+    ctl('inclination','Inclination',0,90,1,55,'°'),
+    ctl('latitude','Observer latitude',-80,80,2,34,'°'),
+    ctl('time','Elapsed time',0,24,.25,0,'h'),
+    ctl('viewAzimuth','3D view azimuth',-180,180,1,-17,'°'),
+    ctl('viewElevation','3D view elevation',5,80,1,14,'°'),
+  ],
+  animate:{id:'time',min:0,max:24,step:.08},
+  render(v,U){
+    const R=6378, r=26560, t=v.time*3600, inclination=U.rad(v.inclination);
+    const earthRate=tau/86164.0905, orbitRate=tau/(86164.0905/2);
+    const latitude=U.rad(v.latitude), longitude=U.rad(-84)+earthRate*t;
+    const observer=[R*Math.cos(latitude)*Math.cos(longitude),R*Math.cos(latitude)*Math.sin(longitude),R*Math.sin(latitude)];
+    const camera=U.spatial.scene(U,v,{center:[300,220],scale:175/r});
+    const project=point=>camera.project(point).slice(0,2);
+    const observerXY=project(observer);
+    let graphic=U.circle(300,220,175*R/r,'var(--earth)',U.C.ink), visible=0;
+    for(let plane=0;plane<6;plane++){
+      const node=plane*tau/6;
+      const position=angle=>[
+        r*(Math.cos(node)*Math.cos(angle)-Math.sin(node)*Math.cos(inclination)*Math.sin(angle)),
+        r*(Math.sin(node)*Math.cos(angle)+Math.cos(node)*Math.cos(inclination)*Math.sin(angle)),
+        r*Math.sin(inclination)*Math.sin(angle),
+      ];
+      graphic+=U.path(U.range(90,q=>project(position(q*tau))),U.C.grid,1);
+      for(let satellite=0;satellite<4;satellite++){
+        const phase=orbitRate*t+satellite*tau/4+plane*tau/24;
+        const point=position(phase), satelliteXY=project(point);
+        const aboveHorizon=point.reduce((sum,x,k)=>sum+(x-observer[k])*observer[k],0)>0;
+        if(aboveHorizon){
+          visible++;
+          graphic+=U.line(...observerXY,...satelliteXY,U.C.a,1,'3 4');
+        }
+        const color=aboveHorizon?U.C.a:U.C.muted;
+        graphic+=U.circle(...satelliteXY,aboveHorizon?4:2.5,color,color);
+      }
+    }
+    graphic+=U.circle(...observerXY,5,U.C.b,U.C.b)
+      +U.text(520,70,'Six planes; four satellites per plane')
+      +U.text(520,108,'Illustrative phasing, not live GPS slots')
+      +U.text(520,175,'Orange point: rotating Earth station')
+      +U.text(520,216,'Dashed rays: ideal above-horizon links')
+      +U.text(520,290,'Varied satellite directions improve')
+      +U.text(520,321,'positioning geometry.');
+    graphic+='<rect data-spatial-hit x="100" y="25" width="400" height="390" fill="transparent" aria-hidden="true"/>';
+    return {
+      svg:U.svg(graphic,'Rotatable idealized 24-satellite inclined MEO constellation and visibility').replace('<svg ','<svg data-spatial="true" '),
+      stats:[['Toy satellites above horizon',String(visible)],['Nominal orbital altitude',U.fmt(r-R,0)+' km'],['Idealized period',U.fmt(86164.0905/7200,3)+' h']],
+      equation:'T ≈ ½ sidereal day; &nbsp; h ≈ 20,200 km; &nbsp; i ≈ 55°',
+      note:'The orbit radius and half-sidereal-day period are rounded GPS teaching values. Earth and orbit share one spatial scale, with an orthographic projection. This idealized 24-satellite phasing does not guarantee a particular visibility count or represent the current operational constellation; terrain and elevation masks are omitted.',
+      question:'Why can satellites clustered in one part of the sky give worse positioning than the same count spread widely?',
+    };
+  },
+  checks:()=>[
+    {name:'Half sidereal period about11.97 hours',pass:Math.abs(86164.0905/7200-11.9672348)<1e-6},
+    {name:'GPS nominal altitude is MEO not GEO',pass:26560-6378>20000&&26560-6378<21000},
+  ],
+});
 
 modules.push({id:'doppler-pass',group:'Navigation',title:'Doppler pass',heading:'A nearer pass changes its range rate more sharply',intro:'Use a straight satellite pass to connect closest approach, frequency shift and cross-track distance.',sources:src('October 29 Doppler localization discussion; NOAA SARSAT'),controls:[ctl('cross','Cross-track distance',0,1800,50,400,'km'),ctl('speed','Along-track speed',5,8,.1,7.4,'km/s'),ctl('time','Time from closest approach',-500,500,10,0,'s')],animate:{id:'time',min:-500,max:500,step:5},render(v,U){const h=850,f=406e6,df=t=>-f/c*(1000*v.speed*v.speed*t/Math.hypot(h,v.cross,v.speed*t)),series=[{name:'Selected cross-track distance',color:U.C.a,points:U.range(200,q=>{const t=-500+1000*q;return[t,df(t)/1000];})},{name:'Closest approach',color:U.C.b,dash:'5 4',points:[[0,-11],[0,11]]}];let s=U.line(80,150,700,150,U.C.grid)+U.circle(390,315,7,U.C.b,U.C.b)+U.text(400,342,'Beacon')+U.circle(390+v.speed*v.time*.06,150,6,U.C.a,U.C.a)+U.arrow(335,150,450,150,U.C.a)+U.line(390,315,390+v.speed*v.time*.06,150,U.C.c,1,'4 4')+U.text(65,45,'Along-track pass: geometric distances shown schematically')+U.text(70,390,'The two sides of the ground track have the same ideal Doppler history.');return{svg:U.svg(s,'Straight satellite pass and beacon range geometry')+U.plot(series,{xmin:-500,xmax:500,ymin:-11,ymax:11,xlabel:'Time from closest approach (s)',ylabel:'Doppler shift (kHz)',title:'A 406 MHz beacon in a simplified pass model'}),stats:[['Current shift',U.fmt(df(v.time)/1000,3)+' kHz'],['Closest slant distance',U.fmt(Math.hypot(h,v.cross),0)+' km'],['Slope at zero crossing',U.fmt(-f/c*1000*v.speed*v.speed/Math.hypot(h,v.cross),2)+' Hz/s']],equation:'r(t) = √[h²+b²+(vt)²]; &nbsp; Δf ≈ −(f/c) v²t/r(t)',note:'Straight constant-speed pass over a stationary beacon; h = 850 km and frequency = 406 MHz are supplied here. Zero shift marks closest approach in this model, not universally an exact beacon latitude. A single pass can leave a left/right ambiguity; actual orbit motion, Earth rotation and oscillator offsets need a fuller solution.',question:'Why can a gentler zero-crossing slope indicate a more distant track without identifying which side of the track the beacon lies on?'};},checks:()=>[{name:'Closest approach has zero geometric range rate',pass:7.4*7.4*0/Math.hypot(850,400,0)===0},{name:'Greater cross track reduces zero-crossing slope magnitude',pass:1/Math.hypot(850,1000)<1/850}]});
 

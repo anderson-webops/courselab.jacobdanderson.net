@@ -43,6 +43,9 @@
 .gs-system .gs-tabs button[aria-selected="true"] { color:var(--site-ink); background:var(--site-surface); border-color:var(--site-line); box-shadow:inset 0 3px var(--site-accent); font-weight:650; }
 .gs-canvas-panel { background:#081722; border-radius:0 0 10px 10px; overflow:hidden; }
 .gs-system canvas { display:block; width:100%; height:auto; aspect-ratio:1.55; touch-action:manipulation; }
+.gs-system canvas.can-rotate-array { cursor:grab; }
+.gs-system canvas.is-array-dragging { cursor:grabbing; }
+.gs-system canvas:focus-visible { outline:2px solid var(--a); outline-offset:-3px; }
 .gs-map-legend { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:center; gap:8px 12px; margin:10px 0 14px; font-size:.76rem; color:var(--site-muted); }
 .gs-map-legend span { display:inline-flex; gap:6px; align-items:center; }
 .gs-legend-keys { display:grid; min-width:0; }

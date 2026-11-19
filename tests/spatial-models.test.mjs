@@ -8,7 +8,7 @@ vm.runInNewContext(readFileSync('dist/assets/course-lab.js','utf8'),context);
 const {modules,U}=window.CourseLab,S=U.spatial;
 const near=(a,b,tol=1e-10)=>assert.ok(Math.abs(a-b)<tol,`${a} differs from ${b}`);
 const defaults=m=>Object.fromEntries(m.controls.map(c=>[c.id,c.value]));
-const expected=['look-triangle','azimuth-components','solar-array','plane-wave','polarization','free-space-flux','dipole-pattern','circular-aperture','dish-gain','array-multiplication','planar-array','array-footprint','array-normalization','solid-angle','doppler-pass','navigation-frames','gnss-dop-3d'];
+const expected=['look-triangle','azimuth-components','solar-array','plane-wave','polarization','free-space-flux','dipole-pattern','circular-aperture','dish-gain','array-multiplication','planar-array','array-footprint','array-normalization','solid-angle','doppler-pass','navigation-frames','gnss-dop-3d','orbit-types','gnss-orbits'];
 assert.deepEqual(Array.from(modules.filter(m=>m.spatial),m=>m.id).sort(),expected.sort());
 for(const azimuth of [-180,-45,0,90,180])for(const elevation of [5,25,80]){
   const scene=S.scene(U,{viewAzimuth:azimuth,viewElevation:elevation},{center:[0,0],scale:1});
@@ -51,4 +51,4 @@ for(const dimension of [1,2,3]){
   assert.ok(a.svg.includes('data-spatial="true"'));assert.notEqual(a.svg,b.svg);
   assert.ok(a.svg.includes(['','Wire','Sheet','Bulk'][dimension]));
 }
-console.log('PASS spatial models: orthonormal projection, shared antenna fields, coherent directions, 17 camera-invariant ECE models, physical DOS dimensions and retained abstract 2D views');
+console.log('PASS spatial models: orthonormal projection, shared antenna fields, coherent directions, 19 camera-invariant ECE models, physical DOS dimensions and retained abstract 2D views');

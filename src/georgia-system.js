@@ -19,9 +19,11 @@
   const hue=phase=>`hsl(${((phase+180)%360+360)%360} 76% 63%)`;
   const canvas=$('canvas'),ctx=canvas.getContext('2d');
   const reduced=matchMedia('(prefers-reduced-motion: reduce)');
+  const finePointer=matchMedia('(any-pointer: fine)');
   let state=clone(Model.DEFAULT_STATE),result=null,view='system',selected='r4c4',presetName='default';
   let playing=!reduced.matches,showPower=false,time=0,lastTime=0,renderFrame=0,pending=false;
   let elementHits=[],mapHits=[],selectedCell=null;
+  let arrayBox=null,arrayDrag=null,cameraDirty=false;
   const controls=$$('[data-gs-param]');
   const fields={
     longitude:v=>fmt(v,state.aperture==='explicit'?2:1)+'°',tiltX:v=>fmt(v,1)+'°',tiltY:v=>fmt(v,1)+'°',roll:v=>fmt(v,0)+'°',
@@ -30,12 +32,31 @@
     stride:v=>String(v)+' × λ/2',powerDBW:v=>fmt(v,1)+' dBW',normal:v=>v==='target'?'Toward Georgia':'Toward Earth’s center'
   };
   const colors={bg:'#081722',panel:'#102735',line:'#395362',text:'#edf7fb',muted:'#a6c2cf',teal:'#63dfc4',orange:'#ffb477',purple:'#c2a0ef',blue:'#7bb9ff'};
-  // A fixed oblique camera makes physical tilt and roll visible in the aperture inset.
+  // Orbit the camera in a fixed reference frame so physical aperture rotation stays visible.
   const referenceSatellite=Model.spherical(0,Model.DEFAULT_STATE.longitude,Model.GEO_RADIUS_M);
   const referenceTarget=Model.spherical(Model.GA_CENTER.lat,Model.GA_CENTER.lon);
   const referenceFrame=Model.buildFrame(unit(referenceTarget.map((v,i)=>v-referenceSatellite[i])));
-  const arrayCameraZ=unit(add(mult(referenceFrame.normal,2.5),add(mult(referenceFrame.x,.7),mult(referenceFrame.y,-1.1))));
-  const arrayCameraX=unit(cross(referenceFrame.y,arrayCameraZ)),arrayCameraY=unit(cross(arrayCameraZ,arrayCameraX));
+  const defaultCamera={yaw:deg(Math.atan2(.7,2.5)),pitch:deg(Math.atan2(-1.1,Math.hypot(2.5,.7)))};
+  let arrayCamera={...defaultCamera};
+
+  function arrayCameraAxes(){
+    const yaw=rad(arrayCamera.yaw),pitch=rad(arrayCamera.pitch);
+    const horizontal=add(mult(referenceFrame.normal,Math.cos(yaw)),mult(referenceFrame.x,Math.sin(yaw)));
+    const depth=add(mult(horizontal,Math.cos(pitch)),mult(referenceFrame.y,Math.sin(pitch)));
+    const right=unit(cross(referenceFrame.y,depth));
+    return{right,up:cross(depth,right),depth};
+  }
+  function setArrayCamera(yaw,pitch){
+    arrayCamera={yaw:clamp(yaw,-65,65),pitch:clamp(pitch,-60,60)};
+    cameraDirty=true;
+  }
+  function labelCanvas(){
+    const dragLabel=finePointer.matches?' Drag the array to rotate.':'';
+    const keyLabel=' Arrow keys rotate the array view. Home resets the view.';
+    canvas.tabIndex=view==='georgia'?-1:0;
+    const description=view==='array'?'Array element positions and feed phases.'+dragLabel+keyLabel+' Select elements with the element control below.':view==='georgia'?'Georgia received-power map from the current array.':'Satellite, Earth, Georgia, array elements and combined coverage.'+dragLabel+keyLabel;
+    canvas.setAttribute('aria-label',description);
+  }
 
   function syncControls(){
     $('[data-gs-preset]').value=presetName;
@@ -90,15 +111,17 @@
   $('[data-gs-element-phase]').addEventListener('input',e=>{state.phaseOffsets={...state.phaseOffsets,[selected]:Number(e.target.value)};presetName='custom';schedule();});
   $('[data-gs-remove]').addEventListener('click',()=>{const removed=new Set(state.removed||[]);if(removed.has(selected))removed.delete(selected);else removed.add(selected);state.removed=[...removed];presetName='custom';schedule();});
   $('[data-gs-fit]').addEventListener('click',()=>{const value=Model.fitPower(result),input=$('[data-gs-param="powerDBW"]');if(Number.isFinite(value)){if(value>Number(input.max)||value<Number(input.min)){$('[data-gs-status]').textContent=`Georgia needs about ${fmt(value,1)} dBW for this setting, beyond the ${input.min}–${input.max} dBW control range.`;return;}state.powerDBW=value;presetName='custom';schedule();}});
-  $('[data-gs-reset]').addEventListener('click',()=>{state=clone(Model.DEFAULT_STATE);presetName='default';selected='r4c4';selectedCell=null;schedule();});
+  $('[data-gs-reset]').addEventListener('click',()=>{state=clone(Model.DEFAULT_STATE);presetName='default';selected='r4c4';selectedCell=null;setArrayCamera(defaultCamera.yaw,defaultCamera.pitch);schedule();});
   $('[data-gs-preset]').addEventListener('change',e=>{if(e.target.value==='custom')return;presetName=e.target.value;state=presetName==='default'?clone(Model.DEFAULT_STATE):Model.preset(presetName);selected='r4c4';selectedCell=null;schedule();});
   $('[data-gs-play]').addEventListener('click',()=>{playing=!playing;syncControls();draw();});
   $('[data-gs-power-colors]').addEventListener('click',()=>{showPower=!showPower;syncControls();draw();});
   for(const tab of $$('[data-gs-view]'))tab.addEventListener('click',()=>{
+    finishArrayDrag();
+    canvas.classList.remove('can-rotate-array');
     view=tab.dataset.gsView;
     for(const t of $$('[data-gs-view]')){const on=t===tab;t.setAttribute('aria-selected',String(on));t.tabIndex=on?0:-1;}
     $('[role="tabpanel"].gs-canvas-panel').setAttribute('aria-labelledby',tab.id);
-    canvas.setAttribute('aria-label',view==='array'?'Array element positions and feed phases. Select elements with the element control below.':view==='georgia'?'Georgia received-power map from the current array.':'Satellite, Earth, Georgia, array elements and combined coverage.');
+    labelCanvas();
     draw();
   });
   for(const tab of $$('[data-gs-controls]'))tab.addEventListener('click',()=>{
@@ -111,6 +134,8 @@
     e.preventDefault();const n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;tabs[n].click();tabs[n].focus();
   });
   reduced.addEventListener('change',e=>{if(e.matches){playing=false;syncControls();draw();}});
+  finePointer.addEventListener('change',()=>{labelCanvas();draw();});
+  labelCanvas();
 
   function line(a,b,color,width=1,alpha=1){ctx.globalAlpha=alpha;ctx.strokeStyle=color;ctx.lineWidth=width;ctx.beginPath();ctx.moveTo(...a);ctx.lineTo(...b);ctx.stroke();ctx.globalAlpha=1;}
   function text(s,x,y,color=colors.text,size=12,align='left'){ctx.fillStyle=color;ctx.font=`${size}px ui-sans-serif,system-ui,sans-serif`;ctx.textAlign=align;ctx.textBaseline='middle';ctx.fillText(s,x,y);}
@@ -178,8 +203,10 @@
     }else if(w>=270){text('−80 dBm threshold',x+w-14,y+20,colors.muted,10,'right');}
   }
   function drawArray(box,detailed=false){
+    arrayBox=box;
     const {x,y,w,h}=box;roundRect(x,y,w,h,12,'#0d2130','#4a6476');
-    text(w<220?'Array':'Array · enlarged',x+15,y+20,colors.text,w<220?11:13);if(w>=250)text('Feed phase',x+w-14,y+20,colors.muted,10,'right');
+    const title=finePointer.matches&&w>=135?'Array · drag to rotate':w<220?'Array':'Array · enlarged';
+    text(title,x+15,y+20,colors.text,w<220?10:13);if(w>=250)text('Feed phase',x+w-14,y+20,colors.muted,10,'right');
     const compact=detailed&&w<350,availableH=Math.max(10,h-(detailed?(compact?100:126):84)),availableW=Math.max(10,w-48);
     const sites=result.elements.length?result.elements:[{x:0,y:0}];
     const xmin=Math.min(...sites.map(e=>e.x)),xmax=Math.max(...sites.map(e=>e.x)),ymin=Math.min(...sites.map(e=>e.y)),ymax=Math.max(...sites.map(e=>e.y));
@@ -187,7 +214,8 @@
     const halfX=Math.max(extX/2,size*.12)+size*.06,halfY=Math.max(extY/2,size*.12)+size*.06;
     const middleX=(xmin+xmax)/2,middleY=(ymin+ymax)/2,thickness=size*.035,postHeight=size*.035;
     const world=(px,py,pz=0)=>add(add(mult(result.basis.x,px),mult(result.basis.y,py)),mult(result.basis.normal,pz));
-    const projectRaw=p=>[dot(p,arrayCameraX),-dot(p,arrayCameraY),dot(p,arrayCameraZ)];
+    const {right,up,depth:cameraDepth}=arrayCameraAxes();
+    const projectRaw=p=>[dot(p,right),-dot(p,up),dot(p,cameraDepth)];
     const corners=[world(-halfX,-halfY),world(halfX,-halfY),world(halfX,halfY),world(-halfX,halfY)];
     const bottom=corners.map(p=>add(p,mult(result.basis.normal,-thickness)));
     const normalEnd=mult(result.basis.normal,size*.48),targetDirection=state.autoSteer?result.steering.direction:result.targetResult.direction,targetEnd=mult(targetDirection,size*.72);
@@ -204,7 +232,7 @@
       for(let col=0;col<state.columns;col++){const px=(col-(state.columns-1)/2)*result.spacingM;line(project(world(px,-halfY)),project(world(px,halfY)),'#416372',.45,.7);}
       for(let row=0;row<state.rows;row++){const py=(row-(state.rows-1)/2)*result.spacingM;line(project(world(-halfX,py)),project(world(halfX,py)),'#416372',.45,.7);}
     }
-    const xStep=Math.hypot(dot(result.basis.x,arrayCameraX),dot(result.basis.x,arrayCameraY)),yStep=Math.hypot(dot(result.basis.y,arrayCameraX),dot(result.basis.y,arrayCameraY));
+    const xStep=Math.hypot(dot(result.basis.x,right),dot(result.basis.x,up)),yStep=Math.hypot(dot(result.basis.y,right),dot(result.basis.y,up));
     const cell=state.aperture==='explicit'?Math.min(availableW,availableH)/Math.max(1,Math.sqrt(result.elements.length)):result.spacingM*scale*Math.min(xStep,yStep);
     elementHits=[];
     const elements=result.elements.map(e=>{const base=world(e.x-middleX,e.y-middleY),top=add(base,mult(result.basis.normal,postHeight));return{e,base,top,depth:projectRaw(top)[2]};}).sort((a,b)=>a.depth-b.depth);
@@ -288,21 +316,77 @@
     const rect=canvas.getBoundingClientRect(),ratio=Math.min(devicePixelRatio||1,2),w=rect.width,h=rect.height;
     if(canvas.width!==Math.round(w*ratio)||canvas.height!==Math.round(h*ratio)){canvas.width=Math.round(w*ratio);canvas.height=Math.round(h*ratio);}
     ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,w,h);background(w,h);
-    elementHits=[];mapHits=[];
+    elementHits=[];mapHits=[];arrayBox=null;
     if(view==='system')drawSystem(w,h);
     else if(view==='array'){
       const mobile=w<570,box={x:14,y:14,w:w-(mobile?28:190),h:h-(mobile?102:35)};drawArray(box,true);
       if(mobile)drawPhasors(w/2,h-45,22);else drawPhasors(w-88,h/2,42);
     }else drawMap({x:14,y:14,w:w-28,h:h-28},true);
   }
-  canvas.addEventListener('pointerdown',e=>{
-    const r=canvas.getBoundingClientRect(),x=e.clientX-r.left,y=e.clientY-r.top;
-    const hit=elementHits.reduce((best,p)=>Math.hypot(p.x-x,p.y-y)<p.r&&(!best||Math.hypot(p.x-x,p.y-y)<Math.hypot(best.x-x,best.y-y)-.01||(Math.abs(Math.hypot(p.x-x,p.y-y)-Math.hypot(best.x-x,best.y-y))<.01&&p.depth>best.depth))?p:best,null);
+  function pointerPosition(event){
+    const rect=canvas.getBoundingClientRect();
+    return[event.clientX-rect.left,event.clientY-rect.top];
+  }
+  function onArray(x,y){return arrayBox&&x>=arrayBox.x&&x<=arrayBox.x+arrayBox.w&&y>=arrayBox.y&&y<=arrayBox.y+arrayBox.h;}
+  function selectPoint(x,y){
+    let hit=null,nearest=Infinity;
+    for(const element of elementHits){
+      const distance=Math.hypot(element.x-x,element.y-y);
+      if(distance<element.r&&(distance<nearest-.01||(Math.abs(distance-nearest)<.01&&element.depth>hit?.depth))){
+        hit=element;nearest=distance;
+      }
+    }
     if(hit){selected=hit.id;syncControls();draw();return;}
     const cell=mapHits.find(p=>x>=p.x&&x<p.x+p.w&&y>=p.y&&y<p.y+p.h);if(cell){selectedCell=cell.cell;draw();}
+  }
+  function finishArrayDrag(){
+    const drag=arrayDrag;
+    if(!drag)return;
+    arrayDrag=null;
+    canvas.classList.remove('is-array-dragging');
+    if(canvas.hasPointerCapture(drag.id))canvas.releasePointerCapture(drag.id);
+  }
+  canvas.addEventListener('pointerdown',event=>{
+    if(!event.isPrimary||event.button!==0||arrayDrag)return;
+    const [x,y]=pointerPosition(event);
+    if(event.pointerType!=='touch'&&onArray(x,y)){
+      arrayDrag={id:event.pointerId,x:event.clientX,y:event.clientY,...arrayCamera,moved:false};
+      canvas.setPointerCapture(event.pointerId);
+    }else selectPoint(x,y);
+  });
+  canvas.addEventListener('pointermove',event=>{
+    if(event.pointerType==='touch')return;
+    canvas.classList.toggle('can-rotate-array',!!onArray(...pointerPosition(event)));
+    const drag=arrayDrag;
+    if(!drag||drag.id!==event.pointerId)return;
+    const dx=event.clientX-drag.x,dy=event.clientY-drag.y;
+    if(!drag.moved&&Math.hypot(dx,dy)<5)return;
+    drag.moved=true;
+    canvas.classList.add('is-array-dragging');
+    setArrayCamera(drag.yaw-dx*.42,drag.pitch+dy*.42);
+  });
+  canvas.addEventListener('pointerleave',()=>canvas.classList.remove('can-rotate-array'));
+  canvas.addEventListener('pointerup',event=>{
+    const drag=arrayDrag;
+    if(!drag||drag.id!==event.pointerId)return;
+    const [x,y]=pointerPosition(event);
+    finishArrayDrag();
+    if(!drag.moved&&onArray(x,y))selectPoint(x,y);
+  });
+  for(const event of ['pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>{
+    if(e.pointerId===arrayDrag?.id)finishArrayDrag();
+  });
+  canvas.addEventListener('keydown',event=>{
+    if(!arrayBox||event.altKey||event.ctrlKey||event.metaKey||event.shiftKey)return;
+    const step=8;
+    const delta={ArrowLeft:[step,0],ArrowRight:[-step,0],ArrowUp:[0,-step],ArrowDown:[0,step]}[event.key];
+    if(event.key==='Home')setArrayCamera(defaultCamera.yaw,defaultCamera.pitch);
+    else if(delta)setArrayCamera(arrayCamera.yaw+delta[0],arrayCamera.pitch+delta[1]);
+    else return;
+    event.preventDefault();
   });
   new ResizeObserver(draw).observe(canvas);
-  const tick=now=>{if(lastTime&&playing)time+=Math.min((now-lastTime)/1000,.1);lastTime=now;if(playing&&!document.hidden)draw();renderFrame=requestAnimationFrame(tick);};
+  const tick=now=>{if(lastTime&&playing)time+=Math.min((now-lastTime)/1000,.1);lastTime=now;if((playing||cameraDirty)&&!document.hidden){cameraDirty=false;draw();}renderFrame=requestAnimationFrame(tick);};
   document.addEventListener('visibilitychange',()=>{lastTime=0;});
   update();renderFrame=requestAnimationFrame(tick);
   const api={getState:()=>clone(state),setState:patch=>{state={...state,...clone(patch)};presetName='custom';update();},selectElement:id=>{selected=id;syncControls();draw();},get result(){return result;},get view(){return view;},draw,pause:()=>{playing=false;syncControls();draw();}};

@@ -1,8 +1,8 @@
-/* Enlarged scientific diagrams retain their current state and authored appearance. */
+/* Optional zoom for static scientific references. */
 (() => {
   'use strict';
   const diagrams=container=>[...container.children].filter(element=>element.matches('svg:not(.legend-key), img')&&element.getAttribute('aria-hidden')!=='true');
-  const references=[...document.querySelectorAll('.course-static, .topic-demonstration .figure')].filter(container=>diagrams(container).length);
+  const references=[...document.querySelectorAll('.course-static')].filter(container=>diagrams(container).length);
   if(!references.length)return;
   let serial=0;
   const dialog=document.createElement('dialog');dialog.className='figure-viewer';
@@ -56,7 +56,7 @@
       // Preserve text colors supplied by the figure's surrounding theme rules.
       const labels=[...source.querySelectorAll('text')];
       [...picture.querySelectorAll('text')].forEach((label,index)=>label.setAttribute('fill',getComputedStyle(labels[index]).fill));
-      // A live plot's transparent canvas uses its surrounding surface, including dark mode.
+      // A transparent diagram uses its surrounding surface, including dark mode.
       const background=document.createElementNS('http://www.w3.org/2000/svg','rect');
       background.setAttribute('width','100%');background.setAttribute('height','100%');background.setAttribute('fill',effectiveBackground(source.parentElement));background.setAttribute('data-viewer-background','');
       picture.prepend(background);

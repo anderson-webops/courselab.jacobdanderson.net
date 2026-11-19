@@ -78,10 +78,14 @@
   const number=(x,d=0)=>x.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
   const marker=(U,p,label,color,dx=8,dy=-9)=>U.circle(p[0],p[1],4,color,color)+U.text(p[0]+dx,p[1]+dy,label,'start',color);
 
-  function spatialFigure(el,current,U) {
-    const C=U.C,scale=150/(el.a*(1+el.e)),center=[228,280],yaw=-.62,pitch=.47;
-    const basis=v=>{const x=Math.cos(yaw)*v[0]-Math.sin(yaw)*v[1],d=Math.sin(yaw)*v[0]+Math.cos(yaw)*v[1];return [x,Math.sin(pitch)*d-Math.cos(pitch)*v[2],Math.cos(pitch)*d+Math.sin(pitch)*v[2]];};
-    const project=v=>{const q=basis(v);return [center[0]+scale*q[0],center[1]+scale*q[1]];};
+  function spatialFigure(el,current,values,U) {
+    const C=U.C,scale=150/(el.a*(1+el.e)),center=[228,280];
+    const camera=U.spatial.scene(U,values,{center,scale});
+    const project=v=>camera.project(v).slice(0,2);
+    const behindEarth=v=>{
+      const [x,y,depth]=camera.project(v);
+      return depth<0&&Math.hypot(x-center[0],y-center[1])<EARTH*scale;
+    };
     let out=U.text(55,30,el.name+' · '+(el.i>90?'retrograde':Math.abs(el.i-90)<1e-7?'polar':'prograde'));
     out+=U.text(55,58,'e = '+number(el.e,2)+'   i = '+number(el.i,1)+'°   a = '+number(el.a)+' km');
     out+=U.text(55,94,'Space-fixed view: Earth rotates inside the orbital plane');
@@ -93,15 +97,15 @@
     // Near-hemisphere wire lines are visible; the globe masks orbit segments behind it below.
     for(const lat of [-60,-30,0,30,60]) {
       let part=[];
-      for(let j=0;j<=120;j++) {const lon=j*TAU/120+TAU*current.time/DAY,v=[EARTH*Math.cos(rad(lat))*Math.cos(lon),EARTH*Math.cos(rad(lat))*Math.sin(lon),EARTH*Math.sin(rad(lat))];if(basis(v)[2]>=0)part.push(project(v));else {if(part.length>1)out+=U.path(part,C.grid,1);part=[];}}
+      for(let j=0;j<=120;j++) {const lon=j*TAU/120+TAU*current.time/DAY,v=[EARTH*Math.cos(rad(lat))*Math.cos(lon),EARTH*Math.cos(rad(lat))*Math.sin(lon),EARTH*Math.sin(rad(lat))];const [x,y,depth]=camera.project(v);if(depth>=0)part.push([x,y]);else {if(part.length>1)out+=U.path(part,C.grid,1);part=[];}}
       if(part.length>1)out+=U.path(part,C.grid,1);
     }
     const prime=Array.from({length:61},(_,j)=>{const lat=(-90+j*3)*DEG,lon=TAU*current.time/DAY;return [EARTH*Math.cos(lat)*Math.cos(lon),EARTH*Math.cos(lat)*Math.sin(lon),EARTH*Math.sin(lat)];});
-    let part=[];for(const v of prime){if(basis(v)[2]>=0)part.push(project(v));else {if(part.length>1)out+=U.path(part,C.b,1.5);part=[];}}if(part.length>1)out+=U.path(part,C.b,1.5);
+    let part=[];for(const v of prime){const [x,y,depth]=camera.project(v);if(depth>=0)part.push([x,y]);else {if(part.length>1)out+=U.path(part,C.b,1.5);part=[];}}if(part.length>1)out+=U.path(part,C.b,1.5);
     out+=U.arrow(...project([0,0,-axis]),...project([0,0,axis]),C.muted)+U.text(...project([0,0,axis*1.12]),'N','middle');
     // Redraw the front part of the orbit; hide only the portion actually occulted by Earth.
-    part=[];for(let j=0;j<=360;j++){const q=state(el,el.T*j/360).xyz,b=basis(q),ok=b[2]>=0||Math.hypot(b[0],b[1])>EARTH;if(ok)part.push(project(q));else {if(part.length>1)out+=U.path(part,C.a,2.5);part=[];}}if(part.length>1)out+=U.path(part,C.a,2.5);
-    const sp=project(current.xyz),depth=basis(current.xyz),hidden=depth[2]<0&&Math.hypot(depth[0],depth[1])<EARTH;
+    part=[];for(let j=0;j<=360;j++){const q=state(el,el.T*j/360).xyz;if(!behindEarth(q))part.push(project(q));else {if(part.length>1)out+=U.path(part,C.a,2.5);part=[];}}if(part.length>1)out+=U.path(part,C.a,2.5);
+    const sp=project(current.xyz),hidden=behindEarth(current.xyz);
     if(!hidden)out+=U.circle(...sp,5.5,C.b,C.b);
     out+=U.text(55,460,'Orange: satellite; orange meridian: 0° longitude');
     out+=U.text(55,486,hidden?'Satellite is behind Earth in this camera view.':'Earth blocks the far side of the orbit in this camera view.');
@@ -122,7 +126,8 @@
     out+=U.text(465,516,'Speed now: '+number(current.speed,2)+' km/s');
     out+=U.text(465,542,'Elapsed: '+number(current.time/3600,2)+' h');
     out+=U.text(465,568,el.e>1e-8?'Longer dwell near apogee; faster near perigee.':'A circular orbit has no unique perigee.');
-    return U.svg(out,'Orbit family in a fixed spatial view and its orbital plane, with equal length scales within each view',800,600);
+    out+='<rect data-spatial-hit x="20" y="110" width="410" height="335" fill="transparent" aria-hidden="true"/>';
+    return U.svg(out,'Orbit family in a rotatable spatial view and its orbital plane, with equal length scales within each view',800,600).replace('<svg ','<svg data-spatial="true" ');
   }
 
   function groundFigure(el,current,U) {
@@ -147,17 +152,20 @@
   modules.push({
     id:'orbit-types',group:'Orbits',title:'Orbit types',heading:'Orbit shape, tilt and period determine where a satellite travels',
     intro:'Compare the same satellite state in space, in its orbital plane, and above Earth’s latitude–longitude grid.',
+    spatial:'Space-fixed orbit, Earth’s spin axis, and the rotating prime meridian',
     controls:[
       {id:'preset',label:'Orbit family',value:0,options:presets.map((p,j)=>({value:j,label:p.name}))},
       {id:'progress',label:'Elapsed orbital periods',min:0,max:200,step:1,value:50,unit:'%'},
       {id:'node',label:'Node longitude Ω at epoch',min:-180,max:180,step:5,value:-85,unit:'°'},
       {id:'apsis',label:'Rotate apsides Δω',min:0,max:360,step:5,value:0,unit:'°'},
+      {id:'viewAzimuth',label:'3D view azimuth',min:-180,max:180,step:1,value:-36,unit:'°'},
+      {id:'viewElevation',label:'3D view elevation',min:5,max:80,step:1,value:27,unit:'°'},
     ],
     animate:{id:'progress',min:0,max:200,step:.6},
     sources:['Course: circular and elliptical orbits, orbital elements and satellite look angles','Course: NASA Earth Observatory: Catalog of Earth Satellite Orbits, https://science.nasa.gov/earth/earth-observatory/catalog-of-earth-satellite-orbits/','Course: NASA: Basics of Space Flight, Chapter 5, https://science.nasa.gov/learn/basics-of-space-flight/chapter5-1/','Course: ESA Space Debris Office: Tundra Disposal Orbit Study, https://conference.sdo.esoc.esa.int/proceedings/sdc7/paper/328'],
     render(values,U) {
       const el=elements(values),q=state(el,values.progress/100*el.T);
-      return {svg:spatialFigure(el,q,U)+groundFigure(el,q,U),stats:[['Altitude now',number(q.altitude)+' km'],['Orbital period',number(el.T/3600,3)+' h'],['Subpoint latitude / longitude',hemi(q.latitude,'N','S')+' / '+(q.longitudeDefined?hemi(q.longitude,'E','W'):'no unique longitude at pole')]],
+      return {svg:spatialFigure(el,q,values,U)+groundFigure(el,q,U),stats:[['Altitude now',number(q.altitude)+' km'],['Orbital period',number(el.T/3600,3)+' h'],['Subpoint latitude / longitude',hemi(q.latitude,'N','S')+' / '+(q.longitudeDefined?hemi(q.longitude,'E','W'):'no unique longitude at pole')]],
         equation:'T = 2π√(a³/μ); &nbsp; M = nt = E − e sin E; &nbsp; r = a(1 − e cos E); &nbsp; h = r − R<sub>E</sub><br>r<sub>ECI</sub> = Rz(Ω) Rx(i) Rz(ω) r<sub>plane</sub>; &nbsp; r<sub>ECEF</sub> = Rz(−ω<sub>E</sub>t) r<sub>ECI</sub>',
         note:el.description+' Ideal bound two-body ellipses, fixed elements, spherical Earth and uniform sidereal rotation; no J2, atmosphere, eclipses, thrust or precession. The 63.4° critical inclination has a J2 motivation, but that perturbation is not simulated. Epoch Earth angle is 0°. Ω is measured eastward from the fixed epoch x-axis; for an equatorial orbit there is no unique ascending node. The apsis control adds Δω to the preset argument; for a circle it changes the phase reference because perigee is undefined. Dots and trails show positions, not ground-station visibility or coverage. Animation uses the same fraction of an orbit for each family, not the same number of real seconds.',
         question:'Which preset keeps one subpoint fixed? Compare the two geosynchronous variations, then explain why the eccentric-orbit dots cluster near apogee and how the apsis control changes its latitude.'};

@@ -31,6 +31,10 @@
       else{input.type='range';input.min=c.min;input.max=c.max;input.step=c.step;}
       input.value=values[c.id];input.addEventListener('input',()=>{values[c.id]=Number(input.value);draw();});wrap.append(label,input);controls.append(wrap);
     }
+    if(Object.hasOwn(values,'viewAzimuth')&&Object.hasOwn(values,'viewElevation')){
+      U.spatial.bindDrag(graphic,()=>['viewAzimuth','viewElevation'].map(id=>controls.querySelector('#project-'+module.id+'-'+id)),
+        (azimuth,elevation)=>{values.viewAzimuth=azimuth;values.viewElevation=elevation;draw();});
+    }
     workspace.append(visual,controls);figure.append(workspace);const caption=document.createElement('figcaption');caption.textContent='Fig. '+mount.dataset.figure+'. '+module.heading+'.';figure.append(caption);mount.append(figure,equation,note);draw();
   }
   function geometry(){

@@ -104,7 +104,7 @@ try {
       }
       return { states, failures };
     });
-    assert.equal(result.states, 638);
+    assert.equal(result.states, 646);
     assert.deepEqual(result.failures, []);
     return result;
   });

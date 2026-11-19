@@ -82,9 +82,61 @@ const Spatial=(() => {
   function figure(U,v,options,draw){
     const view=scene(U,v,options),title=options.title??'Spatial view';
     const svg=U.svg(U.text(24,28,title)+draw(view),options.label??title,view.width,view.height);
-    return svg.replace('<svg ','<svg data-spatial="true" ');
+    return svg.replace('<svg ','<svg data-spatial="true" aria-description="Drag to rotate or use the 3D view controls." ');
   }
-  return Object.freeze({controls,scene,figure,spherical});
+  // Capture on the host because drawing a new viewpoint replaces the SVG.
+  function bindDrag(host, cameraInputs, redraw, save=()=>{}){
+    host.dataset.cameraHost='';
+    let drag=null, frame=0;
+    function renderCamera(){
+      frame=0;
+      if(!drag?.rotating || drag.inputs.some(input=>!input.isConnected))return;
+      const next=drag.inputs.map((input,index)=>{
+        const min=Number(input.min),max=Number(input.max);
+        let value=Math.round(drag.angles[index]+.45*drag.delta[index]);
+        if(index===0 && min===-180 && max===180 && (value<min || value>max)){
+          value=((value+180)%360+360)%360-180;
+        }
+        return Math.max(min,Math.min(max,value));
+      });
+      if(next.every((value,index)=>value===Number(drag.inputs[index].value)))return;
+      drag.inputs.forEach((input,index)=>{input.value=String(next[index]);});
+      redraw(...next);
+      drag.changed=true;
+    }
+    function move(event){
+      if(drag?.id!==event.pointerId)return;
+      drag.delta=[event.clientX-drag.start[0],event.clientY-drag.start[1]];
+      if(!drag.rotating && Math.hypot(...drag.delta)<4)return;
+      drag.rotating=true;
+      host.dataset.cameraDragging='';
+      if(!frame)frame=requestAnimationFrame(renderCamera);
+    }
+    function finish(event){
+      if(drag?.id!==event.pointerId)return;
+      if(event.type==='pointerup')move(event);
+      cancelAnimationFrame(frame);
+      renderCamera();
+      const {id,changed}=drag;
+      drag=null;
+      delete host.dataset.cameraDragging;
+      if(host.hasPointerCapture(id))host.releasePointerCapture(id);
+      if(changed)save();
+    }
+    host.addEventListener('pointerdown',event=>{
+      if(drag || event.pointerType!=='mouse' || event.button!==0)return;
+      const surface=event.target.closest('svg[data-spatial]');
+      if(!surface || (surface.querySelector('[data-spatial-hit]') && !event.target.closest('[data-spatial-hit]')))return;
+      const inputs=cameraInputs();
+      if(inputs.some(input=>!input))return;
+      drag={id:event.pointerId,inputs,angles:inputs.map(input=>Number(input.value)),
+        start:[event.clientX,event.clientY],delta:[0,0],rotating:false,changed:false};
+      host.setPointerCapture(event.pointerId);
+    });
+    host.addEventListener('pointermove',move);
+    for(const type of ['pointerup','pointercancel','lostpointercapture'])host.addEventListener(type,finish);
+  }
+  return Object.freeze({controls,scene,figure,spherical,bindDrag});
 })();
 U.spatial=Spatial;
 

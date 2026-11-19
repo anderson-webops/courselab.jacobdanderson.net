@@ -63,6 +63,25 @@ try{
   }
   violations.push(...await page.evaluate(()=>window.spatialCsp||[]));assert.deepEqual(errors,[]);assert.deepEqual(violations,[]);assert.deepEqual(external,[]);
  });
+ await check('Dragging the aperture rotates its view while preserving the selected feed and physical model',async()=>{
+  const state=()=>page.evaluate(()=>GeorgiaSystemExplorer.getState());
+  const canvas=page.locator('[data-gs-canvas]');
+  const box=await canvas.boundingBox();
+  const before=await capture();
+  const target=before.circles.find(([, ,radius])=>radius>=2.1&&radius<=7);
+  assert.ok(target);
+  const design=await state(),feed=await page.locator('#gs-element').inputValue();
+  await page.mouse.move(box.x+target[0],box.y+target[1]);
+  await page.mouse.down();
+  await page.mouse.move(box.x+target[0]+85,box.y+target[1]+32,{steps:5});
+  await page.mouse.up();
+  const rotated=await capture();
+  assert.notDeepEqual(rotated.polygons,before.polygons);
+  assert.deepEqual(await state(),design);
+  assert.equal(await page.locator('#gs-element').inputValue(),feed);
+  await canvas.press('Home');
+  assert.deepEqual((await capture()).polygons,before.polygons);
+ });
 }finally{
  await browser.close();const report={passed:results.filter(r=>r.status==='passed').length,failed:results.filter(r=>r.status==='failed').length,results,errors,violations,external};
  await writeFile(path.join(output,'project-spatial-browser-report.json'),JSON.stringify(report,null,2)+'\n');if(report.failed)process.exitCode=1;

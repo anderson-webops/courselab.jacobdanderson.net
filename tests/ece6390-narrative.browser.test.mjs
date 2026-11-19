@@ -73,32 +73,27 @@ try{
   assert.match(await page.locator('figure').nth(1).locator('.figure').textContent(),/Transmit 101010; receive 010101/);
   return{topics:5};
  });
- await check('Each live figure enlarges its current state and restores keyboard focus',async()=>{
-  for(const t of topics.filter(t=>t.simulation)){await goto(t);const defs=await page.evaluate(id=>CourseFigureModels.models.find(x=>x.id===id).controls,t.simulation),c=defs[0],input=page.locator('#device-'+c.id),value=c.options?c.options.find(o=>o.value!==c.value).value:c.value===c.max?c.min:c.max;
-   if(c.options)await input.selectOption(String(value));else await input.evaluate((e,v)=>{e.value=v;e.dispatchEvent(new Event('input',{bubbles:true}));},value);
-   const figure=page.locator('figure').nth(1),before=await figure.locator('.figure > svg').textContent(),button=figure.getByRole('button',{name:'Enlarge figure',exact:true});
-   assert.equal(await button.count(),1,t.id);await button.click();const dialog=page.locator('.figure-viewer');assert.ok(await dialog.isVisible());assert.equal(await dialog.locator('.fv-stage > svg').textContent(),before,t.id+':latest-state');await dialog.getByRole('button',{name:'Fit the complete figure'}).click();await page.keyboard.press('Escape');assert.equal(await dialog.isVisible(),false);assert.ok(await button.evaluate(e=>document.activeElement===e),t.id+':focus');
-   await page.keyboard.press('Enter');assert.ok(await dialog.isVisible());await dialog.getByRole('button',{name:'Close',exact:true}).click();
+ await check('Scientific references retain zoom while live models stay in the lesson',async()=>{
+  for(const t of topics.filter(t=>t.simulation)){
+   await goto(t);
+   const reference=page.locator('figure.topic-demonstration').first(),live=page.locator('figure.topic-demonstration').nth(1);
+   assert.equal(await reference.getByRole('button',{name:'Enlarge figure',exact:true}).count(),1,t.id);
+   assert.equal(await live.locator('.figure-enlarge-actions').count(),0,t.id);
   }return{models:topics.filter(t=>t.simulation).length};
  });
- await check('Multi-diagram figures enlarge each current diagram without legend actions and restore focus',async()=>{
+ await check('Multi-diagram simulations redraw their geometry without duplicate zoom actions',async()=>{
   await page.goto(base+'/courses/gt/ece6390/topics/look-triangle/');await page.waitForSelector('#figure > svg');
   const figure=page.locator('#figure'),diagrams=figure.locator(':scope > svg:not(.legend-key)'),actions=page.locator('#figure + .figure-enlarge-actions button');
-  assert.equal(await diagrams.count(),3);await page.waitForFunction(()=>document.querySelectorAll('#figure + .figure-enlarge-actions button').length===3);assert.equal(await actions.count(),3);
-  const old=await diagrams.first().innerHTML();await page.locator('#input-gamma').evaluate(e=>{e.value='70';e.dispatchEvent(new Event('input',{bubbles:true}));});assert.notEqual(await diagrams.first().innerHTML(),old,'look-triangle redraws before enlargement');
-  const signature=svg=>[...svg.querySelectorAll('path,line,circle,polygon,polyline,ellipse')].map(e=>[e.tagName,...['d','x1','y1','x2','y2','cx','cy','r','rx','ry','points','transform'].map(a=>e.getAttribute(a))]);
-  for(let i=0;i<3;i++){
-   const source=diagrams.nth(i),name=await source.locator(':scope > title').textContent(),expected=await source.evaluate(signature),action=actions.nth(i);
-   assert.ok((await action.getAttribute('aria-label')).includes(name));await action.click();const dialog=page.locator('.figure-viewer');assert.equal(await dialog.locator('.fv-stage > svg > title').textContent(),name);assert.deepEqual(await dialog.locator('.fv-stage > svg').evaluate(signature),expected,'diagram '+(i+1)+' clones its current geometry');
-   await page.keyboard.press('Escape');assert.ok(await action.evaluate(e=>document.activeElement===e),'diagram '+(i+1)+' returns focus');
-  }
-  return{scientificDiagrams:3,actions:3};
+  assert.equal(await diagrams.count(),3);assert.equal(await actions.count(),0);
+  const old=await diagrams.first().innerHTML();await page.locator('#input-gamma').evaluate(e=>{e.value='70';e.dispatchEvent(new Event('input',{bubbles:true}));});assert.notEqual(await diagrams.first().innerHTML(),old,'look-triangle redraws in place');
+  assert.equal(await diagrams.count(),3);assert.equal(await actions.count(),0);
+  return{scientificDiagrams:3,actions:0};
  });
- await check('Dark live figures retain their surface and text contrast, and large narrative figures fit mobile',async()=>{
+ await check('Dark static references retain their surface and text contrast, and large narrative figures fit mobile',async()=>{
   await page.emulateMedia({colorScheme:'dark'});await goto(topics.find(t=>t.id==='bpsk-detection'));
-  const figure=page.locator('figure').nth(1),source=figure.locator('.figure > svg'),expected=await source.evaluate(svg=>{let n=svg.parentElement,bg;while(n){bg=getComputedStyle(n).backgroundColor;if(bg!=='transparent'&&bg!=='rgba(0, 0, 0, 0)')break;n=n.parentElement;}return{background:bg,fills:[...svg.querySelectorAll('text')].map(e=>getComputedStyle(e).fill)};});
+  const figure=page.locator('figure').first(),source=figure.locator('.course-static > svg'),expected=await source.evaluate(svg=>{let n=svg.parentElement,bg;while(n){bg=getComputedStyle(n).backgroundColor;if(bg!=='transparent'&&bg!=='rgba(0, 0, 0, 0)')break;n=n.parentElement;}return{background:bg,fills:[...svg.querySelectorAll('text')].map(e=>getComputedStyle(e).fill)};});
   await figure.getByRole('button',{name:'Enlarge figure',exact:true}).click();const dialog=page.locator('.figure-viewer');assert.equal(await dialog.locator('[data-viewer-background]').getAttribute('fill'),expected.background);assert.deepEqual(await dialog.locator('.fv-stage > svg text').evaluateAll(es=>es.map(e=>getComputedStyle(e).fill)),expected.fills);
-  const contrast=await dialog.evaluate((e,colors)=>{const luminance=s=>{const v=s.match(/[\d.]+/g).slice(0,3).map(x=>{const c=Number(x)/255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4;});return .2126*v[0]+.7152*v[1]+.0722*v[2];},a=luminance(colors.background);return Math.min(...colors.fills.map(fill=>{const b=luminance(fill);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}));},expected);assert.ok(contrast>=4.5,'enlarged live text contrast '+contrast);await page.screenshot({path:out+'/live-viewer-dark.png'});await page.keyboard.press('Escape');
+  const contrast=await dialog.evaluate((e,colors)=>{const luminance=s=>{const v=s.match(/[\d.]+/g).slice(0,3).map(x=>{const c=Number(x)/255;return c<=.04045?c/12.92:((c+.055)/1.055)**2.4;});return .2126*v[0]+.7152*v[1]+.0722*v[2];},a=luminance(colors.background);return Math.min(...colors.fills.map(fill=>{const b=luminance(fill);return(Math.max(a,b)+.05)/(Math.min(a,b)+.05);}));},expected);assert.ok(contrast>=4.5,'enlarged reference text contrast '+contrast);await page.screenshot({path:out+'/reference-viewer-dark.png'});await page.keyboard.press('Escape');
   await page.setViewportSize({width:320,height:800});await page.goto(base+'/courses/gt/ece6390/study/exam-1/orbits/');await page.locator('.figure-enlarge').first().click();await page.getByRole('button',{name:'Fit the complete figure'}).click();const fitted=await page.locator('.fv-stage').evaluate(stage=>({width:stage.clientWidth,height:stage.clientHeight,imageWidth:stage.firstElementChild.getBoundingClientRect().width,imageHeight:stage.firstElementChild.getBoundingClientRect().height}));assert.ok(fitted.imageWidth<=fitted.width&&fitted.imageHeight<=fitted.height,JSON.stringify(fitted));await page.screenshot({path:out+'/narrative-fit-320.png'});await page.keyboard.press('Escape');await page.setViewportSize({width:1440,height:1050});await page.emulateMedia({colorScheme:'light'});return{darkContrast:contrast,fitted};
  });
  await check('All default topics remain within desktop/mobile viewports in light and dark themes',async()=>{

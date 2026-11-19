@@ -20,6 +20,15 @@ async function labels(){return page.locator('[data-spatial]').evaluateAll(svgs=>
   return[...svg.querySelectorAll('text')].filter(e=>{const b=e.getBBox(),m=svg.getCTM().inverse().multiply(e.getCTM());return[[b.x,b.y],[b.x+b.width,b.y],[b.x,b.y+b.height],[b.x+b.width,b.y+b.height]].some(([x,y])=>{const p=new DOMPoint(x,y).matrixTransform(m);return p.x<-.75||p.y<-.75||p.x>box.width+.75||p.y>box.height+.75;});}).map(e=>e.textContent);
 }));}
 async function view(azimuth,elevation){for(const [id,value]of [['viewAzimuth',azimuth],['viewElevation',elevation]])await page.locator('#input-'+id).evaluate((e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}));},String(value));}
+async function drag(surface,dx=75,dy=45){
+  await surface.scrollIntoViewIfNeeded();
+  const box=await surface.boundingBox();
+  const x=box.x+box.width*.42,y=box.y+box.height*.45;
+  await page.mouse.move(x,y);
+  await page.mouse.down();
+  await page.mouse.move(x+dx,y+dy,{steps:5});
+  await page.mouse.up();
+}
 try{
   await mkdir(output,{recursive:true});
   await check('Spatial camera controls change geometry while preserving physical readouts and route state',async()=>{
@@ -30,6 +39,51 @@ try{
       await page.locator('#reset').click();assert.deepEqual(await labels(),[],id+' default labels');
     }
     return{modules:ids.length};
+  });
+  await check('Mouse drag rotates the live figure, synchronizes the sliders and saves the viewpoint',async()=>{
+    await visit('dipole-pattern');
+    const figure=page.locator('#figure svg[data-spatial]');
+    const stats=await page.locator('#stats').textContent();
+    const azimuth=page.locator('#input-viewAzimuth'),elevation=page.locator('#input-viewElevation');
+    const originalAzimuth=await azimuth.inputValue(),originalElevation=await elevation.inputValue();
+    const original=await figure.innerHTML();
+    await figure.click();
+    assert.equal(await azimuth.inputValue(),originalAzimuth,'A click leaves the camera alone');
+    await drag(figure);
+    assert.notEqual(await figure.innerHTML(),original);
+    assert.notEqual(await azimuth.inputValue(),originalAzimuth);
+    assert.notEqual(await elevation.inputValue(),originalElevation);
+    assert.equal(await page.locator('#stats').textContent(),stats);
+    const rotatedAzimuth=await azimuth.inputValue(),rotatedElevation=await elevation.inputValue();
+    const url=new URL(page.url());
+    assert.equal(url.searchParams.get('c_viewAzimuth'),rotatedAzimuth);
+    assert.equal(url.searchParams.get('c_viewElevation'),rotatedElevation);
+    await page.reload();
+    await figure.waitFor();
+    assert.equal(await azimuth.inputValue(),rotatedAzimuth);
+    assert.equal(await elevation.inputValue(),rotatedElevation);
+    const plot=page.locator('#figure svg[role="img"]:not([data-spatial])').first();
+    await drag(plot);
+    assert.equal(await azimuth.inputValue(),rotatedAzimuth,'Dragging a 2D companion leaves the camera alone');
+    assert.equal(await elevation.inputValue(),rotatedElevation);
+  });
+  await check('Mouse drag is shared by the lab, project figures and course-specific figures',async()=>{
+    const entries=[
+      ['courses/gt/ece6390/lab/#plane-wave','#figure svg[data-spatial]','#input-viewAzimuth'],
+      ['courses/gt/ece6390/topics/orbit-types/','#figure [data-spatial-hit]','#input-viewAzimuth'],
+      ['courses/gt/ece6390/topics/gnss-orbits/','#figure [data-spatial-hit]','#input-viewAzimuth'],
+      ['courses/gt/ece6390/project/','[data-project-module="planar-array"] svg[data-spatial]','#project-planar-array-viewAzimuth'],
+      ['courses/byu/phscs587/topics/density-of-states-dimensions/','svg[data-spatial]','#device-viewAzimuth'],
+      ['courses/gt/ece6390/topics/satellite-scan-angle/','svg[data-spatial]','#device-viewAzimuth'],
+    ];
+    for(const [route,selector,input] of entries){
+      await page.goto(new URL('/'+route,base).href);
+      const figure=page.locator(selector).first(),slider=page.locator(input);
+      await figure.waitFor();
+      const before=await slider.inputValue();
+      await drag(figure);
+      assert.notEqual(await slider.inputValue(),before,route);
+    }
   });
   await check('Spatial labels remain inside their figures at camera corners on phones and desktops',async()=>{
     let states=0;

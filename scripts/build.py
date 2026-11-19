@@ -167,12 +167,25 @@ const save=()=>{
     history.replaceState(null,'',url.pathname+url.search+url.hash);
   }catch{}
 };""")
+    js = replace_once(js, 'function pause(){', '''Spatial.bindDrag($('figure'),
+  ()=>[$('input-viewAzimuth'),$('input-viewElevation')],
+  (azimuth,elevation)=>{
+    values[active].viewAzimuth=azimuth;
+    values[active].viewElevation=elevation;
+    draw();
+  },save);
+function pause(){''')
     js = replace_once(js, 'pause();active=id;const m=modules.find', 'pause();id=root.dataset.topic||id;active=id;const m=modules.find')
     js = replace_once(js, "$('panel').setAttribute('aria-labelledby','tab-'+id)", "$('panel').setAttribute('aria-labelledby',root.dataset.topic?'topic-title':'tab-'+id)")
     js = replace_once(js, "history.replaceState(null,'','#'+id)", "!root.dataset.topic&&history.replaceState(null,'','#'+id)")
     js = replace_once(js, "$('footer').textContent=modules.length+' interactive concepts · Class through October 29, 2026; assigned digital review · Illustrative examples'", "$('footer').textContent=''")
     css += '''
 .legend .legend-key { display:inline-block; width:22px; min-width:22px; height:6px; flex:none; }
+@media (any-pointer:fine) {
+  [data-camera-host] svg[data-spatial]:not(:has([data-spatial-hit])),
+  [data-camera-host] [data-spatial-hit] { cursor:grab; user-select:none; }
+  [data-camera-dragging] svg[data-spatial], [data-camera-dragging] [data-spatial-hit] { cursor:grabbing; }
+}
 .lab-site-header { max-width:1204px; margin:0 auto; padding:18px 0 0; }
 .lab-site-tabs { display:flex; flex-wrap:wrap; gap:5px; border-bottom:1px solid var(--line); }
 .lab-site-tabs a { display:inline-flex; align-items:center; min-height:44px; padding:9px 15px; color:var(--muted); background:var(--soft); border:1px solid var(--line); border-bottom:0; border-radius:8px 8px 0 0; text-decoration:none; }

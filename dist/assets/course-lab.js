@@ -305,7 +305,70 @@ modules.push({id:'planar-array',group:'Antennas',title:'Planar steering',heading
 modules.push({id:'array-footprint',group:'Antennas',title:'Beam to footprint',heading:'An angular beam becomes a patch of ground through geometry',intro:'Change aperture dimensions and slant distance to see a simplified ground footprint stretch.',sources:src('Array-factor, look-angle and free-space link-budget prerequisites'),controls:[ctl('nx','Elements along x',10,160,10,80),ctl('ny','Elements along y',10,160,10,100),ctl('range','Range to flat target plane',20000,45000,1000,36000,'km'),ctl('level','Coverage contour',-20,-1,1,-3,'dB from peak')],render(v,U){const p=(x,y)=>{const r=Math.hypot(v.range,x,y);return af(v.nx,Math.PI*x/r)*af(v.ny,Math.PI*y/r);};let s=heat(U,p,1500,['Cross-range x (km)','Along-range y (km)'],10**(v.level/10));let count=0,total=0;for(let iy=0;iy<80;iy++)for(let ix=0;ix<80;ix++){let x=-1500+3000*(ix+.5)/80,y=-1500+3000*(iy+.5)/80;total++;if(10*Math.log10(Math.max(p(x,y),1e-30))>=v.level)count++;}s+=U.text(505,220,'Flat plane normal to boresight')+U.text(505,310,'Angular width × distance sets size.');return{svg:U.svg(s,'Illustrative array power projected onto a flat ground plane'),stats:[['Relative contour',v.level+' dB'],['Area above contour in shown window',U.fmt(count/total*3000*3000,0)+' km²'],['Active elements',String(v.nx*v.ny)]],equation:'u = x/√(r₀²+x²+y²), &nbsp; v = y/√(r₀²+x²+y²); &nbsp; Pₙ(x,y) = |AF(u,v)/N|²',note:'This is a flat-plane geometric preview using relative power, not an absolute −80 dBm coverage claim. The outlined contour and sampled area cover only the shown ±1500 km window; coverage can extend beyond it. The area uses an illustrative 80×80 sample. The actual homework instead needs spherical georeferenced geometry, absolute gain normalization, slant-range loss and every supplied raster location.',question:'If range doubles and the angular pattern stays fixed, how should footprint width and area scale?'};},checks:()=>[{name:'Boresight on flat plane has normalized unit power',pass:af(80,0)*af(100,0)===1},{name:'Area scales as distance squared for a fixed angular contour',pass:(2*2)===4}]});
 
 function inv3(a){const m=a.map((r,i)=>r.concat([0,0,0].map((_,j)=>+(i===j))));for(let j=0;j<3;j++){let p=j;for(let k=j+1;k<3;k++)if(Math.abs(m[k][j])>Math.abs(m[p][j]))p=k;[m[p],m[j]]=[m[j],m[p]];let q=m[j][j];if(Math.abs(q)<1e-12)return null;for(let k=0;k<6;k++)m[j][k]/=q;for(let i=0;i<3;i++)if(i!==j){let q=m[i][j];for(let k=0;k<6;k++)m[i][k]-=q*m[j][k];}}return m.map(r=>r.slice(3));}
-modules.push({id:'gnss-orbits',group:'Navigation',title:'GPS orbit geometry',heading:'Inclined MEO planes spread satellites across the sky',intro:'Compare a simple six-plane constellation as Earth rotates beneath its orbiting satellites.',sources:src('October 29 GPS introduction, note page 6; GPS.gov space segment'),controls:[ctl('inclination','Inclination',0,90,1,55,'°'),ctl('latitude','Observer latitude',-80,80,2,34,'°'),ctl('time','Elapsed time',0,24,.25,0,'h')],animate:{id:'time',min:0,max:24,step:.08},render(v,U){const R=6378,r=26560,w=tau/86164.0905,n=tau/(86164.0905/2),t=v.time*3600,i=U.rad(v.inclination),la=U.rad(v.latitude),lo=U.rad(-84)+w*t,obs=[R*Math.cos(la)*Math.cos(lo),R*Math.cos(la)*Math.sin(lo),R*Math.sin(la)],dot=(a,b)=>a.reduce((s,x,j)=>s+x*b[j],0),az=-Math.atan(.3),el=.24,p=a=>[300+175*(Math.cos(az)*a[0]-Math.sin(az)*a[1])/r,220+175*(Math.sin(el)*(Math.sin(az)*a[0]+Math.cos(az)*a[1])-Math.cos(el)*a[2])/r];let s=U.circle(300,220,175*R/r,'var(--earth)',U.C.ink),visible=0;for(let plane=0;plane<6;plane++){const a=plane*tau/6,pos=q=>[r*(Math.cos(a)*Math.cos(q)-Math.sin(a)*Math.cos(i)*Math.sin(q)),r*(Math.sin(a)*Math.cos(q)+Math.cos(a)*Math.cos(i)*Math.sin(q)),r*Math.sin(i)*Math.sin(q)];s+=U.path(U.range(90,q=>p(pos(q*tau))),U.C.grid,1);for(let j=0;j<4;j++){const q=n*t+j*tau/4+plane*tau/24,ss=pos(q),ok=dot(ss.map((x,k)=>x-obs[k]),obs)>0;if(ok){visible++;s+=U.line(...p(obs),...p(ss),U.C.a,1,'3 4');}s+=U.circle(...p(ss),ok?4:2.5,ok?U.C.a:U.C.muted,ok?U.C.a:U.C.muted);}}s+=U.circle(...p(obs),5,U.C.b,U.C.b)+U.text(520,70,'Six planes; four satellites per plane')+U.text(520,108,'Illustrative phasing, not live GPS slots')+U.text(520,175,'Orange point: rotating Earth station')+U.text(520,216,'Dashed rays: ideal above-horizon links')+U.text(520,290,'GNSS benefits from varied directions,')+U.text(520,321,'not simply a large satellite count.');return{svg:U.svg(s,'Idealized 24-satellite inclined MEO constellation and visibility'),stats:[['Toy satellites above horizon',String(visible)],['Nominal orbital altitude',U.fmt(r-R,0)+' km'],['Idealized period',U.fmt(86164.0905/7200,3)+' h']],equation:'T ≈ ½ sidereal day; &nbsp; h ≈ 20,200 km; &nbsp; i ≈ 55°',note:'The orbit radius and half-sidereal-day period are rounded GPS teaching values. Earth and orbit share one spatial scale, with an orthographic projection. This idealized 24-satellite phasing does not guarantee a particular visibility count or represent the current operational constellation; terrain and elevation masks are omitted.',question:'Why can satellites clustered in one part of the sky give worse positioning than the same count spread widely?'};},checks:()=>[{name:'Half sidereal period about11.97 hours',pass:Math.abs(86164.0905/7200-11.9672348)<1e-6},{name:'GPS nominal altitude is MEO not GEO',pass:26560-6378>20000&&26560-6378<21000}]});
+modules.push({
+  id:'gnss-orbits', group:'Navigation', title:'GPS orbit geometry',
+  heading:'Inclined MEO planes spread satellites across the sky',
+  intro:'Compare a simple six-plane constellation as Earth rotates beneath its orbiting satellites.',
+  sources:src('October 29 GPS introduction, note page 6; GPS.gov space segment'),
+  spatial:'Six inclined orbital planes and above-horizon links from a rotating Earth station',
+  controls:[
+    ctl('inclination','Inclination',0,90,1,55,'°'),
+    ctl('latitude','Observer latitude',-80,80,2,34,'°'),
+    ctl('time','Elapsed time',0,24,.25,0,'h'),
+    ctl('viewAzimuth','3D view azimuth',-180,180,1,-17,'°'),
+    ctl('viewElevation','3D view elevation',5,80,1,14,'°'),
+  ],
+  animate:{id:'time',min:0,max:24,step:.08},
+  render(v,U){
+    const R=6378, r=26560, t=v.time*3600, inclination=U.rad(v.inclination);
+    const earthRate=tau/86164.0905, orbitRate=tau/(86164.0905/2);
+    const latitude=U.rad(v.latitude), longitude=U.rad(-84)+earthRate*t;
+    const observer=[R*Math.cos(latitude)*Math.cos(longitude),R*Math.cos(latitude)*Math.sin(longitude),R*Math.sin(latitude)];
+    const camera=U.spatial.scene(U,v,{center:[300,220],scale:175/r});
+    const project=point=>camera.project(point).slice(0,2);
+    const observerXY=project(observer);
+    let graphic=U.circle(300,220,175*R/r,'var(--earth)',U.C.ink), visible=0;
+    for(let plane=0;plane<6;plane++){
+      const node=plane*tau/6;
+      const position=angle=>[
+        r*(Math.cos(node)*Math.cos(angle)-Math.sin(node)*Math.cos(inclination)*Math.sin(angle)),
+        r*(Math.sin(node)*Math.cos(angle)+Math.cos(node)*Math.cos(inclination)*Math.sin(angle)),
+        r*Math.sin(inclination)*Math.sin(angle),
+      ];
+      graphic+=U.path(U.range(90,q=>project(position(q*tau))),U.C.grid,1);
+      for(let satellite=0;satellite<4;satellite++){
+        const phase=orbitRate*t+satellite*tau/4+plane*tau/24;
+        const point=position(phase), satelliteXY=project(point);
+        const aboveHorizon=point.reduce((sum,x,k)=>sum+(x-observer[k])*observer[k],0)>0;
+        if(aboveHorizon){
+          visible++;
+          graphic+=U.line(...observerXY,...satelliteXY,U.C.a,1,'3 4');
+        }
+        const color=aboveHorizon?U.C.a:U.C.muted;
+        graphic+=U.circle(...satelliteXY,aboveHorizon?4:2.5,color,color);
+      }
+    }
+    graphic+=U.circle(...observerXY,5,U.C.b,U.C.b)
+      +U.text(520,70,'Six planes; four satellites per plane')
+      +U.text(520,108,'Illustrative phasing, not live GPS slots')
+      +U.text(520,175,'Orange point: rotating Earth station')
+      +U.text(520,216,'Dashed rays: ideal above-horizon links')
+      +U.text(520,290,'Varied satellite directions improve')
+      +U.text(520,321,'positioning geometry.');
+    graphic+='<rect data-spatial-hit x="100" y="25" width="400" height="390" fill="transparent" aria-hidden="true"/>';
+    return {
+      svg:U.svg(graphic,'Rotatable idealized 24-satellite inclined MEO constellation and visibility').replace('<svg ','<svg data-spatial="true" '),
+      stats:[['Toy satellites above horizon',String(visible)],['Nominal orbital altitude',U.fmt(r-R,0)+' km'],['Idealized period',U.fmt(86164.0905/7200,3)+' h']],
+      equation:'T ≈ ½ sidereal day; &nbsp; h ≈ 20,200 km; &nbsp; i ≈ 55°',
+      note:'The orbit radius and half-sidereal-day period are rounded GPS teaching values. Earth and orbit share one spatial scale, with an orthographic projection. This idealized 24-satellite phasing does not guarantee a particular visibility count or represent the current operational constellation; terrain and elevation masks are omitted.',
+      question:'Why can satellites clustered in one part of the sky give worse positioning than the same count spread widely?',
+    };
+  },
+  checks:()=>[
+    {name:'Half sidereal period about11.97 hours',pass:Math.abs(86164.0905/7200-11.9672348)<1e-6},
+    {name:'GPS nominal altitude is MEO not GEO',pass:26560-6378>20000&&26560-6378<21000},
+  ],
+});
 
 modules.push({id:'doppler-pass',group:'Navigation',title:'Doppler pass',heading:'A nearer pass changes its range rate more sharply',intro:'Use a straight satellite pass to connect closest approach, frequency shift and cross-track distance.',sources:src('October 29 Doppler localization discussion; NOAA SARSAT'),controls:[ctl('cross','Cross-track distance',0,1800,50,400,'km'),ctl('speed','Along-track speed',5,8,.1,7.4,'km/s'),ctl('time','Time from closest approach',-500,500,10,0,'s')],animate:{id:'time',min:-500,max:500,step:5},render(v,U){const h=850,f=406e6,df=t=>-f/c*(1000*v.speed*v.speed*t/Math.hypot(h,v.cross,v.speed*t)),series=[{name:'Selected cross-track distance',color:U.C.a,points:U.range(200,q=>{const t=-500+1000*q;return[t,df(t)/1000];})},{name:'Closest approach',color:U.C.b,dash:'5 4',points:[[0,-11],[0,11]]}];let s=U.line(80,150,700,150,U.C.grid)+U.circle(390,315,7,U.C.b,U.C.b)+U.text(400,342,'Beacon')+U.circle(390+v.speed*v.time*.06,150,6,U.C.a,U.C.a)+U.arrow(335,150,450,150,U.C.a)+U.line(390,315,390+v.speed*v.time*.06,150,U.C.c,1,'4 4')+U.text(65,45,'Along-track pass: geometric distances shown schematically')+U.text(70,390,'The two sides of the ground track have the same ideal Doppler history.');return{svg:U.svg(s,'Straight satellite pass and beacon range geometry')+U.plot(series,{xmin:-500,xmax:500,ymin:-11,ymax:11,xlabel:'Time from closest approach (s)',ylabel:'Doppler shift (kHz)',title:'A 406 MHz beacon in a simplified pass model'}),stats:[['Current shift',U.fmt(df(v.time)/1000,3)+' kHz'],['Closest slant distance',U.fmt(Math.hypot(h,v.cross),0)+' km'],['Slope at zero crossing',U.fmt(-f/c*1000*v.speed*v.speed/Math.hypot(h,v.cross),2)+' Hz/s']],equation:'r(t) = √[h²+b²+(vt)²]; &nbsp; Δf ≈ −(f/c) v²t/r(t)',note:'Straight constant-speed pass over a stationary beacon; h = 850 km and frequency = 406 MHz are supplied here. Zero shift marks closest approach in this model, not universally an exact beacon latitude. A single pass can leave a left/right ambiguity; actual orbit motion, Earth rotation and oscillator offsets need a fuller solution.',question:'Why can a gentler zero-crossing slope indicate a more distant track without identifying which side of the track the beacon lies on?'};},checks:()=>[{name:'Closest approach has zero geometric range rate',pass:7.4*7.4*0/Math.hypot(850,400,0)===0},{name:'Greater cross track reduces zero-crossing slope magnitude',pass:1/Math.hypot(850,1000)<1/850}]});
 
@@ -722,10 +785,14 @@ modules.find(m=>m.id==='array-normalization').spatialPower=(theta,phi,v)=>arrayP
   const number=(x,d=0)=>x.toLocaleString('en-US',{maximumFractionDigits:d,minimumFractionDigits:d});
   const marker=(U,p,label,color,dx=8,dy=-9)=>U.circle(p[0],p[1],4,color,color)+U.text(p[0]+dx,p[1]+dy,label,'start',color);
 
-  function spatialFigure(el,current,U) {
-    const C=U.C,scale=150/(el.a*(1+el.e)),center=[228,280],yaw=-.62,pitch=.47;
-    const basis=v=>{const x=Math.cos(yaw)*v[0]-Math.sin(yaw)*v[1],d=Math.sin(yaw)*v[0]+Math.cos(yaw)*v[1];return [x,Math.sin(pitch)*d-Math.cos(pitch)*v[2],Math.cos(pitch)*d+Math.sin(pitch)*v[2]];};
-    const project=v=>{const q=basis(v);return [center[0]+scale*q[0],center[1]+scale*q[1]];};
+  function spatialFigure(el,current,values,U) {
+    const C=U.C,scale=150/(el.a*(1+el.e)),center=[228,280];
+    const camera=U.spatial.scene(U,values,{center,scale});
+    const project=v=>camera.project(v).slice(0,2);
+    const behindEarth=v=>{
+      const [x,y,depth]=camera.project(v);
+      return depth<0&&Math.hypot(x-center[0],y-center[1])<EARTH*scale;
+    };
     let out=U.text(55,30,el.name+' · '+(el.i>90?'retrograde':Math.abs(el.i-90)<1e-7?'polar':'prograde'));
     out+=U.text(55,58,'e = '+number(el.e,2)+'   i = '+number(el.i,1)+'°   a = '+number(el.a)+' km');
     out+=U.text(55,94,'Space-fixed view: Earth rotates inside the orbital plane');
@@ -737,15 +804,15 @@ modules.find(m=>m.id==='array-normalization').spatialPower=(theta,phi,v)=>arrayP
     // Near-hemisphere wire lines are visible; the globe masks orbit segments behind it below.
     for(const lat of [-60,-30,0,30,60]) {
       let part=[];
-      for(let j=0;j<=120;j++) {const lon=j*TAU/120+TAU*current.time/DAY,v=[EARTH*Math.cos(rad(lat))*Math.cos(lon),EARTH*Math.cos(rad(lat))*Math.sin(lon),EARTH*Math.sin(rad(lat))];if(basis(v)[2]>=0)part.push(project(v));else {if(part.length>1)out+=U.path(part,C.grid,1);part=[];}}
+      for(let j=0;j<=120;j++) {const lon=j*TAU/120+TAU*current.time/DAY,v=[EARTH*Math.cos(rad(lat))*Math.cos(lon),EARTH*Math.cos(rad(lat))*Math.sin(lon),EARTH*Math.sin(rad(lat))];const [x,y,depth]=camera.project(v);if(depth>=0)part.push([x,y]);else {if(part.length>1)out+=U.path(part,C.grid,1);part=[];}}
       if(part.length>1)out+=U.path(part,C.grid,1);
     }
     const prime=Array.from({length:61},(_,j)=>{const lat=(-90+j*3)*DEG,lon=TAU*current.time/DAY;return [EARTH*Math.cos(lat)*Math.cos(lon),EARTH*Math.cos(lat)*Math.sin(lon),EARTH*Math.sin(lat)];});
-    let part=[];for(const v of prime){if(basis(v)[2]>=0)part.push(project(v));else {if(part.length>1)out+=U.path(part,C.b,1.5);part=[];}}if(part.length>1)out+=U.path(part,C.b,1.5);
+    let part=[];for(const v of prime){const [x,y,depth]=camera.project(v);if(depth>=0)part.push([x,y]);else {if(part.length>1)out+=U.path(part,C.b,1.5);part=[];}}if(part.length>1)out+=U.path(part,C.b,1.5);
     out+=U.arrow(...project([0,0,-axis]),...project([0,0,axis]),C.muted)+U.text(...project([0,0,axis*1.12]),'N','middle');
     // Redraw the front part of the orbit; hide only the portion actually occulted by Earth.
-    part=[];for(let j=0;j<=360;j++){const q=state(el,el.T*j/360).xyz,b=basis(q),ok=b[2]>=0||Math.hypot(b[0],b[1])>EARTH;if(ok)part.push(project(q));else {if(part.length>1)out+=U.path(part,C.a,2.5);part=[];}}if(part.length>1)out+=U.path(part,C.a,2.5);
-    const sp=project(current.xyz),depth=basis(current.xyz),hidden=depth[2]<0&&Math.hypot(depth[0],depth[1])<EARTH;
+    part=[];for(let j=0;j<=360;j++){const q=state(el,el.T*j/360).xyz;if(!behindEarth(q))part.push(project(q));else {if(part.length>1)out+=U.path(part,C.a,2.5);part=[];}}if(part.length>1)out+=U.path(part,C.a,2.5);
+    const sp=project(current.xyz),hidden=behindEarth(current.xyz);
     if(!hidden)out+=U.circle(...sp,5.5,C.b,C.b);
     out+=U.text(55,460,'Orange: satellite; orange meridian: 0° longitude');
     out+=U.text(55,486,hidden?'Satellite is behind Earth in this camera view.':'Earth blocks the far side of the orbit in this camera view.');
@@ -766,7 +833,8 @@ modules.find(m=>m.id==='array-normalization').spatialPower=(theta,phi,v)=>arrayP
     out+=U.text(465,516,'Speed now: '+number(current.speed,2)+' km/s');
     out+=U.text(465,542,'Elapsed: '+number(current.time/3600,2)+' h');
     out+=U.text(465,568,el.e>1e-8?'Longer dwell near apogee; faster near perigee.':'A circular orbit has no unique perigee.');
-    return U.svg(out,'Orbit family in a fixed spatial view and its orbital plane, with equal length scales within each view',800,600);
+    out+='<rect data-spatial-hit x="20" y="110" width="410" height="335" fill="transparent" aria-hidden="true"/>';
+    return U.svg(out,'Orbit family in a rotatable spatial view and its orbital plane, with equal length scales within each view',800,600).replace('<svg ','<svg data-spatial="true" ');
   }
 
   function groundFigure(el,current,U) {
@@ -791,17 +859,20 @@ modules.find(m=>m.id==='array-normalization').spatialPower=(theta,phi,v)=>arrayP
   modules.push({
     id:'orbit-types',group:'Orbits',title:'Orbit types',heading:'Orbit shape, tilt and period determine where a satellite travels',
     intro:'Compare the same satellite state in space, in its orbital plane, and above Earth’s latitude–longitude grid.',
+    spatial:'Space-fixed orbit, Earth’s spin axis, and the rotating prime meridian',
     controls:[
       {id:'preset',label:'Orbit family',value:0,options:presets.map((p,j)=>({value:j,label:p.name}))},
       {id:'progress',label:'Elapsed orbital periods',min:0,max:200,step:1,value:50,unit:'%'},
       {id:'node',label:'Node longitude Ω at epoch',min:-180,max:180,step:5,value:-85,unit:'°'},
       {id:'apsis',label:'Rotate apsides Δω',min:0,max:360,step:5,value:0,unit:'°'},
+      {id:'viewAzimuth',label:'3D view azimuth',min:-180,max:180,step:1,value:-36,unit:'°'},
+      {id:'viewElevation',label:'3D view elevation',min:5,max:80,step:1,value:27,unit:'°'},
     ],
     animate:{id:'progress',min:0,max:200,step:.6},
     sources:['Course: circular and elliptical orbits, orbital elements and satellite look angles','Course: NASA Earth Observatory: Catalog of Earth Satellite Orbits, https://science.nasa.gov/earth/earth-observatory/catalog-of-earth-satellite-orbits/','Course: NASA: Basics of Space Flight, Chapter 5, https://science.nasa.gov/learn/basics-of-space-flight/chapter5-1/','Course: ESA Space Debris Office: Tundra Disposal Orbit Study, https://conference.sdo.esoc.esa.int/proceedings/sdc7/paper/328'],
     render(values,U) {
       const el=elements(values),q=state(el,values.progress/100*el.T);
-      return {svg:spatialFigure(el,q,U)+groundFigure(el,q,U),stats:[['Altitude now',number(q.altitude)+' km'],['Orbital period',number(el.T/3600,3)+' h'],['Subpoint latitude / longitude',hemi(q.latitude,'N','S')+' / '+(q.longitudeDefined?hemi(q.longitude,'E','W'):'no unique longitude at pole')]],
+      return {svg:spatialFigure(el,q,values,U)+groundFigure(el,q,U),stats:[['Altitude now',number(q.altitude)+' km'],['Orbital period',number(el.T/3600,3)+' h'],['Subpoint latitude / longitude',hemi(q.latitude,'N','S')+' / '+(q.longitudeDefined?hemi(q.longitude,'E','W'):'no unique longitude at pole')]],
         equation:'T = 2π√(a³/μ); &nbsp; M = nt = E − e sin E; &nbsp; r = a(1 − e cos E); &nbsp; h = r − R<sub>E</sub><br>r<sub>ECI</sub> = Rz(Ω) Rx(i) Rz(ω) r<sub>plane</sub>; &nbsp; r<sub>ECEF</sub> = Rz(−ω<sub>E</sub>t) r<sub>ECI</sub>',
         note:el.description+' Ideal bound two-body ellipses, fixed elements, spherical Earth and uniform sidereal rotation; no J2, atmosphere, eclipses, thrust or precession. The 63.4° critical inclination has a J2 motivation, but that perturbation is not simulated. Epoch Earth angle is 0°. Ω is measured eastward from the fixed epoch x-axis; for an equatorial orbit there is no unique ascending node. The apsis control adds Δω to the preset argument; for a circle it changes the phase reference because perigee is undefined. Dots and trails show positions, not ground-station visibility or coverage. Animation uses the same fraction of an orbit for each family, not the same number of real seconds.',
         question:'Which preset keeps one subpoint fixed? Compare the two geosynchronous variations, then explain why the eccentric-orbit dots cluster near apogee and how the apsis control changes its latitude.'};
@@ -1383,6 +1454,13 @@ const save=()=>{
     history.replaceState(null,'',url.pathname+url.search+url.hash);
   }catch{}
 };
+Spatial.bindDrag($('figure'),
+  ()=>[$('input-viewAzimuth'),$('input-viewElevation')],
+  (azimuth,elevation)=>{
+    values[active].viewAzimuth=azimuth;
+    values[active].viewElevation=elevation;
+    draw();
+  },save);
 function pause(){playing=false;cancelAnimationFrame(frame);const b=$('play');if(b){b.textContent='Play';b.setAttribute('aria-pressed','false')}}
 function draw(){const m=modules.find(m=>m.id===active);try{const r=m.render(values[active],U);$('figure').innerHTML=r.svg;$('stats').innerHTML=(r.stats||[]).slice(0,3).map(s=>`<div class="stat"><span>${esc(s[0])}</span><strong>${esc(s[1])}</strong></div>`).join('');$('equation').innerHTML=r.equation||'';$('note').textContent=r.note||'';$('question').textContent=r.question?'Think it through: '+r.question:'';$('figure').classList.remove('error');for(const c of m.controls){const out=$('value-'+c.id);if(out)out.textContent=fmt(values[active][c.id],3)+(c.unit?' '+c.unit:'')}}catch(e){$('figure').classList.add('error');$('figure').textContent='This graphic could not be drawn: '+e.message;console.error(active,e)}}
 function select(id,focus=false){pause();id=root.dataset.topic||id;active=id;const m=modules.find(x=>x.id===id);$('subjects').innerHTML=groups.map(([g,label])=>`<button type="button" role="tab" id="subject-${g}" aria-selected="${m.group===g}" aria-controls="panel">${label}</button>`).join('');$('concepts').innerHTML=modules.filter(x=>x.group===m.group).map(x=>`<button type="button" role="tab" id="tab-${x.id}" aria-selected="${id===x.id}" aria-controls="panel">${esc(x.title)}</button>`).join('');$('panel').setAttribute('aria-labelledby',root.dataset.topic?'topic-title':'tab-'+id);$('heading').textContent=m.heading;const lesson=$('topic-lesson');if(lesson)lesson.href='../topics/'+id+'/';$('intro').textContent=m.intro;$('controls').innerHTML=m.controls.map(c=>`<div class="control"><label for="input-${c.id}"><span>${esc(c.label)}</span>${c.options?'':`<output id="value-${c.id}" for="input-${c.id}"></output>`}</label>${c.options?`<select id="input-${c.id}">${c.options.map(o=>`<option value="${o.value}" ${values[id][c.id]===o.value?'selected':''}>${esc(o.label)}</option>`).join('')}</select>`:`<input type="range" id="input-${c.id}" min="${c.min}" max="${c.max}" step="${c.step}" value="${values[id][c.id]}">`}</div>`).join('')+`<div class="actions">${m.animate?'<button type="button" id="play" aria-pressed="false">Play</button>':''}<button type="button" id="reset">Reset example</button></div>`;$('sources').innerHTML=(m.sources||[]).map(sourceLabel).filter((s,i,a)=>a.indexOf(s)===i).map(s=>`<li>${esc(s)}</li>`).join('');$('footer').textContent='';for(const c of m.controls)$('input-'+c.id).addEventListener('input',e=>{pause();values[id][c.id]=Number(e.target.value);draw();save()});$('reset').onclick=()=>{pause();values[id]=Object.fromEntries(m.controls.map(c=>[c.id,c.value]));select(id)};if(m.animate)$('play').onclick=()=>{if(playing){pause();return}playing=true;$('play').textContent='Pause';$('play').setAttribute('aria-pressed','true');const a=m.animate;if(values[id][a.id]>=a.max)values[id][a.id]=a.min;lastFrame=0;const tick=t=>{if(!playing)return;if(t-lastFrame>=80){lastFrame=t;values[id][a.id]=Math.min(a.max,values[id][a.id]+a.step);$('input-'+a.id).value=values[id][a.id];draw();if(values[id][a.id]>=a.max){pause();save();return}}frame=requestAnimationFrame(tick)};frame=requestAnimationFrame(tick)};draw();save();try{!root.dataset.topic&&history.replaceState(null,'','#'+id)}catch{}if(focus)$('tab-'+id).focus()}
