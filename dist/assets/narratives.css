@@ -1,0 +1,30 @@
+.study-page { max-width:850px; margin:32px auto; line-height:1.75; font-size:1.05rem; }
+.study-page h1 { font-size:clamp(1.8rem,4vw,2.6rem); line-height:1.25; margin:0 0 28px; }
+.study-page h2 { font-size:1.45rem; line-height:1.35; margin:44px 0 18px; }
+.study-page h3 { font-size:1.2rem; margin-top:32px; }
+.study-page p { max-width:76ch; }
+.study-page a { color:var(--a); text-underline-offset:3px; }
+.study-page .narrative-figure { margin:24px 0 30px; }
+.narrative-figure .figure { width:min(100%,650px); margin:auto; padding:12px; background:#fff; border-radius:6px; }
+.narrative-figure img { display:block; width:100%; height:auto; }
+.narrative-figure figcaption { max-width:76ch; margin:14px auto 0; font-size:.95rem; line-height:1.65; }
+.narrative-figure .figure-enlarge { display:block; margin:12px auto; }
+.narrative-equation { max-width:100%; overflow-x:auto; padding:10px 0; margin:10px 0; }
+.narrative-equation math { min-width:min-content; }
+.study-page math[display=inline] { font-size:1.03em; display:inline-block; max-width:100%; overflow-x:auto; vertical-align:middle; }
+.study-page table { display:block; overflow-x:auto; max-width:100%; border-collapse:collapse; font-size:.95rem; margin:20px 0; }
+.study-page th,.study-page td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+.study-page caption { text-align:left; margin-bottom:10px; font-weight:650; }
+.narrative-sources { margin:38px 0; }
+.narrative-sources li { margin:12px 0; }
+.study-links { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 28px; padding-left:22px; }
+.study-chapters { padding-left:28px; }
+.study-chapters li { padding:12px 0; border-bottom:1px solid var(--line); }
+.study-chapters a { display:block; }
+.study-cards { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:20px; list-style:none; padding:0; }
+.study-cards a { display:flex; flex-direction:column; gap:10px; height:100%; padding:22px; border:1px solid var(--line); border-radius:8px; background:var(--surface); text-decoration:none; }
+.study-cards strong { font-size:1.2rem; }
+.study-cards span { color:var(--muted); line-height:1.6; }
+.fv-stage img { display:block; max-width:none; height:auto; }
+@media(max-width:700px) { .study-cards,.study-links { grid-template-columns:1fr; } .study-page { margin-top:24px; font-size:1rem; } .narrative-figure .figure { padding:6px; } }
+@media print { .study-page { max-width:none; font-size:11pt; } .narrative-figure { break-inside:avoid; } .study-experiments,.figure-enlarge,.study-page .practice,.study-page .topic-sequence { display:none; } }

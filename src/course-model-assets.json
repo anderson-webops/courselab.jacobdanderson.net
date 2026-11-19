@@ -7,5 +7,8 @@
   ],
   "gt/ece6612": [
     "security-models.js"
+  ],
+  "gt/ece6390": [
+    "ece6390-models.js"
   ]
 }

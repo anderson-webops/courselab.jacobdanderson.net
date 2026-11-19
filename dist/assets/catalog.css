@@ -33,3 +33,8 @@
 .related-course-links { display:flex; flex-wrap:wrap; gap:10px 22px; margin:16px 0; font-size:1rem; }
 .related-course-links a { color:inherit; text-underline-offset:4px; }
 .concept-lesson { display:inline-block; margin:0 0 16px; color:var(--a); }
+
+.library-extensions { margin-top:38px; border-top:1px solid var(--line); padding-top:16px; }
+.library-extensions ul { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px 24px; padding-left:20px; }
+.library-extensions a { line-height:1.6; }
+@media(max-width:700px) { .library-extensions ul { grid-template-columns:1fr; } }

@@ -20,6 +20,7 @@
 .topic-demonstration .workspace { display:grid; grid-template-columns:minmax(0,1fr) 260px; align-items:start; gap:24px; }
 .topic-demonstration .visual { min-width:0; }
 .topic-demonstration .figure { background:var(--surface); border:1px solid var(--line); }
+.topic-demonstration .figure > svg { min-width:0; }
 .topic-demonstration figcaption { color:var(--muted); font-size:.95rem; line-height:1.5; margin:16px 0 20px; }
 .topic-page .equation { line-height:1.7; overflow-wrap:anywhere; }
 .topic-page .note { max-width:80ch; line-height:1.6; }

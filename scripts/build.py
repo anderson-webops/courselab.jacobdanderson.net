@@ -324,6 +324,7 @@ def build():
     start = lab_js.index('const C=')
     end = lab_js.index('const Orb =', start)
     helpers = lab_js[start:end] + (ROOT/'src/spatial-figures.js').read_text()
+    helpers = helpers.replace('<text class="axis-title"', '<text class="axis-title" fill="${C.ink}"')
     write_generated(assets/'figure-utils.js', "(() => {'use strict';\n"+helpers+'\nwindow.CourseFigureU=U;\n})();')
     lab_js = lab_js[:start]+'const U=window.CourseFigureU;\nconst {C,esc,fmt,text,line,path,circle,arrow,svg,range,legend,wheel,plot}=U;\n'+lab_js[end:]
     lab = lab.replace('<script src="../assets/course-lab.js"', '<script src="../assets/figure-utils.js" defer></script>\n<script src="../assets/course-lab.js"')
@@ -349,7 +350,7 @@ def build():
     provenance = json.loads((ROOT / 'src/provenance.json').read_text())
     provenance['version'] = (ROOT / 'VERSION').read_text().strip()
     for source in sorted((ROOT/'src').rglob('*')):
-        if source.is_file() and source.suffix in ['.js','.css','.html','.svg','.json'] and source.name != 'provenance.json':
+        if source.is_file() and source.suffix in ['.js','.css','.html','.svg','.json','.png'] and source.name != 'provenance.json':
             provenance['source_sha256'][source.relative_to(ROOT/'src').as_posix()] = hashlib.sha256(source.read_bytes()).hexdigest()
     (dest / 'source-info.json').write_text(json.dumps(provenance, indent=2) + '\n')
     print(f'Built Course Lab with {len(list(dest.rglob('*.html')))} pages; all runtime assets are local.')

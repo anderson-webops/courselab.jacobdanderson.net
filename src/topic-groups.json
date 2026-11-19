@@ -114,17 +114,38 @@
         "nyquist-pulse",
         "rectangular-pulse-spectrum",
         "matched-filter",
-        "ofdm-multipath",
-        "modem-chain"
+        "ofdm-multipath"
       ]
     },
     {
-      "title": "Modulation, rates and power",
+      "title": "Modulation and satellite broadcasting",
       "ids": [
         "iq-constellation",
+        "broadcast-constellations",
         "rate-bandwidth",
+        "modem-chain",
+        "amplifier-backoff",
         "adaptive-modcod",
-        "amplifier-backoff"
+        "dvbs2-chain"
+      ]
+    },
+    {
+      "title": "Detection and reliability",
+      "ids": [
+        "energy-per-bit",
+        "bpsk-detection",
+        "qam-error-probability",
+        "soft-decisions"
+      ]
+    },
+    {
+      "title": "Channel coding and recovery",
+      "ids": [
+        "product-parity",
+        "block-code-distance",
+        "convolutional-code",
+        "iterative-decoding",
+        "ldpc-constraints"
       ]
     },
     {

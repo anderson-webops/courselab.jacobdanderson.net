@@ -1,0 +1,124 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="referrer" content="no-referrer"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'"><title>Read This Guide as One Satellite Link | Course Lab</title><link rel="canonical" href="https://courselab.jacobdanderson.net/courses/gt/ece6390/study/exam-2/introduction/"><link rel="icon" href="../../../../../../assets/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../../../../../../assets/course-lab.css"><link rel="stylesheet" href="../../../../../../assets/topics.css"><link rel="stylesheet" href="../../../../../../assets/catalog.css"><link rel="stylesheet" href="../../../../../../assets/figure-viewer.css"><link rel="stylesheet" href="../../../../../../assets/narratives.css"><script src="../../../../../../assets/topic-practice.js" defer></script><script src="../../../../../../assets/figure-viewer.js" defer></script><link rel="stylesheet" href="../../../../../../assets/status-slots.css"><script src="../../../../../../assets/status-slots.js" defer></script></head><body class="topic-site"><a class="lab-skip" href="#main">Skip to content</a><header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary"><a data-site-view="courses" href="../../../../../">Courses</a><a data-site-view="topics" href="../../../../../../topics/" aria-current="page">Topics</a><a data-site-view="simulations" href="../../../lab/">Simulations</a></div><a data-site-view="search" href="../../../../../../search/">Search</a></nav></header><main id="main" class="study-page"><p class="topic-breadcrumb"><a href="../../../">ECE 6390</a> / <a href="../">Exam 2</a></p><h1 id="sec:intro">Read This Guide as One Satellite Link</h1>
+<figure class="narrative-figure" id="fig:roadmap"><div class="figure course-static"><img src="../../../../../../assets/narratives/exam-2/audit-front-roadmap-3d.png" alt="A three-dimensional schematic places the antenna, receiver and navigation tasks on Earth. Blue chapters follow the power from a transmitting antenna to a receiver; green chapters follow the information that power carries; the orange chapter uses timing signals to locate a receiver. The sketch is schematic and not to scale." width="1351" height="1600" loading="lazy" decoding="async"></div><figcaption><strong>Fig. 1.</strong> A three-dimensional schematic places the antenna, receiver and navigation tasks on Earth. Blue chapters follow the power from a transmitting antenna to a receiver; green chapters follow the information that power carries; the orange chapter uses timing signals to locate a receiver. The sketch is schematic and not to scale.</figcaption></figure>
+<p>Fig. <a href=".#fig:roadmap">1</a> shows where each chapter acts on the same physical link. A geostationary satellite radiates a beam toward a ground station; the ground station turns the arriving field back into bits; a separate set of navigation satellites lets a handheld receiver measure where it is. Each chapter answers one question about that picture, and each answer becomes the input to the next chapter.</p>
+<p>One running example threads through the guide. A geostationary satellite at Atlanta’s longitude sends a 10 GHz downlink to a 1 m dish in Atlanta. Chapter <a href="../apertures/">II</a> gives the dish’s gain, Chapter <a href="../link/">IV</a> its look angle, slant range and received power, and Chapter <a href="../modulation/">VII</a> its noise, symbol-energy ratio and decision quality. Following one set of numbers from antenna to decision shows exactly where each formula’s inputs come from.</p>
+<p>Table <a href=".#tab:running-inputs">I</a> collects the running example’s independent choices. Geometry, frequency, antenna efficiency, transmitter settings and receiver assumptions enter at different points; the later chapters calculate their consequences. The model assumes far-field free-space propagation, matched pointing and polarization, and no extra feeder, rain or implementation losses. Those choices isolate the course calculations rather than predict a complete operating satellite link. The symbol rate, received quality ratios and noisy decisions are derived or simulated later; they are not additional measured givens.</p>
+<table id="tab:running-inputs">
+<caption>Declared Inputs for the Running GEO Downlink</caption>
+<thead>
+<tr>
+<th>Quantity</th>
+<th>Assumed value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Atlanta latitude; east-positive longitude</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>33.75</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">33.75^\circ</annotation></semantics></math> N; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>−</mi><msup><mn>84.388</mn><mo>∘</mo></msup></mrow><annotation encoding="application/x-tex">-84.388^\circ</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>GEO subpoint</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msup><mn>0</mn><mo>∘</mo></msup><annotation encoding="application/x-tex">0^\circ</annotation></semantics></math> latitude; station longitude</td>
+</tr>
+<tr>
+<td>Earth / GEO geocentric radii</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>6378</mn><annotation encoding="application/x-tex">6378</annotation></semantics></math> / <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>42</mn><mo>,</mo><mn>164</mn></mrow><annotation encoding="application/x-tex">42{,}164</annotation></semantics></math> km</td>
+</tr>
+<tr>
+<td>Carrier frequency</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>10</mn><annotation encoding="application/x-tex">10</annotation></semantics></math> GHz</td>
+</tr>
+<tr>
+<td>Accepted transmit power; transmit gain</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>10</mn><annotation encoding="application/x-tex">10</annotation></semantics></math> W (<math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>10</mn><annotation encoding="application/x-tex">10</annotation></semantics></math> dBW); <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>30</mn><annotation encoding="application/x-tex">30</annotation></semantics></math> dBi</td>
+</tr>
+<tr>
+<td>Receive diameter; aperture efficiency</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>1</mn><annotation encoding="application/x-tex">1</annotation></semantics></math> m; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>η</mi><mi>a</mi></msub><mo>=</mo><mn>0.60</mn></mrow><annotation encoding="application/x-tex">\eta_a=0.60</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>Equivalent system noise temperature</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>T</mi><mrow><mi mathvariant="normal">s</mi><mi mathvariant="normal">y</mi><mi mathvariant="normal">s</mi></mrow></msub><mo>=</mo><mn>290</mn></mrow><annotation encoding="application/x-tex">T_{\mathrm{sys}}=290</annotation></semantics></math> K</td>
+</tr>
+<tr>
+<td>Raw data rate; compression factor</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mn>12</mn><annotation encoding="application/x-tex">12</annotation></semantics></math> Mbit/s; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi mathvariant="script">𝒞</mi><mo>=</mo><mn>3</mn></mrow><annotation encoding="application/x-tex">\mathcal{C}=3</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>Code rate; constellation</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>r</mi><mi>c</mi></msub><mo>=</mo><mn>1</mn><mi>/</mi><mn>2</mn></mrow><annotation encoding="application/x-tex">r_c=1/2</annotation></semantics></math>; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>M</mi><mo>=</mo><mn>16</mn></mrow><annotation encoding="application/x-tex">M=16</annotation></semantics></math> QAM</td>
+</tr>
+<tr>
+<td>Raised-cosine rolloff</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>α</mi><mo>=</mo><mn>0.25</mn></mrow><annotation encoding="application/x-tex">\alpha=0.25</annotation></semantics></math></td>
+</tr>
+<tr>
+<td>Noise-measurement bandwidth</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>B</mi><mi>N</mi></msub><mo>=</mo><mn>2.5</mn></mrow><annotation encoding="application/x-tex">B_N=2.5</annotation></semantics></math> MHz (separate assumption)</td>
+</tr>
+</tbody>
+</table>
+<p>Some symbols change meaning between chapters; the notation table keeps their definitions together.</p>
+<table id="tab:notation">
+<caption>Symbols That Change Meaning Between Chapters</caption>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Waves and antennas</th>
+<th>Signals and navigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>k</mi><annotation encoding="application/x-tex">k</annotation></semantics></math></td>
+<td>wavenumber <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mn>2</mn><mi>π</mi><mi>/</mi><mi>λ</mi></mrow><annotation encoding="application/x-tex">2\pi/\lambda</annotation></semantics></math>, rad/m</td>
+<td>integer index in sums; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>k</mi><mi>B</mi></msub><annotation encoding="application/x-tex">k_B</annotation></semantics></math> is Boltzmann’s constant</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>R</mi><annotation encoding="application/x-tex">R</annotation></semantics></math></td>
+<td>range or path length, m</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><msub><mi>R</mi><mi>s</mi></msub><mo>,</mo><msub><mi>R</mi><mi>b</mi></msub><mo>,</mo><msub><mi>R</mi><mi>c</mi></msub></mrow><annotation encoding="application/x-tex">R_s,R_b,R_c</annotation></semantics></math> are rates (with subscripts)</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>T</mi><mi>c</mi></msub><annotation encoding="application/x-tex">T_c</annotation></semantics></math></td>
+<td>carrier period</td>
+<td>chip duration</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>a</mi><annotation encoding="application/x-tex">a</annotation></semantics></math></td>
+<td>aperture radius; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>n</mi></msub><annotation encoding="application/x-tex">a_n</annotation></semantics></math> feed weights</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>a</mi><mi>m</mi></msub><annotation encoding="application/x-tex">a_m</annotation></semantics></math> symbol values; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>a</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">a(t)</annotation></semantics></math> spreading code; echo amplitude</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>D</mi><annotation encoding="application/x-tex">D</annotation></semantics></math></td>
+<td>aperture diameter; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>D</mi><mrow><mi mathvariant="normal">d</mi><mi mathvariant="normal">i</mi><mi mathvariant="normal">r</mi></mrow></msub><annotation encoding="application/x-tex">D_{\mathrm{dir}}</annotation></semantics></math> directivity</td>
+<td>—</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>ψ</mi><annotation encoding="application/x-tex">\psi</annotation></semantics></math></td>
+<td>angle between vectors (I); feed angle off the dish axis (II); adjacent-element phase (III)</td>
+<td>—</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>M</mi><annotation encoding="application/x-tex">M</annotation></semantics></math></td>
+<td>—</td>
+<td>constellation size (<a href="../modulation/">VII</a>); processing gain (<a href="../navigation/">XI</a>)</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math></td>
+<td>intensity scale <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>C</mi><annotation encoding="application/x-tex">C</annotation></semantics></math>, W/sr</td>
+<td>carrier power; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>C</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">a</mi><mi mathvariant="normal">p</mi></mrow></msub><annotation encoding="application/x-tex">C_{\mathrm{cap}}</annotation></semantics></math> capacity; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi mathvariant="script">𝒞</mi><annotation encoding="application/x-tex">\mathcal{C}</annotation></semantics></math> compression</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>Q</mi><annotation encoding="application/x-tex">Q</annotation></semantics></math></td>
+<td>pair-normalization sum</td>
+<td>quadrature component <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mrow><mi>Q</mi><mo stretchy="false" form="prefix">(</mo><mi>t</mi><mo stretchy="false" form="postfix">)</mo></mrow><annotation encoding="application/x-tex">Q(t)</annotation></semantics></math>; DOP matrix</td>
+</tr>
+<tr>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><mi>b</mi><annotation encoding="application/x-tex">b</annotation></semantics></math></td>
+<td>—</td>
+<td><math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mi>q</mi></msub><annotation encoding="application/x-tex">b_q</annotation></semantics></math> bits/sample; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mrow><mi mathvariant="normal">c</mi><mi mathvariant="normal">l</mi><mi mathvariant="normal">k</mi></mrow></msub><annotation encoding="application/x-tex">b_{\mathrm{clk}}</annotation></semantics></math> clock offset; <math display="inline" xmlns="http://www.w3.org/1998/Math/MathML"><semantics><msub><mi>b</mi><mo>⟂</mo></msub><annotation encoding="application/x-tex">b_\perp</annotation></semantics></math> cross-track</td>
+</tr>
+</tbody>
+</table>
+<section class="topic-reading practice"><h2>Practice</h2><article class="practice-question" data-practice="ece6390-exam-2-introduction-1"><h3>1. Double the range while keeping frequency, power, gains and excess losses fixed. How do received power and free-space path loss change?</h3><label for="attempt-1">Your reasoning</label><textarea id="attempt-1" rows="4" maxlength="8000"></textarea><div class="practice-actions"><button type="button" data-hint aria-controls="hint-1">Hint</button><button type="button" data-compare aria-controls="answer-1" disabled>Compare reasoning</button></div><p id="hint-1" class="practice-hint" hidden>Use the inverse-square range dependence and 20 log10 of the range ratio.</p><p id="answer-1" class="practice-answer" hidden>Received power becomes one quarter, about 6.02 dB lower. Free-space path loss increases by about 6.02 dB. Receiver noise is unchanged if its temperature and equivalent bandwidth are unchanged.</p></article></section><nav class="topic-sequence" aria-label="Reading sequence"><a rel="next" href="../waves/">A Wave Is an Oscillation That Arrives Somewhere Else →</a></nav></main></body></html>

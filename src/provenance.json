@@ -10,7 +10,7 @@
     "Original array, navigation and digital-signal experiments, validated 2026-10-30",
     "November 10 and 12 course notes and existing local lecture transcripts; user-supplied array/gain discussion",
     "Fall 2024 PHSCS 587 notebooks and all 28 available lecture recordings; original device-physics explanations, figures and staged practice",
-    "ECE 6612 syllabus, slides 01\u201320 and recorded-lecture notes through the final class on November 12, 2026; conceptual lab scope reviewed privately"
+    "ECE 6612 syllabus, slides 01–20 and recorded-lecture notes through the final class on November 12, 2026; conceptual lab scope reviewed privately"
   ],
   "adaptations": [
     "Shared navigation and layout",
@@ -52,6 +52,43 @@
     "learn.jacobdanderson.net"
   ],
   "reference_links": [
-    "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates"
+    "https://ecen665web.groups.et.byu.net/notes/ln9.pdf",
+    "https://gssc.esa.int/navipedia/index.php/Bancroft_Method",
+    "https://gssc.esa.int/navipedia/index.php/Baseband_Processing",
+    "https://gssc.esa.int/navipedia/index.php/Correlators",
+    "https://gssc.esa.int/navipedia/index.php/Differential_GNSS",
+    "https://gssc.esa.int/navipedia/index.php/Ionosphere-free_Combination_for_Dual_Frequency_Receivers",
+    "https://gssc.esa.int/navipedia/index.php/Positioning_Error",
+    "https://gssc.esa.int/navipedia/index.php/Satellite_Coordinates_Computation",
+    "https://gssc.esa.int/navipedia/index.php/Transformations_between_ECEF_and_ENU_coordinates",
+    "https://live.ocw.mit.edu/courses/6-007-electromagnetic-energy-from-motors-to-lasers-spring-2011/7c18778ca0e6c11c2264aadaf42c2bd6_MIT6_007S11_lec19.pdf",
+    "https://numpy.org/doc/stable/reference/routines.fft.html",
+    "https://science.nasa.gov/earth/earth-observatory/catalog-of-earth-satellite-orbits/",
+    "https://www.analog.com/en/resources/app-notes/an-922.html",
+    "https://www.etsi.org/deliver/etsi_en/302300_302399/302307/01.03.01_60/en_302307v010301p.pdf",
+    "https://www.gps.gov/sites/default/files/2025-07/IS-GPS-200N.pdf",
+    "https://www.mathworks.com/help/comm/ref/comm.dqpskmodulator-system-object.html",
+    "https://www.mathworks.com/help/comm/ref/comm.turbodecoder-system-object.html",
+    "https://www.mathworks.com/help/comm/ref/ldpcdecoder.html",
+    "https://www.mathworks.com/help/comm/ug/analytical-expressions-used-in-berawgn-function-and-bit-error-rate-analysis-app.html",
+    "https://www.nist.gov/pml/time-and-frequency-division/popular-links/time-frequency-z/time-frequency-z-g",
+    "https://www.sarsat.noaa.gov/emergency-406-beacons/",
+    "https://www.youtube.com/watch?v=1V26Yr5KzW8",
+    "https://www.youtube.com/watch?v=6NzXumiQQtw",
+    "https://www.youtube.com/watch?v=D6qWe2fyEXU",
+    "https://www.youtube.com/watch?v=FGjKbX5EzWc",
+    "https://www.youtube.com/watch?v=M_SRUF4TQgA",
+    "https://www.youtube.com/watch?v=QrvXtvE1MT0",
+    "https://www.youtube.com/watch?v=R3KHaRWzpFM",
+    "https://www.youtube.com/watch?v=THjqSx49dYM",
+    "https://www.youtube.com/watch?v=V5zVWlRNFgA",
+    "https://www.youtube.com/watch?v=WAr5RM6shxc",
+    "https://www.youtube.com/watch?v=XxjgFeKjEI8",
+    "https://www.youtube.com/watch?v=Yn-MEMaiA0Y",
+    "https://www.youtube.com/watch?v=bH37AwqPpdk",
+    "https://www.youtube.com/watch?v=cxV3AfFJEK0",
+    "https://www.youtube.com/watch?v=i_dH6yE8xb0",
+    "https://www.youtube.com/watch?v=qjN4bdMASjE",
+    "https://www.youtube.com/watch?v=ulCRyxC5H3o"
   ]
 }

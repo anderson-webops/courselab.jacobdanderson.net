@@ -8,6 +8,7 @@ const {chromium}=require(process.env.PLAYWRIGHT_MODULE||'playwright');
 const base=new URL(process.env.ORBITALHW_URL||'http://127.0.0.1:4178');
 const output=path.resolve(process.env.QA_OUTPUT||'.ai-work/runs/topics-browser');
 const manifest=JSON.parse(await readFile('dist/assets/topic-manifest.json','utf8'));
+const additional=JSON.parse(await readFile('src/course-topics/ece6390-narrative.json','utf8'));
 const results=[],errors=[],violations=[],requests=[];
 const browser=await chromium.launch({headless:true,...(process.env.PLAYWRIGHT_CHANNEL?{channel:process.env.PLAYWRIGHT_CHANNEL}:{})});
 const context=await browser.newContext({viewport:{width:1440,height:1100}});
@@ -20,10 +21,10 @@ try{
  await mkdir(output,{recursive:true});
  await check('Topic index reaches every independent page',async()=>{
   await page.goto(new URL('/courses/gt/ece6390/topics/',base).href);
-  assert.equal(await page.locator('.topic-grid a').count(),67);
+  assert.equal(await page.locator('.topic-grid a').count(),manifest.length+additional.length);
   assert.equal(await page.locator('h1').count(),1);
   const links=await page.locator('.topic-grid a').evaluateAll(els=>els.map(e=>e.pathname));
-  assert.deepEqual([...links].sort(),manifest.map(x=>x.route).sort());
+  assert.deepEqual([...links].sort(),[...manifest.map(x=>x.route),...additional.map(x=>'/courses/'+x.course+'/topics/'+x.id+'/')].sort());
  });
  await check('Every topic loads its own live figure before explanation and practice',async()=>{
   for(const item of manifest){

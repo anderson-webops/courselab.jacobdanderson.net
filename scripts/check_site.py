@@ -84,7 +84,12 @@ def check():
     for file in dist.rglob('*'):
         if not file.is_file():
             continue
-        text = file.read_text()
+        payload = file.read_bytes()
+        if file.suffix == '.png':
+            assert payload.startswith(b'\x89PNG\r\n\x1a\n'), f'Invalid PNG: {file.name}'
+            text = payload.decode('latin1')
+        else:
+            text = payload.decode('utf-8')
         assert '/Users/' not in text, f'Local path leaked in {file.name}'
         assert not re.search(r'\b(?:AKIA[A-Z0-9]{16}|gh[pousr]_[A-Za-z0-9]{20,})\b', text), 'Unexpected credential-shaped value'
     info = json.loads((dist / 'source-info.json').read_text())

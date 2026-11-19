@@ -42,6 +42,14 @@ To add a course, add its verified institution/code/title to `courses.json`, then
 
 The 26 topic lessons follow cryptography, link/IP protection, routing, transport/DNS, TLS/QUIC, web, authentication/email, access control, DoS and malware. Eleven adjustable models use the existing shared figure controls. Existing authenticated-encryption and TLS URLs and their saved-question prompts are retained. [Coverage and remaining depth](ECE6612-COVERAGE.md) records source scope and model limits.
 
+## ECE 6390 study narratives
+
+The course overview links Exam 1 and Exam 2 readings under `/courses/gt/ece6390/study/exam-1/` and `/courses/gt/ece6390/study/exam-2/`. Each chapter has a stable URL, figure references, native MathML equations, related simulations and attempt-first practice. All 78 topic pages link to their longer connected explanation.
+
+`src/study-narratives.json` and `src/narrative-figures/` contain original reviewed learning material. `scripts/narratives.py` publishes it through the shared course shell. The optional authoring tool `scripts/import_study_narratives.py` imports reviewed LaTeX and scientific figure PDFs using Pandoc and Poppler; these tools are not required for an ordinary site build. Raw lectures, recordings, assignments, submissions and answer documents remain outside this repository. Source-specific figure numbers are retained within each exam reading.
+
+The detection/coding additions are in `src/course-topics/ece6390-narrative.json` and `src/ece6390-models.js`. Discrete profile controls use named native selections, URL state validates supported choices, and enlarged figures capture the current simulation state. Existing progress keys are preserved.
+
 ## State and sharing
 
 Existing storage keys are preserved: `orbitalhw:orbit:v1`, `ece6390-course-lab-v1` and `orbitalhw-attempt-*`. Storage failure does not disable simulations. Written attempts stay local and comparison feedback begins hidden. Topic controls use validated `c_<control-id>` query parameters where supported; direct links and refreshes restore those values. Question answers are never put in URLs.

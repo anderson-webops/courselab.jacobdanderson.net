@@ -109,7 +109,12 @@ class CourseLabTests(unittest.TestCase):
             with self.subTest(artifact=str(artifact.relative_to(DIST))):
                 self.assertNotIn(artifact.suffix.lower(),
                                  {'.pdf', '.plist', '.py', '.docx', '.note', '.mp3', '.m4a'})
-                text = artifact.read_text()
+                payload = artifact.read_bytes()
+                if artifact.suffix == '.png':
+                    self.assertTrue(payload.startswith(b'\x89PNG\r\n\x1a\n'))
+                    text = payload.decode('latin1')
+                else:
+                    text = payload.decode('utf-8')
                 self.assertNotIn('/Users/', text)
                 self.assertNotIn('/Volumes/', text)
                 self.assertNotRegex(text, r'file://|libgen\.(?:li|rs)|solutions-manual')

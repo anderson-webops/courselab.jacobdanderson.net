@@ -5,6 +5,10 @@ import html
 import json
 import posixpath
 import re
+try:
+    from scripts.narratives import build_study_pages
+except ModuleNotFoundError:
+    from narratives import build_study_pages
 
 PRIMARY = 'https://courselab.jacobdanderson.net'
 ECE = 'courses/gt/ece6390'
@@ -29,7 +33,7 @@ def header(file, courses, current=None):
     current_route=route(file)
     nav=[]
     for ident,label,target in [('courses','Courses','/courses/'),('topics','Topics','/topics/'),('simulations','Simulations','/'+ECE+'/lab/'),('search','Search','/search/')]:
-        active=' aria-current="page"' if current_route==target or (ident=='topics' and '/topics/' in current_route) or (ident=='simulations' and current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations']) else ''
+        active=' aria-current="page"' if current_route==target or (ident=='topics' and ('/topics/' in current_route or '/study/' in current_route)) or (ident=='simulations' and current_route.split('/')[-2] in ['orbit','solar','project','lab','admin','simulations']) else ''
         nav.append(f'<a data-site-view="{ident}" href="{relative(file,target)}"{active}>{label}</a>')
     return '<header class="catalog-header"><nav class="catalog-bar" aria-label="Site"><div class="catalog-primary">'+''.join(nav[:3])+'</div>'+nav[3]+'</nav></header>'
 
@@ -107,6 +111,14 @@ def build_catalog(root, csp):
             replaced+=n
         assert replaced==1,(name,replaced)
         text = text.replace('| Orbital HW','| Course Lab').replace('ECE 6390 · Course Lab','All simulations')
+        if name=='lab/index.html':
+            linked=[topic for topic in extra_topics if topic['course']=='gt/ece6390' and topic.get('simulation')]
+            groups_of_models=[('Detection and digital transmission',linked[:5]+[topic for topic in linked[5:] if topic['id']=='soft-decisions']),('Error correction',[topic for topic in linked[5:] if topic['id']!='soft-decisions'])]
+            sections=[]
+            for heading,items in groups_of_models:
+                if items:
+                    sections.append('<section class="library-extensions"><h2>'+heading+'</h2><ul>'+''.join('<li><a href="'+relative(new_file,'/'+ECE+'/topics/'+topic['id']+'/')+'">'+html.escape(topic['title'])+'</a></li>' for topic in items)+'</ul></section>')
+            text=text.replace('</main>',''.join(sections)+'</main>',1)
         if not name.startswith('learn/'):
             breadcrumb=f'<p class="topic-breadcrumb"><a href="{relative(new_file,"/"+ECE+"/")}">ECE 6390</a></p>'
             text=text.replace('<h1',breadcrumb+'<h1',1)
@@ -119,6 +131,8 @@ def build_catalog(root, csp):
                 extras='<section class="topic-reading"><h2>Explore further</h2><ul>'+''.join(f'<li><a href="{relative(new_file,"/"+ECE+"/"+path)}">{html.escape(label)}</a></li>' for label,path in links)+'</ul></section>'
                 text=text.replace('<section class="topic-reading practice"',extras+'<section class="topic-reading practice"',1)
         text = text.replace('</head>',f'<link rel="canonical" href="{PRIMARY+route(new_file)}"><link rel="stylesheet" href="{relative(new_file,"/assets/catalog.css")}"></head>')
+        if name.startswith('learn/') and name!='learn/index.html' and 'assets/figure-viewer.js' not in text:
+            text=text.replace('</head>',f'<link rel="stylesheet" href="{relative(new_file,"/assets/figure-viewer.css")}"><script src="{relative(new_file,"/assets/figure-viewer.js")}" defer></script></head>')
         target=dest/new_file;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(text);old.unlink()
     for folder in sorted((x for x in dest.rglob('*') if x.is_dir()),key=lambda x:len(x.parts),reverse=True):
         if not any(folder.iterdir()):folder.rmdir()
@@ -149,6 +163,22 @@ def build_catalog(root, csp):
         body=body.replace('</main>','<nav class="topic-sequence" aria-label="More in this course">'+''.join(sequence)+'</nav></main>')
         out=dest/file;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(page(file,t['title'],body,csp,courses,key,extra=assets))
         index.append({'title':t['title'],'course':key,'code':next(c['displayCode'] for c in courses if c['institution']+'/'+c['code']==key),'group':'Foundations','route':route(file),'text':' '.join(t['explanation'])})
+    ece_topics=[entry for entry in index if entry['course']=='gt/ece6390']
+    ranks={ident:i for i,ident in enumerate(ident for group in groups['gt/ece6390'] for ident in group['ids'])}
+    ece_topics.sort(key=lambda entry:ranks.get(entry['route'].rstrip('/').split('/')[-1],999))
+    for at,entry in enumerate(ece_topics):
+        file=entry['route'].lstrip('/')+'index.html'
+        sequence=[]
+        for rel,offset,arrow in [('prev',-1,'← '),('next',1,'')]:
+            if 0<=at+offset<len(ece_topics):
+                neighbor=ece_topics[at+offset]
+                title=arrow+neighbor['title']+(' →' if rel=='next' else '')
+                sequence.append('<a rel="'+rel+'" href="'+relative(file,neighbor['route'])+'">'+html.escape(title)+'</a>')
+        target=dest/file
+        text=target.read_text()
+        text=re.sub(r'<nav class="topic-sequence"[^>]*>.*?</nav>','<nav class="topic-sequence" aria-label="More in this course">'+''.join(sequence)+'</nav>',text,count=1,flags=re.S)
+        target.write_text(text)
+    study=build_study_pages(root,csp,courses,page,relative,practice,index)
     cards=[]
     for c in courses:
         key=c['institution']+'/'+c['code'];base='/courses/'+key+'/'
@@ -161,8 +191,8 @@ def build_catalog(root, csp):
         if key=='gt/ece6390':
             tools='<p><a href="topics/">Browse the topic index</a></p>'
         unfinished=f'<p class="course-status">In progress</p><p>{html.escape(c.get("gap","Additional course topics and practice remain to be developed."))}</p>' if c['status']=='in-progress' else ''
-        body=f'<main id="main" class="catalog-page"><p class="course-institution">{INSTITUTIONS[c["institution"]]}</p><h1>{html.escape(title)}</h1><p>{html.escape(c["description"])}</p>{unfinished}{tools}<div id="topics">{links}</div></main>'
-        out=dest/file;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(page(file,title,body,csp,courses,key))
+        body=f'<main id="main" class="catalog-page"><p class="course-institution">{INSTITUTIONS[c["institution"]]}</p><h1>{html.escape(title)}</h1><p>{html.escape(c["description"])}</p>{unfinished}{study['overview'] if key=='gt/ece6390' else ''}{tools}<div id="topics">{links}</div></main>'
+        out=dest/file;out.parent.mkdir(parents=True,exist_ok=True);out.write_text(page(file,title,body,csp,courses,key,extra='<link rel="stylesheet" href="'+relative(file,'/assets/narratives.css')+'">' if key=='gt/ece6390' else ''))
         if key=='gt/ece6390':
             topic_file=ECE+'/topics/index.html'
             topic_body='<main id="course-lab" class="topic-index"><p class="topic-breadcrumb"><a href="../">ECE 6390</a></p><h1>Course topics</h1>'+grouped_topics(topic_file,course_topics,groups.get(key,[]))+'</main>'
@@ -186,6 +216,7 @@ def build_catalog(root, csp):
     (dest/'courses').mkdir(exist_ok=True)
     course_index='<main id="main" class="catalog-page"><h1>Courses</h1><ul class="course-cards">'+''.join(card.replace('href="courses/', 'href="') for card in cards)+'</ul></main>'
     (dest/'courses/index.html').write_text(page('courses/index.html','Courses',course_index,csp,courses))
+    index.extend(study['search'])
     # Search data is shipped as a local script to retain connect-src none.
     for title,path,text in [('GeorgiaTenna project','project/','Aperture, feeds, phases, steering, normalization, link budget and geographic coverage'),('Orbit and Sun','orbit/','Orbital forces, look angles and Sun geometry'),('Solar acceleration components','solar/','Radial and tangential projections of solar pressure')]:
         index.append({'title':title,'course':'gt/ece6390','code':'ECE 6390','group':'Interactive tools','route':'/'+ECE+'/'+path,'text':text})
