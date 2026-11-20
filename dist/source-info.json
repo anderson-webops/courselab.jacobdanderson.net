@@ -58,9 +58,9 @@
     "course-model-assets.json": "83c2320da1de8a78dddccd853b7f5d3926466a201d7a1c5bf32c025d653b3929",
     "course-navigation.js": "795637e84ef220716d873fdda3c7145350e1b3f529255b3deaebabd54da4b1ca",
     "course-topics/ece6390-narrative.json": "8d65ada8d7c1f45889b2979cbc568c8c804fda1cfb2bd8103197f9bb0c2bdbe7",
-    "course-topics/ece6612-applications.json": "fd01ad7d4a40252cd1aa53f4c0b90df23fc65118c92c3bb3260b28e3ef253c66",
+    "course-topics/ece6612-applications.json": "46505a4a7ac142623129c73888adf7ecdb0cd5411946dd247493afa0fa4aaf53",
     "course-topics/ece6612-foundations.json": "a276dbf4f2cdcf3521ff2fa6f7037872173138f5a1c242fc865fdbf5a5abae8a",
-    "course-topics/ece6612-protocols.json": "c287406f1d35c1f19b03707d74733fa21ff4e158f59349d6eba68c62fc56901e",
+    "course-topics/ece6612-protocols.json": "5a320bb2642b6f86927297d3d02536e2293fb52f125a56d5dd43b54ba5df9cc1",
     "course-update.js": "85406824c6bc924df3a6c608f59cfec5f34f8815351bd6397afd2df2f2d80147",
     "courses.json": "c77f9459308492b1531a359cdbcb25676979e490e0cf76f59694b33a8567480b",
     "device-models.js": "e70e4f4e72f4aa728a91edb62782a3c70fe30d9e03ff29f8cef20a5e70cc0bae",
@@ -347,5 +347,5 @@
     "https://www.youtube.com/watch?v=qjN4bdMASjE",
     "https://www.youtube.com/watch?v=ulCRyxC5H3o"
   ],
-  "version": "1.11.0"
+  "version": "1.12.0"
 }

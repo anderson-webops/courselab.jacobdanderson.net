@@ -1,6 +1,6 @@
 # ECE 6612 coverage
 
-Reviewed November 12, 2026. The public collection contains 26 original lessons, 26 reference figures, 11 adjustable models and 52 attempt-first questions. Topic order follows the course's actual concept sequence. The syllabus supplies the overall scope; slides and lecture notes establish the material available for each topic.
+Reviewed November 19, 2026. The public collection contains 26 original lessons, 26 reference figures, 11 adjustable models and 52 attempt-first questions. Topic order follows the course's actual concept sequence. The syllabus supplies the overall scope; slides and lecture notes establish the material available for each topic.
 
 | Course material | Public lessons | Adjustable investigations |
 | --- | --- | --- |
@@ -18,6 +18,7 @@ The conceptual lab review contributes byte-level reasoning, capture interpretati
 ## Taught cutoff and remaining depth
 
 - Recorded lecture coverage is reviewed through the **November 12, 2026 final lecture**, completing DoS and malware. The final lecture adds reflection and cloud-capacity explanations, telescope observation designs, worm targeting and execution examples, and layered botnet-disruption cases. Course topic coverage is complete through that lecture; the following items describe the collection’s remaining depth limits.
+- A November 19 comparison of the QUIC-through-malware lessons with slides C14–C20 added the lectures’ worked cases: QUIC packet-number freshness, the reason for the 3× rule, Retry and costs; HTTP statelessness, explicit Domain, document.cookie and deletion; the search-page XSS, HTML escaping, CSP outcomes and the Balance/Username SQL injection with its parse-tree effect; the image-tag CSRF transfer, Referer stripping and confirmation; plaintext-to-salted storage, NIST length guidance and cracking tools; the second-service SSO step and signed passkey registration; spoofing motives, a worked SPF record and SPF/DKIM/DMARC deployment trade-offs; passive-only opportunistic TLS; isolation versus identification and the three DoS strategies; and virus vectors, the Morris CFAA case and Slammer’s fire-and-forget scanning. Lesson count, questions, models and saved-attempt keys are unchanged.
 - Lessons describe protocol mechanisms and security decisions. Cryptographic round internals, exhaustive packet-header field catalogs, vendor-specific BGP/firewall commands, full protocol implementations and research-project measurements remain outside this edition's depth.
 - Models expose a defined relationship using small examples. Tiny RSA/Diffie–Hellman values demonstrate algebra; the XOR model demonstrates keystream reuse. Probability models state independence/uniformity assumptions. Password hardware cost is an input, and worm growth uses an explicitly bounded early-phase approximation.
 - VPN visibility assumes the illustrated tunnel termination, routing and application encryption. Provider collusion, traffic correlation, DNS paths, endpoint compromise and operational implementation require additional evidence in a real evaluation.
