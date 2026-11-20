@@ -6,7 +6,7 @@ Source: [anderson-webops/courselab.jacobdanderson.net](https://github.com/anders
 
 ## Build and preview
 
-Use Node 26.13.1 and npm 12.2.1. There are no application dependencies or server database.
+Use Node 26.13.1 and npm 12.2.3. There are no application dependencies or server database.
 
 ```sh
 npm ci
